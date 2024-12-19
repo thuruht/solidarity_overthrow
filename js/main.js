@@ -80,7 +80,7 @@ async function fetchAndDisplayWeather(lat, lon, name) {
   }
 }
 
-// Function to track a location and associate IPI level
+// Function to track a location and associate metrics
 function trackLocation(name, lat, lon) {
   // Prevent duplicates
   if (trackedLocations.some(loc => loc.name === name)) {
@@ -88,14 +88,16 @@ function trackLocation(name, lat, lon) {
     return;
   }
 
-  const ipi = Math.floor(Math.random() * 101); // Random Imperialist Power Index (0-100)
-  const locationData = { name, lat, lon, ipi };
+  const ipi = Math.floor(Math.random() * 21) + 80; // Imperialist Power Index starts high (80–100)
+  const solidarity = Math.floor(Math.random() * 21); // Solidarity Index starts low (0–20)
+  const propaganda = Math.floor(Math.random() * 21) + 80; // Propaganda Level starts high (80–100)
+  const locationData = { name, lat, lon, ipi, solidarity, propaganda };
   cacheData('locationData', locationData);
 
   // Update tracked locations in sidebar
   trackedLocations.push(locationData);
   updateSidebar();
-  console.log(`Tracking location: ${name}, IPI: ${ipi}`);
+  console.log(`Tracking location: ${name}, IPI: ${ipi}, Solidarity: ${solidarity}, Propaganda: ${propaganda}`);
 }
 
 // Example locations array
@@ -134,7 +136,8 @@ document.getElementById('locationSearch').addEventListener('keydown', async even
       const data = await response.json();
       if (data.length > 0) {
         const { lat, lon, display_name } = data[0];
-        fetchAndDisplayWeather(lat, lon, display_name);
+        const cityAndCountry = display_name.split(',').slice(0, 2).join(',').trim();
+        fetchAndDisplayWeather(lat, lon, cityAndCountry);
         map.setView([lat, lon], 6);
       } else {
         alert('Location not found. Please try again.');
@@ -154,7 +157,7 @@ function updateSidebar() {
     <p><b>Imperialist Power Index:</b> ${averageIpi}%</p>
     <h4>Tracked Locations</h4>
     <ul>
-      ${trackedLocations.map(loc => `<li>${loc.name}: IPI ${loc.ipi}%</li>`).join('')}
+      ${trackedLocations.map(loc => `<li>${loc.name}: IPI ${loc.ipi}%, Solidarity: ${loc.solidarity}%, Propaganda: ${loc.propaganda}%</li>`).join('')}
     </ul>`;
   document.querySelector('.sidebar').innerHTML = sidebarContent;
 }
