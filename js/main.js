@@ -1,4 +1,4 @@
-// File: revolutionary_simulator_prototype.js
+// File Part 1: revolutionary_simulator_prototype.js
 
 // Include Leaflet.js (Add this in your HTML file):
 // <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -41,6 +41,9 @@ if ('indexedDB' in window) {
     console.error('Error initializing IndexedDB.');
   };
 }
+
+// Global Imperialist Power Index
+let globalIpi = 100;
 
 // Function to cache data
 const cacheData = (storeName, data) => {
@@ -96,6 +99,11 @@ function trackLocation(name, lat, lon) {
 
   // Update tracked locations in sidebar
   trackedLocations.push(locationData);
+
+  // Adjust global IPI
+  const localIpiReduction = ipi - solidarity;
+  globalIpi = Math.max(globalIpi - localIpiReduction / 10, 0); // Reduce global IPI by 1/10th of local reduction
+
   updateSidebar();
   console.log(`Tracking location: ${name}, IPI: ${ipi}, Solidarity: ${solidarity}, Propaganda: ${propaganda}`);
 }
@@ -114,6 +122,8 @@ const locations = [
 ];
 
 const trackedLocations = []; // Stores tracked locations
+
+// File Part 2: revolutionary_simulator_prototype.js
 
 // Fetch weather for all example locations
 locations.forEach(loc => fetchAndDisplayWeather(loc.lat, loc.lon, loc.name));
@@ -154,7 +164,7 @@ function updateSidebar() {
   const averageIpi = trackedLocations.length > 0 ? (totalIpi / trackedLocations.length).toFixed(2) : 0;
 
   const sidebarContent = `<h3>Global Metrics</h3>
-    <p><b>Imperialist Power Index:</b> ${averageIpi}%</p>
+    <p><b>Global Imperialist Power Index:</b> ${globalIpi.toFixed(2)}%</p>
     <h4>Tracked Locations</h4>
     <ul>
       ${trackedLocations.map(loc => `<li>${loc.name}: IPI ${loc.ipi}%, Solidarity: ${loc.solidarity}%, Propaganda: ${loc.propaganda}%</li>`).join('')}
@@ -167,7 +177,7 @@ const sidebar = L.control({ position: 'topright' });
 sidebar.onAdd = function () {
   const div = L.DomUtil.create('div', 'sidebar');
   div.innerHTML = `<h3>Global Metrics</h3>
-    <p><b>Imperialist Power Index:</b> 0%</p>
+    <p><b>Global Imperialist Power Index:</b> ${globalIpi}%</p>
     <h4>Tracked Locations</h4>
     <ul></ul>`;
   return div;
