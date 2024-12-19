@@ -11,7 +11,7 @@ const map = L.map('map', {
 
 // Use CartoDB's tile service for clean tiles
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors & <a href="https://carto.com/">CARTO</a>',
+  attribution: '<small>&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors & <a href="https://carto.com/">CARTO</a></small>',
   subdomains: 'abcd',
   maxZoom: 19
 }).addTo(map);
@@ -122,64 +122,135 @@ const locations = [
 ];
 
 const trackedLocations = []; // Stores tracked locations
-
 // File Part 2: revolutionary_simulator_prototype.js
 
 // Fetch weather for all example locations
 locations.forEach(loc => fetchAndDisplayWeather(loc.lat, loc.lon, loc.name));
 
-// Add user input for dynamic location search
-const searchInput = L.control({ position: 'topleft' });
-searchInput.onAdd = function () {
-  const div = L.DomUtil.create('div', 'search-bar');
-  div.innerHTML = '<input type="text" id="locationSearch" placeholder="Search Location...">';
+// Add dropdown for selecting cities
+const cityDropdown = L.control({ position: 'topleft' });
+cityDropdown.onAdd = function () {
+  const div = L.DomUtil.create('div', 'city-dropdown');
+  div.innerHTML = '<select id="cityDropdown"><option value="" disabled selected>Select a city...</option></select>';
   return div;
 };
-searchInput.addTo(map);
+cityDropdown.addTo(map);
 
-document.getElementById('locationSearch').addEventListener('keydown', async event => {
-  if (event.key === 'Enter') {
-    const query = event.target.value;
-    const geocodeUrl = `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`;
-    try {
-      const response = await fetch(geocodeUrl);
-      const data = await response.json();
-      if (data.length > 0) {
-        const { lat, lon, display_name } = data[0];
-        const cityAndCountry = display_name.split(',').slice(0, 2).join(',').trim();
-        fetchAndDisplayWeather(lat, lon, cityAndCountry);
-        map.setView([lat, lon], 6);
-      } else {
-        alert('Location not found. Please try again.');
+// Populate the dropdown with global cities and custom city option
+function populateDropdown() {
+  const dropdown = document.getElementById("cityDropdown");
+
+  // Populate with global cities
+  globalCities.forEach(city => {
+    const option = document.createElement("option");
+    option.value = city.name;
+    option.textContent = city.name;
+    dropdown.appendChild(option);
+  });
+
+  // Add "Custom City" option
+  const customOption = document.createElement("option");
+  customOption.value = "custom";
+  customOption.textContent = "Add Custom City...";
+  dropdown.appendChild(customOption);
+}
+
+populateDropdown();
+
+// Handle city selection from dropdown
+const trackedLocations = []; // Stores tracked locations
+
+document.getElementById("cityDropdown").addEventListener("change", async function () {
+  if (this.value === "custom") {
+    const cityName = prompt("Enter the name of the city:");
+    if (cityName) {
+      const geocodeUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1`;
+      try {
+        const response = await fetch(geocodeUrl);
+        const data = await response.json();
+
+        if (data.length > 0) {
+          const { lat, lon, display_name } = data[0];
+          const customCity = {
+            name: display_name.split(",")[0],
+            lat: parseFloat(lat),
+            lon: parseFloat(lon),
+            ipi: Math.floor(Math.random() * 16) + 85, // Random IPI: 85–100
+            solidarity: Math.floor(Math.random() * 16), // Random Solidarity: 0–15
+            propaganda: Math.floor(Math.random() * 21) + 80, // Random Propaganda: 80–100
+          };
+
+          addCustomCity(customCity);
+        } else {
+          alert("City not found. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error fetching city coordinates:", error);
+        alert("Unable to find city coordinates. Please try again.");
       }
-    } catch (error) {
-      console.error('Error fetching geocode data:', error);
+    }
+  } else {
+    const selectedCity = globalCities.find(city => city.name === this.value);
+    if (selectedCity) {
+      updateCityMetrics(selectedCity);
+      map.setView([selectedCity.lat, selectedCity.lon], 6);
     }
   }
 });
 
-// Function to update the sidebar
-function updateSidebar() {
-  const totalIpi = trackedLocations.reduce((sum, loc) => sum + loc.ipi, 0);
-  const averageIpi = trackedLocations.length > 0 ? (totalIpi / trackedLocations.length).toFixed(2) : 0;
+// Add a custom city dynamically
+function addCustomCity(city) {
+  // Add to dropdown
+  const dropdown = document.getElementById("cityDropdown");
+  const option = document.createElement("option");
+  option.value = city.name;
+  option.textContent = city.name;
+  dropdown.appendChild(option);
 
-  const sidebarContent = `<h3>Global Metrics</h3>
-    <p><b>Global Imperialist Power Index:</b> ${globalIpi.toFixed(2)}%</p>
-    <h4>Tracked Locations</h4>
-    <ul>
-      ${trackedLocations.map(loc => `<li>${loc.name}: IPI ${loc.ipi}%, Solidarity: ${loc.solidarity}%, Propaganda: ${loc.propaganda}%</li>`).join('')}
-    </ul>`;
-  document.querySelector('.sidebar').innerHTML = sidebarContent;
+  // Add to global cities list
+  globalCities.push(city);
+
+  // Add marker to the map
+  const marker = L.marker([city.lat, city.lon]).addTo(map);
+  marker.bindPopup(`<b>${city.name}</b><br><b>IPI:</b> ${city.ipi}%<br><b>Solidarity:</b> ${city.solidarity}%<br><b>Propaganda:</b> ${city.propaganda}%`);
+  map.setView([city.lat, city.lon], 6);
+
+  // Update the sidebar with the custom city’s metrics
+  updateCityMetrics(city);
 }
 
-// Sidebar for metrics
-const sidebar = L.control({ position: 'topright' });
-sidebar.onAdd = function () {
-  const div = L.DomUtil.create('div', 'sidebar');
-  div.innerHTML = `<h3>Global Metrics</h3>
+// Update the sidebar with city metrics
+function updateCityMetrics(city) {
+  const sidebarContent = `<h3>${city.name} Metrics</h3>
+    <p><b>Imperialist Power Index:</b> ${city.ipi}%</p>
+    <p><b>Solidarity:</b> ${city.solidarity}%</p>
+    <p><b>Propaganda:</b> ${city.propaganda}%</p>`;
+  document.querySelector(".city-metrics").innerHTML = sidebarContent;
+}
+
+// Function to update global metrics
+function updateGlobalMetrics() {
+  const totalIpi = globalCities.reduce((sum, city) => sum + city.ipi, 0);
+  const globalIpi = (totalIpi / globalCities.length).toFixed(2);
+
+  const totalPropaganda = globalCities.reduce((sum, city) => sum + city.propaganda, 0);
+  const globalPropaganda = (totalPropaganda / globalCities.length).toFixed(2);
+
+  const totalSolidarity = globalCities.reduce((sum, city) => sum + city.solidarity, 0);
+  const globalSolidarity = (totalSolidarity / globalCities.length).toFixed(2);
+
+  const sidebarContent = `<h3>Global Metrics</h3>
     <p><b>Global Imperialist Power Index:</b> ${globalIpi}%</p>
-    <h4>Tracked Locations</h4>
-    <ul></ul>`;
-  return div;
-};
-sidebar.addTo(map);
+    <p><b>Propaganda Level:</b> ${globalPropaganda}%</p>
+    <p><b>Solidarity Index:</b> ${globalSolidarity}%</p>`;
+  document.querySelector(".global-metrics").innerHTML = sidebarContent;
+}
+
+// Initialize global metrics on page load
+updateGlobalMetrics();
+
+// Sidebar HTML updates are expected to include:
+// <div id="sidebar">
+//   <div class="global-metrics"></div>
+//   <div class="city-metrics"></div>
+// </div>
