@@ -23,27 +23,33 @@ L.control.attribution({
 
 // Fetch real-time weather data from OpenWeatherMap
 const apiKey = '955034a79abe8e7bc9df0666a15f1b06';
-const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=0&lon=0&appid=${apiKey}`;
 
-// Function to fetch weather data and plot it on the map
+// Function to fetch weather data and plot multiple markers
 async function fetchAndDisplayWeather() {
   try {
-    // Fetch weather data
-    const response = await fetch(weatherUrl);
-    const data = await response.json();
+    // Array of example coordinates for multiple locations
+    const locations = [
+      { lat: 40.7128, lon: -74.0060, name: 'New York City' },
+      { lat: 51.5074, lon: -0.1278, name: 'London' },
+      { lat: 35.6895, lon: 139.6917, name: 'Tokyo' }
+    ];
 
-    // Example data extraction (mocking one location for now)
-    const lat = data.coord.lat;
-    const lon = data.coord.lon;
-    const description = data.weather[0].description;
+    // Loop through locations to fetch and display weather data
+    for (const loc of locations) {
+      const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${loc.lat}&lon=${loc.lon}&appid=${apiKey}`);
+      const data = await response.json();
 
-    // Add marker to the map
-    L.marker([lat, lon])
-      .addTo(map)
-      .bindPopup(`<b>Weather Event:</b> ${description}`)
-      .openPopup();
+      // Extract weather description
+      const description = data.weather[0].description;
 
-    console.log('Weather data plotted:', data);
+      // Add marker for each location
+      L.marker([loc.lat, loc.lon])
+        .addTo(map)
+        .bindPopup(`<b>${loc.name}</b><br><b>Weather:</b> ${description}`)
+        .openPopup();
+
+      console.log(`Weather data for ${loc.name}:`, data);
+    }
   } catch (error) {
     console.error('Error fetching weather data:', error);
   }
@@ -58,7 +64,8 @@ sidebar.onAdd = function () {
   const div = L.DomUtil.create('div', 'sidebar');
   div.innerHTML = `<h3>Global Metrics</h3>
     <p><b>Imperialist Power Index:</b> 85%</p>
-    <p><b>Community Resilience:</b> 45%</p>`;
+    <p><b>Community Resilience:</b> 45%</p>
+    <p><b>Tracked Locations:</b> 3</p>`;
   return div;
 };
 sidebar.addTo(map);
