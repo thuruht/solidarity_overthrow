@@ -17,6 +17,38 @@ L.control.attribution({
   position: 'bottomright'
 }).addTo(map).setPrefix('');
 
+// Add a legend to explain marker colors
+function addLegend() {
+  const legend = L.control({ position: 'bottomleft' });
+
+  legend.onAdd = function(map) {
+    const div = L.DomUtil.create('div', 'info legend');
+    div.innerHTML = `
+      <h4>Solidarity Level</h4>
+      <div><span style="background-color: green; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 5px;"></span> High (80-100%)</div>
+      <div><span style="background-color: gold; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 5px;"></span> Medium (50-79%)</div>
+      <div><span style="background-color: orange; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 5px;"></span> Low (20-49%)</div>
+      <div><span style="background-color: red; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 5px;"></span> Critical (0-19%)</div>
+    `;
+    
+    // Add custom styling
+    div.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    div.style.padding = '10px';
+    div.style.borderRadius = '5px';
+    div.style.color = 'white';
+    div.style.fontFamily = "'Special Elite', monospace";
+    div.style.fontSize = '0.8em';
+    div.style.maxWidth = '200px';
+    
+    return div;
+  };
+
+  legend.addTo(map);
+}
+
+// Add legend to the map
+addLegend();
+
 // Offline storage setup using IndexedDB (if needed)
 let db;
 if ('indexedDB' in window) {
@@ -45,7 +77,7 @@ const cacheData = (storeName, data) => {
     const store = tx.objectStore(storeName);
     store.put(data);
     tx.oncomplete = () => console.log(`Cached data for ${data.name || data.id}`);
-  }Beirut Metrics
+  }
 };
 
 // Fetch weather and display markers
@@ -58,7 +90,10 @@ async function fetchWeather(lat, lon, name) {
 
     const weatherDescription = data.weather && data.weather[0] ? data.weather[0].description : 'Unknown';
     const marker = L.marker([lat, lon]).addTo(map);
-    Beirut Metrics
+    
+    // Set a unique id for the marker
+    marker._icon.id = `marker-${name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+    
     // Use bindTooltip to show city & weather on hover
     marker.bindTooltip(
       `<b>${name}</b><br>Weather: ${weatherDescription}`,
