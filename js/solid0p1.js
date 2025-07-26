@@ -49,6 +49,59 @@ function addLegend() {
 // Add legend to the map
 addLegend();
 
+// Add reset view button
+function addResetViewButton() {
+  const resetButton = L.control({ position: 'topright' });
+  
+  resetButton.onAdd = function(map) {
+    const button = L.DomUtil.create('button', 'reset-view-button');
+    button.innerHTML = '<span class="material-icons">public</span> Reset View';
+    button.title = 'Reset map to default view';
+    
+    // Style the button
+    button.style.backgroundColor = '#444';
+    button.style.color = 'white';
+    button.style.border = 'none';
+    button.style.padding = '8px 12px';
+    button.style.borderRadius = '4px';
+    button.style.cursor = 'pointer';
+    button.style.display = 'flex';
+    button.style.alignItems = 'center';
+    button.style.fontFamily = "'Special Elite', monospace";
+    button.style.fontSize = '14px';
+    button.style.boxShadow = '0 2px 5px rgba(0,0,0,0.3)';
+    
+    // Add hover effect
+    button.onmouseover = function() {
+      this.style.backgroundColor = '#666';
+    };
+    button.onmouseout = function() {
+      this.style.backgroundColor = '#444';
+    };
+    
+    // Add click event
+    L.DomEvent.on(button, 'click', function(e) {
+      L.DomEvent.stopPropagation(e);
+      map.setView([20, 0], 2); // Reset to default view
+      
+      // Add a small animation
+      if (typeof gsap !== 'undefined') {
+        gsap.fromTo(button, { scale: 0.9 }, { scale: 1, duration: 0.3 });
+      }
+    });
+    
+    // Prevent map click events when button is clicked
+    L.DomEvent.disableClickPropagation(button);
+    
+    return button;
+  };
+  
+  resetButton.addTo(map);
+}
+
+// Add reset view button to the map
+addResetViewButton();
+
 // Offline storage setup using IndexedDB (if needed)
 let db;
 if ('indexedDB' in window) {

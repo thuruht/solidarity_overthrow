@@ -1,0 +1,15 @@
+/* Reset view button */
+.reset-view-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s ease;
+}
+
+.reset-view-button:hover {
+  transform: scale(1.05);
+}
+
+.reset-view-button:active {
+  transform: scale(0.95);
+}

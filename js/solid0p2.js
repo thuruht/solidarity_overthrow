@@ -58,15 +58,9 @@ function placeStaticMarker(city) {
   // Set a unique id for the marker
   marker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
   
-  // Use bindTooltip to show city info on hover
-  marker.bindTooltip(
-    `<b>${city.name}</b><br>
-     <span>IPI: ${city.ipi}%</span><br>
-     <span>Solidarity: ${city.solidarity}%</span><br>
-     <span>Propaganda: ${city.propaganda}%</span>`,
-    { direction: 'auto', opacity: 0.9 }
-  );
-
+  // Fetch weather data for this city
+  fetchAndIntegrateWeather(city, marker);
+  
   // Add popup for more detailed info and actions
   marker.bindPopup(createCityPopup(city));
   
@@ -84,6 +78,52 @@ function placeStaticMarker(city) {
   colorizeMarker(marker, city);
 }
 
+// Fetch weather data and integrate it with the city marker
+async function fetchAndIntegrateWeather(city, marker) {
+  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&units=metric&appid=955034a79abe8e7bc9df0666a15f1b06`;
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    
+    // Store weather data with the city
+    city.weather = {
+      description: data.weather && data.weather[0] ? data.weather[0].description : 'Unknown',
+      temp: data.main ? data.main.temp : null,
+      humidity: data.main ? data.main.humidity : null,
+      wind: data.wind ? data.wind.speed : null,
+      icon: data.weather && data.weather[0] ? data.weather[0].icon : null
+    };
+    
+    // Update the tooltip to include weather info
+    marker.bindTooltip(
+      `<b>${city.name}</b><br>
+       <span>Weather: ${city.weather.description}</span><br>
+       <span>Temp: ${city.weather.temp !== null ? city.weather.temp.toFixed(1) + '°C' : 'N/A'}</span><br>
+       <span>IPI: ${city.ipi}%</span><br>
+       <span>Solidarity: ${city.solidarity}%</span>`,
+      { direction: 'auto', opacity: 0.9 }
+    );
+    
+    // Update popup if it's already created
+    const popup = marker.getPopup();
+    if (popup) {
+      popup.setContent(createCityPopup(city));
+    }
+    
+  } catch (error) {
+    console.error(`Error fetching weather data for ${city.name}:`, error);
+    
+    // Default tooltip without weather
+    marker.bindTooltip(
+      `<b>${city.name}</b><br>
+       <span>IPI: ${city.ipi}%</span><br>
+       <span>Solidarity: ${city.solidarity}%</span><br>
+       <span>Propaganda: ${city.propaganda}%</span>`,
+      { direction: 'auto', opacity: 0.9 }
+    );
+  }
+}
+
 // Create popup content for a city
 function createCityPopup(city) {
   const popupContent = document.createElement('div');
@@ -93,6 +133,28 @@ function createCityPopup(city) {
   const header = document.createElement('h3');
   header.textContent = city.name;
   popupContent.appendChild(header);
+  
+  // Weather information (if available)
+  if (city.weather) {
+    const weatherDiv = document.createElement('div');
+    weatherDiv.className = 'popup-weather';
+    
+    // If we have a weather icon, display it
+    let weatherHTML = '';
+    if (city.weather.icon) {
+      weatherHTML += `<img src="https://openweathermap.org/img/wn/${city.weather.icon}.png" alt="${city.weather.description}" style="vertical-align: middle; margin-right: 5px;">`;
+    }
+    
+    weatherHTML += `
+      <p><b>Weather:</b> ${city.weather.description}</p>
+      ${city.weather.temp !== null ? `<p><b>Temperature:</b> ${city.weather.temp.toFixed(1)}°C</p>` : ''}
+      ${city.weather.humidity !== null ? `<p><b>Humidity:</b> ${city.weather.humidity}%</p>` : ''}
+      ${city.weather.wind !== null ? `<p><b>Wind:</b> ${city.weather.wind} m/s</p>` : ''}
+    `;
+    
+    weatherDiv.innerHTML = weatherHTML;
+    popupContent.appendChild(weatherDiv);
+  }
   
   // City metrics
   const metrics = document.createElement('div');
@@ -242,14 +304,6 @@ function colorizeMarker(marker, city) {
 // Initialize map with markers
 initializeMap();
 
-// Fetch additional cities (placeholder) and then fetch weather for all
-// Comment this out to avoid immediate rate limit issues:
-// fetchAdditionalCities().then(() => {
-//   globalCities.forEach(city => {
-//     fetchWeather(city.lat, city.lon, city.name);
-//   });
-// });
-
 
 
 // Handle city selection from dropdown
@@ -288,6 +342,58 @@ document.getElementById('cityDropdown').addEventListener('change', async functio
   }
 });
 
+// Handle city selection
+function handleCitySelection(cityName) {
+  const city = globalCities.find(c => c.name === cityName);
+  if (city) {
+    map.setView([city.lat, city.lon], 6);
+    updateCityMetrics(city);
+  }
+}
+
+// Add a custom city dynamically
+function addCustomCity(city) {
+  // Prevent duplicate cities
+  if (globalCities.some(existingCity => existingCity.name === city.name)) {
+    alert(`${city.name} is already added.`);
+    return;
+  }
+
+  // Add to global cities list
+  globalCities.push(city);
+
+  // Repopulate dropdown to include the new city
+  populateDropdown();
+
+  // Place marker for the custom city with integrated weather
+  const marker = L.marker([city.lat, city.lon]).addTo(map);
+  marker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+  
+  // Fetch weather and integrate it with the marker
+  fetchAndIntegrateWeather(city, marker);
+  
+  // Add popup and event listeners
+  marker.bindPopup(createCityPopup(city));
+  marker.on('click', () => {
+    const dropdown = document.getElementById('cityDropdown');
+    if (dropdown) {
+      dropdown.value = city.name;
+    }
+    map.setView([city.lat, city.lon], 6);
+    updateCityMetrics(city);
+  });
+  
+  // Color the marker based on solidarity level
+  colorizeMarker(marker, city);
+
+  // Update the sidebar with the custom city's metrics
+  updateCityMetrics(city);
+  updateGlobalMetrics();
+  
+  // Focus on the new city
+  map.setView([city.lat, city.lon], 6);
+}
+
 
 // Add a custom city dynamically
 function addCustomCity(city) {
@@ -313,11 +419,23 @@ function addCustomCity(city) {
 
 // Update the sidebar with city metrics
 function updateCityMetrics(city) {
-  const sidebarContent = `<h3>${city.name} Metrics</h3>
+  let content = `<h3>${city.name} Metrics</h3>`;
+  
+  // Add weather info if available
+  if (city.weather) {
+    content += `
+      <p><b>Weather:</b> ${city.weather.description}</p>
+      ${city.weather.temp !== null ? `<p><b>Temperature:</b> ${city.weather.temp.toFixed(1)}°C</p>` : ''}
+    `;
+  }
+  
+  content += `
     <p><b>Imperialist Power Index:</b> ${city.ipi}%</p>
     <p><b>Solidarity:</b> ${city.solidarity}%</p>
-    <p><b>Propaganda:</b> ${city.propaganda}%</p>`;
-  document.querySelector(".city-metrics").innerHTML = sidebarContent;
+    <p><b>Propaganda:</b> ${city.propaganda}%</p>
+  `;
+  
+  document.querySelector(".city-metrics").innerHTML = content;
 }
 
 // Function to update global metrics
@@ -432,7 +550,9 @@ function performCollectiveAction(actionType) {
   }
 
   updateGlobalMetrics();
-  triggerStateRetaliation(actionType);
+  if (typeof triggerStateRetaliation === 'function') {
+    triggerStateRetaliation(actionType);
+  }
 
   // Check achievements and game state
   if (typeof checkAchievements === 'function') {
