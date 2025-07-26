@@ -51,7 +51,8 @@ addLegend();
 
 // Add reset view button
 function addResetViewButton() {
-  const resetButton = L.control({ position: 'topright' });
+  // Position it top-left, below the city dropdown
+  const resetButton = L.control({ position: 'topleft' });
   
   resetButton.onAdd = function(map) {
     const button = L.DomUtil.create('button', 'reset-view-button');
@@ -70,6 +71,7 @@ function addResetViewButton() {
     button.style.fontFamily = "'Special Elite', monospace";
     button.style.fontSize = '14px';
     button.style.boxShadow = '0 2px 5px rgba(0,0,0,0.3)';
+    button.style.marginTop = '10px'; // Add some top margin
     
     // Add hover effect
     button.onmouseover = function() {

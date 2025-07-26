@@ -4,6 +4,9 @@
   align-items: center;
   gap: 5px;
   transition: all 0.3s ease;
+  margin-top: 50px !important; /* Position below the city dropdown */
+  margin-left: 10px !important;
+  z-index: 999;
 }
 
 .reset-view-button:hover {
@@ -12,4 +15,9 @@
 
 .reset-view-button:active {
   transform: scale(0.95);
+}
+
+/* Ensure Leaflet's zoom control doesn't overlap with reset button */
+.leaflet-top.leaflet-left .leaflet-control-zoom {
+  margin-top: 110px; /* Ensure zoom controls are below reset button */
 }
