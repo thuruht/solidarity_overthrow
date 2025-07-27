@@ -2,126 +2,52 @@
 
 // Populate the dropdown with global cities and custom city option
 function populateDropdown() {
-  const dropdown = document.getElementById('cityDropdown');
-  if (!dropdown) return;
-  dropdown.innerHTML = `
-    <option value="" disabled selected>Select a city...</option>
-    ${globalCities
-      .map(city => `<option value="${city.name}">${city.name}</option>`)
-      .join('')}
-    // Add to global cities list
-  globa  // Place marker  // Add to global cities lis  // Add to global cities list
-  globalCities.push(city);
-
-  // Repopulate dropdown to include the new city
-  populateDropdown();
-
-  // Place marker for the custom city
-  const marker = L.marker([city.lat, city.lon]).addTo(map);
-  marker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+  const citySelector = document.getElementById('cityDropdown');
+  if (!citySelector) return;
   
-  // Fetch weather and integrate it with the marker
-  fetchAndIntegrateWeather(city, marker);
+  // Clear existing options except the default
+  while (citySelector.options.length > 1) {
+    citySelector.remove(1);
+  }
   
-  // Add popup and event listeners
-  marker.bindPopup(createCityPopup(city));
-  marker.on('click', () => {
-    const dropdown = document.getElementById('cityDropdown');
-    if (dropdown) {
-      dropdown.value = city.name;
-    }
-    map.setView([city.lat, city.lon], 6);
-    updateCityMetrics(city);
+  // Add cities to dropdown
+  globalCities.forEach(city => {
+    const option = document.createElement('option');
+    option.value = city.name;
+    option.textContent = city.name;
+    citySelector.appendChild(option);
   });
   
-  // Color the marker based on solidarity level
-  colorizeMarker(marker, city);
+  // Add option for custom city
+  const customOption = document.createElement('option');
+  customOption.value = "custom";
+  customOption.textContent = "Add Custom City...";
+  citySelector.appendChild(customOption);
+}
 
-  // Update the sidebar with the custom city's metrics
-  updateCityMetrics(city);ities.push(city);
-
-  // Repopulate dropdown to include the new city
-  populateDropdown();
-
-  // Place marker for the city
-  const marker = L.marker([city.lat, city.lon]).addTo(map);
-  marker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+// Populate the city dropdown
+function populateDropdown() {
+  const citySelector = document.getElementById('cityDropdown');
+  if (!citySelector) return;
   
-  // Fetch weather and integrate it with the marker
-  fetchAndIntegrateWeather(city, marker);
+  // Clear existing options except the default
+  while (citySelector.options.length > 1) {
+    citySelector.remove(1);
+  }
   
-  // Add popup and event listeners
-  marker.bindPopup(createCityPopup(city));
-  marker.on('click', () => {
-    const dropdown = document.getElementById('cityDropdown');
-    if (dropdown) {
-      dropdown.value = city.name;
-    }
-    map.setView([city.lat, city.lon], 6);
-    updateCityMetrics(city);
+  // Add cities to dropdown
+  globalCities.forEach(city => {
+    const option = document.createElement('option');
+    option.value = city.name;
+    option.textContent = city.name;
+    citySelector.appendChild(option);
   });
   
-  // Color the marker based on solidarity level
-  colorizeMarker(marker, city);
-
-  // Update the sidebar with the custom city's metrics
-  updateCityMetrics(city);
-  updateGlobalMetrics();y
-  const marker = L.marker([city.lat, city.lon]).addTo(map);
-  marker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
-  
-  // Fetch weather and integrate it with the marker
-  fetchAndIntegrateWeather(city, marker);
-  
-  // Add popup and event listeners
-  marker.bindPopup(createCityPopup(city));
-  marker.on('click', () => {
-    const dropdown = document.getElementById('cityDropdown');
-    if (dropdown) {
-      dropdown.value = city.name;
-    }
-    map.setView([city.lat, city.lon], 6);
-    updateCityMetrics(city);
-  });
-  
-  // Color the marker based on solidarity level
-  colorizeMarker(marker, city);
-  
-  // Update the sidebar with the custom city's metrics
-  updateCityMetrics(city);
-  updateGlobalMetrics();s.push(city);
-
-  // Repopulate dropdown to include the new city
-  populateDropdown();
-
-  // Place marker for the custom city with integrated weather
-  const marker = L.marker([city.lat, city.lon]).addTo(map);
-  marker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
-  
-  // Fetch weather and integrate it with the marker
-  fetchAndIntegrateWeather(city, marker);
-  
-  // Add popup and event listeners
-  marker.bindPopup(createCityPopup(city));
-  marker.on('click', () => {
-    const dropdown = document.getElementById('cityDropdown');
-    if (dropdown) {
-      dropdown.value = city.name;
-    }
-    map.setView([city.lat, city.lon], 6);
-    updateCityMetrics(city);
-  });
-  
-  // Color the marker based on solidarity level
-  colorizeMarker(marker, city);
-
-  // Update the sidebar with the custom city's metrics
-  updateCityMetrics(city);
-  updateGlobalMetrics();
-  
-  // Focus on the new city
-  map.setView([city.lat, city.lon], 6);lue="custom">Add Custom City...</option>
-  `;
+  // Add option for custom city
+  const customOption = document.createElement('option');
+  customOption.value = "custom";
+  customOption.textContent = "Add Custom City...";
+  citySelector.appendChild(customOption);
 }
 
 // Placeholder for future API integration
@@ -685,3 +611,6 @@ document.getElementById('collectiveActionsDropdown').addEventListener('change', 
     this.value = "";
   }
 });
+
+// Make fetchAndIntegrateWeather globally available
+window.fetchAndIntegrateWeather = fetchAndIntegrateWeather;

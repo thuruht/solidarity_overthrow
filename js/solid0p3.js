@@ -56,7 +56,7 @@ async function fetchWeatherDataOnly(lat, lon, name) {
   return { description, temp };
 }
 
-// Fetch fresh data and update cache, then place marker using fetchAndIntegrateWeather
+// Fetch fresh data and update cache, then place marker using fetchAndIntegrateWeather from solid0p2.js
 async function fetchWeatherAndUpdateCache(city) {
   // First get raw data
   const weatherData = await fetchWeatherDataOnly(city.lat, city.lon, city.name);
@@ -76,18 +76,64 @@ async function fetchWeatherAndUpdateCache(city) {
     
     if (markerObj) {
       // Update the existing marker with weather data
-      await fetchAndIntegrateWeather(city, markerObj);
+      if (typeof window.fetchAndIntegrateWeather === 'function') {
+        await window.fetchAndIntegrateWeather(city, markerObj);
+      } else {
+        // Fallback if fetchAndIntegrateWeather is not available
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&units=metric&appid=955034a79abe8e7bc9df0666a15f1b06`;
+        try {
+          const response = await fetch(url);
+          const data = await response.json();
+          
+          // Store weather data with the city
+          city.weather = {
+            description: data.weather && data.weather[0] ? data.weather[0].description : 'Unknown',
+            temp: data.main ? data.main.temp : null,
+            humidity: data.main ? data.main.humidity : null,
+            wind: data.wind ? data.wind.speed : null,
+            icon: data.weather && data.weather[0] ? data.weather[0].icon : null
+          };
+          
+          // Update the tooltip to include weather info
+          markerObj.bindTooltip(
+            `<b>${city.name}</b><br>
+             <span>Weather: ${city.weather.description}</span><br>
+             <span>Temp: ${city.weather.temp !== null ? city.weather.temp.toFixed(1) + '°C' : 'N/A'}</span><br>
+             <span>IPI: ${city.ipi}%</span><br>
+             <span>Solidarity: ${city.solidarity}%</span>`,
+            { direction: 'auto', opacity: 0.9 }
+          );
+        } catch (error) {
+          console.error(`Error fetching weather data for ${city.name}:`, error);
+        }
+      }
     } else {
-      // Create a new marker using the main addCityToMap function
+      // Create a new marker using Leaflet
       const newMarker = L.marker([city.lat, city.lon]).addTo(map);
       newMarker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
-      await fetchAndIntegrateWeather(city, newMarker);
+      
+      // Add basic tooltip
+      newMarker.bindTooltip(
+        `<b>${city.name}</b><br>
+         <span>Weather: ${weatherData.description}</span><br>
+         <span>IPI: ${city.ipi}%</span><br>
+         <span>Solidarity: ${city.solidarity}%</span>`,
+        { direction: 'auto', opacity: 0.9 }
+      );
     }
   } else {
     // No marker exists yet, create a new one
     const newMarker = L.marker([city.lat, city.lon]).addTo(map);
     newMarker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
-    await fetchAndIntegrateWeather(city, newMarker);
+    
+    // Add basic tooltip
+    newMarker.bindTooltip(
+      `<b>${city.name}</b><br>
+       <span>Weather: ${weatherData.description}</span><br>
+       <span>IPI: ${city.ipi}%</span><br>
+       <span>Solidarity: ${city.solidarity}%</span>`,
+      { direction: 'auto', opacity: 0.9 }
+    );
   }
 
   return cityData.weather;
@@ -126,13 +172,6 @@ async function updateAllCitiesInBatches() {
 // You might remove the bulk fetch from solid0p2.js and rely on this:
 updateAllCitiesInBatches();
 
-// Initialize global metrics data object
-const globalMetricsData = {
-  ipi: 100,
-  propaganda: 100,
-  solidarity: 0
-};
-
 // Example: If a marker is clicked and the city data isn't ready, call handleCitySelection():
 // In solid0p1.js or solid0p2.js marker on click:
 // marker.on('click', () => { handleCitySelection(city.name); });
@@ -145,7 +184,7 @@ console.log('Caching and batch logic (solid0p3.js) loaded.');
 // State retaliation mechanisms based on collective actions
 function triggerStateRetaliation(actionType) {
   // Higher chance of retaliation when imperialist power is threatened
-  const retaliationChance = Math.random() + (0.5 - globalMetricsData.ipi/200); // 0-100% chance
+  const retaliationChance = Math.random() + (0.5 - window.globalMetricsData.ipi/200); // 0-100% chance
   const threshold = 0.3;  // 30% base chance
 
   if (retaliationChance < threshold) {
@@ -171,7 +210,7 @@ function triggerStateRetaliation(actionType) {
         applyRetaliation('surveillance', 'The state increases surveillance on revolutionary networks.');
         break;
     }
-  } else if (globalMetricsData.ipi < 50 && Math.random() < 0.2) {
+  } else if (window.globalMetricsData.ipi < 50 && Math.random() < 0.2) {
     // Desperate measures when imperial power is really threatened
     applyRetaliation('military_intervention', 'Military forces deployed to maintain control!');
   }
@@ -236,26 +275,26 @@ function applyRetaliation(type, message) {
   // Apply global effects
   switch (type) {
     case 'crackdown':
-      globalMetricsData.ipi = Math.min(100, globalMetricsData.ipi + 5);
-      globalMetricsData.solidarity = Math.max(0, globalMetricsData.solidarity - 3);
+      window.globalMetricsData.ipi = Math.min(100, window.globalMetricsData.ipi + 5);
+      window.globalMetricsData.solidarity = Math.max(0, window.globalMetricsData.solidarity - 3);
       break;
     case 'propaganda':
-      globalMetricsData.propaganda = Math.min(100, globalMetricsData.propaganda + 10);
+      window.globalMetricsData.propaganda = Math.min(100, window.globalMetricsData.propaganda + 10);
       break;
     case 'arrests':
-      globalMetricsData.solidarity = Math.max(0, globalMetricsData.solidarity - 5);
+      window.globalMetricsData.solidarity = Math.max(0, window.globalMetricsData.solidarity - 5);
       break;
     case 'surveillance':
-      globalMetricsData.ipi = Math.min(100, globalMetricsData.ipi + 3);
-      globalMetricsData.solidarity = Math.max(0, globalMetricsData.solidarity - 2);
+      window.globalMetricsData.ipi = Math.min(100, window.globalMetricsData.ipi + 3);
+      window.globalMetricsData.solidarity = Math.max(0, window.globalMetricsData.solidarity - 2);
       break;
     case 'economic_sanctions':
-      globalMetricsData.solidarity = Math.max(0, globalMetricsData.solidarity - 10);
-      globalMetricsData.propaganda = Math.min(100, globalMetricsData.propaganda + 5);
+      window.globalMetricsData.solidarity = Math.max(0, window.globalMetricsData.solidarity - 10);
+      window.globalMetricsData.propaganda = Math.min(100, window.globalMetricsData.propaganda + 5);
       break;
     case 'military_intervention':
-      globalMetricsData.ipi = Math.min(100, globalMetricsData.ipi + 15);
-      globalMetricsData.solidarity = Math.max(0, globalMetricsData.solidarity - 15);
+      window.globalMetricsData.ipi = Math.min(100, window.globalMetricsData.ipi + 15);
+      window.globalMetricsData.solidarity = Math.max(0, window.globalMetricsData.solidarity - 15);
       break;
   }
 
