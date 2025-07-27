@@ -1,0 +1,65 @@
+/* Mobile Responsive Fixes */
+@media screen and (max-width: 768px) {
+  #top-bar {
+    height: auto;
+    min-height: 80px;
+    padding: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  #top-bar .global-metrics {
+    flex-direction: column;
+    margin-top: 10px;
+    width: 100%;
+  }
+  
+  #top-bar .global-metrics span {
+    margin: 3px 0;
+    font-size: 14px;
+  }
+  
+  #city-selector {
+    top: 100px;
+    left: 10px;
+    width: calc(100% - 20px);
+    max-width: 300px;
+    z-index: 1000;
+  }
+  
+  #sidebar {
+    bottom: 50px;
+    right: 10px;
+    max-height: 35vh;
+    width: 90%;
+    max-width: 300px;
+    overflow-y: auto;
+    z-index: 999;
+  }
+  
+  .leaflet-control-zoom {
+    margin-top: 150px !important;
+  }
+  
+  .reset-view-button {
+    top: 200px !important;
+    left: 10px !important;
+  }
+  
+  h1 {
+    font-size: 18px;
+    margin: 0;
+  }
+  
+  .city-metrics {
+    margin-top: 150px;
+    max-height: 30vh;
+    overflow-y: auto;
+  }
+}
+
+/* Ensure the sidebar doesn't overlap the bottom banner */
+#bottom-banner {
+  z-index: 1001;
+  position: relative;
+}

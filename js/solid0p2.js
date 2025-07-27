@@ -9,7 +9,118 @@ function populateDropdown() {
     ${globalCities
       .map(city => `<option value="${city.name}">${city.name}</option>`)
       .join('')}
-    <option value="custom">Add Custom City...</option>
+    // Add to global cities list
+  globa  // Place marker  // Add to global cities lis  // Add to global cities list
+  globalCities.push(city);
+
+  // Repopulate dropdown to include the new city
+  populateDropdown();
+
+  // Place marker for the custom city
+  const marker = L.marker([city.lat, city.lon]).addTo(map);
+  marker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+  
+  // Fetch weather and integrate it with the marker
+  fetchAndIntegrateWeather(city, marker);
+  
+  // Add popup and event listeners
+  marker.bindPopup(createCityPopup(city));
+  marker.on('click', () => {
+    const dropdown = document.getElementById('cityDropdown');
+    if (dropdown) {
+      dropdown.value = city.name;
+    }
+    map.setView([city.lat, city.lon], 6);
+    updateCityMetrics(city);
+  });
+  
+  // Color the marker based on solidarity level
+  colorizeMarker(marker, city);
+
+  // Update the sidebar with the custom city's metrics
+  updateCityMetrics(city);ities.push(city);
+
+  // Repopulate dropdown to include the new city
+  populateDropdown();
+
+  // Place marker for the city
+  const marker = L.marker([city.lat, city.lon]).addTo(map);
+  marker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+  
+  // Fetch weather and integrate it with the marker
+  fetchAndIntegrateWeather(city, marker);
+  
+  // Add popup and event listeners
+  marker.bindPopup(createCityPopup(city));
+  marker.on('click', () => {
+    const dropdown = document.getElementById('cityDropdown');
+    if (dropdown) {
+      dropdown.value = city.name;
+    }
+    map.setView([city.lat, city.lon], 6);
+    updateCityMetrics(city);
+  });
+  
+  // Color the marker based on solidarity level
+  colorizeMarker(marker, city);
+
+  // Update the sidebar with the custom city's metrics
+  updateCityMetrics(city);
+  updateGlobalMetrics();y
+  const marker = L.marker([city.lat, city.lon]).addTo(map);
+  marker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+  
+  // Fetch weather and integrate it with the marker
+  fetchAndIntegrateWeather(city, marker);
+  
+  // Add popup and event listeners
+  marker.bindPopup(createCityPopup(city));
+  marker.on('click', () => {
+    const dropdown = document.getElementById('cityDropdown');
+    if (dropdown) {
+      dropdown.value = city.name;
+    }
+    map.setView([city.lat, city.lon], 6);
+    updateCityMetrics(city);
+  });
+  
+  // Color the marker based on solidarity level
+  colorizeMarker(marker, city);
+  
+  // Update the sidebar with the custom city's metrics
+  updateCityMetrics(city);
+  updateGlobalMetrics();s.push(city);
+
+  // Repopulate dropdown to include the new city
+  populateDropdown();
+
+  // Place marker for the custom city with integrated weather
+  const marker = L.marker([city.lat, city.lon]).addTo(map);
+  marker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+  
+  // Fetch weather and integrate it with the marker
+  fetchAndIntegrateWeather(city, marker);
+  
+  // Add popup and event listeners
+  marker.bindPopup(createCityPopup(city));
+  marker.on('click', () => {
+    const dropdown = document.getElementById('cityDropdown');
+    if (dropdown) {
+      dropdown.value = city.name;
+    }
+    map.setView([city.lat, city.lon], 6);
+    updateCityMetrics(city);
+  });
+  
+  // Color the marker based on solidarity level
+  colorizeMarker(marker, city);
+
+  // Update the sidebar with the custom city's metrics
+  updateCityMetrics(city);
+  updateGlobalMetrics();
+  
+  // Focus on the new city
+  map.setView([city.lat, city.lon], 6);lue="custom">Add Custom City...</option>
   `;
 }
 

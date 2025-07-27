@@ -56,7 +56,7 @@ async function fetchWeatherDataOnly(lat, lon, name) {
   return { description, temp };
 }
 
-// Fetch fresh data and update cache, then place marker by calling existing fetchWeather()
+// Fetch fresh data and update cache, then place marker using fetchAndIntegrateWeather
 async function fetchWeatherAndUpdateCache(city) {
   // First get raw data
   const weatherData = await fetchWeatherDataOnly(city.lat, city.lon, city.name);
@@ -66,10 +66,29 @@ async function fetchWeatherAndUpdateCache(city) {
   cityData.weather = { ...weatherData, lastFetched: Date.now() };
   await saveCityToIndexedDB(cityData);
 
-  // Now place the marker & tooltip via existing fetchWeather() function
-  // fetchWeather() places a marker and sets tooltip, but doesn't return data.
-  // We have data already, so just call fetchWeather() to place the marker and set events.
-  await fetchWeather(city.lat, city.lon, city.name);
+  // Get the existing marker if it exists
+  const markerElement = document.querySelector(`#marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`);
+  if (markerElement) {
+    // Find the marker object
+    const markerObj = Object.values(map._layers).find(
+      layer => layer._icon && layer._icon.id === `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`
+    );
+    
+    if (markerObj) {
+      // Update the existing marker with weather data
+      await fetchAndIntegrateWeather(city, markerObj);
+    } else {
+      // Create a new marker using the main addCityToMap function
+      const newMarker = L.marker([city.lat, city.lon]).addTo(map);
+      newMarker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+      await fetchAndIntegrateWeather(city, newMarker);
+    }
+  } else {
+    // No marker exists yet, create a new one
+    const newMarker = L.marker([city.lat, city.lon]).addTo(map);
+    newMarker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+    await fetchAndIntegrateWeather(city, newMarker);
+  }
 
   return cityData.weather;
 }

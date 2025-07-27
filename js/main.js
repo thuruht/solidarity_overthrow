@@ -11,6 +11,9 @@ const globalMetricsData = {
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Initializing Solidarity Overthrow game...');
   
+  // Merge additional cities into the global cities array
+  mergeAdditionalCities();
+  
   // Initialize global metrics display
   updateGlobalMetrics();
   
@@ -112,4 +115,42 @@ function restartGame() {
   }
   
   console.log('Game restart complete');
+}
+
+// Function to merge the additional cities into the global cities array
+function mergeAdditionalCities() {
+  if (typeof additionalCities === 'undefined') {
+    console.error('Additional cities not loaded properly!');
+    return;
+  }
+  
+  console.log("Before merging: " + globalCities.length + " cities");
+  
+  // Filter out duplicate cities (same name or very close coordinates)
+  const filteredAdditionalCities = additionalCities.filter(newCity => {
+    return !globalCities.some(existingCity => {
+      // Check for name match or very close coordinates (within 0.01 degrees)
+      return (
+        existingCity.name === newCity.name ||
+        (Math.abs(existingCity.lat - newCity.lat) < 0.01 && 
+         Math.abs(existingCity.lon - newCity.lon) < 0.01)
+      );
+    });
+  });
+  
+  // Add the filtered additional cities to the global cities array
+  globalCities = globalCities.concat(filteredAdditionalCities);
+  
+  console.log("After merging: " + globalCities.length + " cities");
+  console.log("Added " + filteredAdditionalCities.length + " new cities");
+  
+  // Make sure the city dropdown is updated with all cities
+  if (typeof populateDropdown === 'function') {
+    populateDropdown();
+  }
+  
+  // Update all city markers
+  if (typeof updateAllCitiesInBatches === 'function') {
+    updateAllCitiesInBatches();
+  }
 }
