@@ -31,7 +31,7 @@ body {
   border: 1px dotted #ddd;
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  position: absolute;
+  position: fixed; /* Changed from absolute to fixed */
   top: 80px; /* Adjusted to avoid overlapping with top bar */
   right: 10px;
   width: 250px;
@@ -40,6 +40,7 @@ body {
   z-index: 1000;
   font-family: 'Oswald', sans-serif; /* Keep Oswald for sidebar */
   transition: width 0.2s ease-in-out;
+  bottom: auto; /* Ensure it's not affected by bottom property */
 }
 
 #sidebar h3 { 

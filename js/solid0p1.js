@@ -137,40 +137,42 @@ const cacheData = (storeName, data) => {
 
 // Fetch weather and display markers
 async function fetchWeather(lat, lon, name) {
-  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=955034a79abe8e7bc9df0666a15f1b06`;
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    console.log(`Weather for ${name}:`, data);
-
-    const weatherDescription = data.weather && data.weather[0] ? data.weather[0].description : 'Unknown';
+  // Instead of creating a separate marker, use fetchAndIntegrateWeather
+  const city = globalCities.find(c => c.name === name);
+  if (city) {
     const marker = L.marker([lat, lon]).addTo(map);
-    
-    // Set a unique id for the marker
     marker._icon.id = `marker-${name.replace(/[^a-zA-Z0-9]/g, '-')}`;
     
-    // Use bindTooltip to show city & weather on hover
-    marker.bindTooltip(
-      `<b>${name}</b><br>Weather: ${weatherDescription}`,
-      { direction: 'auto', opacity: 0.9 }
-    );
+    // Use the globally available fetchAndIntegrateWeather function
+    if (typeof window.fetchAndIntegrateWeather === 'function') {
+      window.fetchAndIntegrateWeather(city, marker);
+    } else {
+      // Fallback if not available yet
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=955034a79abe8e7bc9df0666a15f1b06`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const weatherDescription = data.weather && data.weather[0] ? data.weather[0].description : 'Unknown';
+        
+        marker.bindTooltip(
+          `<b>${name}</b><br>Weather: ${weatherDescription}`,
+          { direction: 'auto', opacity: 0.9 }
+        );
+      } catch (error) {
+        console.error(`Error fetching weather data for ${name}:`, error);
+      }
+    }
 
     // On click, set the dropdown and zoom in closer
     marker.on('click', () => {
-      const city = globalCities.find(city => city.name === name);
-      if (city) {
-        const dropdown = document.getElementById('cityDropdown');
-        if (dropdown) {
-          dropdown.value = city.name;
-        }
-        // Increase the zoom level for a closer view
-        map.setView([city.lat, city.lon], 10);
-        updateCityMetrics(city);
-        updateGlobalMetrics();
+      const dropdown = document.getElementById('cityDropdown');
+      if (dropdown) {
+        dropdown.value = city.name;
       }
+      // Increase the zoom level for a closer view
+      map.setView([city.lat, city.lon], 10);
+      updateCityMetrics(city);
+      updateGlobalMetrics();
     });
-
-  } catch (error) {
-    console.error(`Error fetching weather data for ${name}:`, error);
   }
 }

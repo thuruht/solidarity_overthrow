@@ -79,33 +79,15 @@ async function fetchWeatherAndUpdateCache(city) {
       if (typeof window.fetchAndIntegrateWeather === 'function') {
         await window.fetchAndIntegrateWeather(city, markerObj);
       } else {
-        // Fallback if fetchAndIntegrateWeather is not available
-        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&units=metric&appid=955034a79abe8e7bc9df0666a15f1b06`;
-        try {
-          const response = await fetch(url);
-          const data = await response.json();
-          
-          // Store weather data with the city
-          city.weather = {
-            description: data.weather && data.weather[0] ? data.weather[0].description : 'Unknown',
-            temp: data.main ? data.main.temp : null,
-            humidity: data.main ? data.main.humidity : null,
-            wind: data.wind ? data.wind.speed : null,
-            icon: data.weather && data.weather[0] ? data.weather[0].icon : null
-          };
-          
-          // Update the tooltip to include weather info
-          markerObj.bindTooltip(
-            `<b>${city.name}</b><br>
-             <span>Weather: ${city.weather.description}</span><br>
-             <span>Temp: ${city.weather.temp !== null ? city.weather.temp.toFixed(1) + '°C' : 'N/A'}</span><br>
-             <span>IPI: ${city.ipi}%</span><br>
-             <span>Solidarity: ${city.solidarity}%</span>`,
-            { direction: 'auto', opacity: 0.9 }
-          );
-        } catch (error) {
-          console.error(`Error fetching weather data for ${city.name}:`, error);
-        }
+        console.error('fetchAndIntegrateWeather is not available globally!');
+        // Use a simplified version if the global function is not available
+        markerObj.bindTooltip(
+          `<b>${city.name}</b><br>
+           <span>Weather: ${weatherData.description}</span><br>
+           <span>IPI: ${city.ipi}%</span><br>
+           <span>Solidarity: ${city.solidarity}%</span>`,
+          { direction: 'auto', opacity: 0.9 }
+        );
       }
     } else {
       // Create a new marker using Leaflet
@@ -120,6 +102,22 @@ async function fetchWeatherAndUpdateCache(city) {
          <span>Solidarity: ${city.solidarity}%</span>`,
         { direction: 'auto', opacity: 0.9 }
       );
+      
+      // Add popup and events
+      newMarker.bindPopup(createCityPopup(city));
+      newMarker.on('click', () => {
+        const dropdown = document.getElementById('cityDropdown');
+        if (dropdown) {
+          dropdown.value = city.name;
+        }
+        map.setView([city.lat, city.lon], 6);
+        updateCityMetrics(city);
+      });
+      
+      // Color the marker based on solidarity level
+      if (typeof colorizeMarker === 'function') {
+        colorizeMarker(newMarker, city);
+      }
     }
   } else {
     // No marker exists yet, create a new one
@@ -134,6 +132,25 @@ async function fetchWeatherAndUpdateCache(city) {
        <span>Solidarity: ${city.solidarity}%</span>`,
       { direction: 'auto', opacity: 0.9 }
     );
+    
+    // Add popup and events
+    if (typeof createCityPopup === 'function') {
+      newMarker.bindPopup(createCityPopup(city));
+    }
+    
+    newMarker.on('click', () => {
+      const dropdown = document.getElementById('cityDropdown');
+      if (dropdown) {
+        dropdown.value = city.name;
+      }
+      map.setView([city.lat, city.lon], 6);
+      updateCityMetrics(city);
+    });
+    
+    // Color the marker based on solidarity level
+    if (typeof colorizeMarker === 'function') {
+      colorizeMarker(newMarker, city);
+    }
   }
 
   return cityData.weather;
@@ -222,9 +239,6 @@ function applyRetaliation(type, message) {
   feedback.style.backgroundColor = 'rgba(139, 0, 0, 0.8)';
   feedback.style.display = 'block';
 
-  // Hide alert after 3 seconds
-  setTimeout(() => feedback.style.display = 'none', 3000);
-
   // Target random cities for retaliation
   const targetCityCount = Math.floor(Math.random() * 5) + 3; // 3-7 cities
   const highSolidarityCities = [...globalCities].filter(city => city.solidarity > 30)
@@ -270,6 +284,25 @@ function applyRetaliation(type, message) {
       });
     }
   });
+
+  // Show a follow-up message with the affected cities
+  if (highSolidarityCities.length > 0) {
+    setTimeout(() => {
+      const cityList = highSolidarityCities.length <= 5 ? 
+        highSolidarityCities.map(city => city.name).join(', ') : 
+        highSolidarityCities.slice(0, 5).map(city => city.name).join(', ') + ` and ${highSolidarityCities.length - 5} more`;
+      
+      feedback.textContent = `State retaliation targets: ${cityList}`;
+      feedback.style.backgroundColor = 'rgba(139, 0, 0, 0.8)';
+      feedback.style.display = 'block';
+      
+      // Hide this follow-up message after 3 more seconds
+      setTimeout(() => feedback.style.display = 'none', 3000);
+    }, 3500); // Show 3.5 seconds after the initial message
+  } else {
+    // Hide alert after 3 seconds if no cities were affected
+    setTimeout(() => feedback.style.display = 'none', 3000);
+  }
 
   // Apply global effects
   // Apply global effects

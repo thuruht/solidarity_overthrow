@@ -28,13 +28,15 @@
   }
   
   #sidebar {
-    bottom: 50px;
+    position: fixed;
+    bottom: 70px; /* Increased to ensure it stays above the footer */
     right: 10px;
     max-height: 35vh;
     width: 90%;
     max-width: 300px;
     overflow-y: auto;
     z-index: 999;
+    top: auto; /* Ensure it's not affected by top property */
   }
   
   .leaflet-control-zoom {
@@ -62,4 +64,35 @@
 #bottom-banner {
   z-index: 1001;
   position: relative;
+}
+
+/* Add styles for action info section */
+.action-info {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  font-size: 0.85em;
+}
+
+.action-tip {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+}
+
+.action-tip .material-icons {
+  font-size: 16px;
+  margin-right: 5px;
+  color: #6B8E23;
+}
+
+/* Make action feedback more visible */
+#retaliation-feedback {
+  font-size: 1.1em;
+  padding: 15px 20px;
+  max-width: 80%;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
 }

@@ -12,7 +12,34 @@ function populateDropdown() {
   
   // Add cities to dropdown
   globalCities.forEach(city => {
-    const option = document.createElement('option');
+    const option = document.createElemen  // Add to global cities list
+  globalCities.push(city);
+
+  // Repopulate dropdown to include the new city
+  populateDropdown();
+
+  // Place marker for the custom city with integrated weather
+  const marker = L.marker([city.lat, city.lon]).addTo(map);
+  marker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+  
+  // Fetch weather and integrate it with the marker
+  fetchAndIntegrateWeather(city, marker);
+  
+  // Add popup and event listeners
+  marker.bindPopup(createCityPopup(city));
+  marker.on('click', () => {
+    const dropdown = document.getElementById('cityDropdown');
+    if (dropdown) {
+      dropdown.value = city.name;
+    }
+    map.setView([city.lat, city.lon], 6);
+    updateCityMetrics(city);
+  });
+  
+  // Color the marker based on solidarity level
+  colorizeMarker(marker, city);
+
+  // Update the sidebar with the custom city's metrics);
     option.value = city.name;
     option.textContent = city.name;
     citySelector.appendChild(option);
@@ -207,7 +234,7 @@ function createCityPopup(city) {
   const actions = document.createElement('div');
   actions.className = 'popup-actions';
   actions.innerHTML = `
-    <p><b>Take Action:</b></p>
+    <p><b>City-Specific Actions:</b></p>
     <button class="action-btn" data-action="protest" data-city="${city.name}">Protest</button>
     <button class="action-btn" data-action="strike" data-city="${city.name}">Strike</button>
     <button class="action-btn" data-action="network" data-city="${city.name}">Network</button>
@@ -516,9 +543,42 @@ function performCollectiveAction(actionType) {
     performedActions[actionType]++;
   }
 
+  // Get global solidarity level to determine impact
+  const globalSolidarity = typeof window.globalMetricsData !== 'undefined' ? 
+    window.globalMetricsData.solidarity : 
+    (globalCities.reduce((sum, city) => sum + city.solidarity, 0) / globalCities.length);
+  
+  // Filter cities with solidarity > 10
+  const potentialCities = globalCities.filter(city => city.solidarity > 10);
+  
+  // Check if there are any eligible cities
+  if (potentialCities.length === 0) {
+    // Show feedback about no eligible cities
+    const feedback = document.getElementById('retaliation-feedback');
+    if (feedback) {
+      feedback.textContent = "No cities have enough solidarity (>10%) to participate in collective actions!";
+      feedback.style.backgroundColor = 'rgba(255, 165, 0, 0.8)'; // Orange for warning
+      feedback.style.display = 'block';
+      
+      // Hide feedback after 3 seconds
+      setTimeout(() => feedback.style.display = 'none', 3000);
+    }
+    return; // Exit the function
+  }
+  
+  // Calculate how many cities can be affected based on global solidarity
+  // Higher solidarity means more coordinated action across cities
+  const maxAffectedPercentage = Math.min(0.6, globalSolidarity / 100);
+  
+  // Calculate how many cities will actually be affected
+  const maxAffectableCount = Math.max(1, Math.floor(potentialCities.length * maxAffectedPercentage));
+  
+  // Randomly select cities from potential cities, prioritizing those with higher solidarity
+  const sortedByHigherSolidarity = [...potentialCities].sort((a, b) => b.solidarity - a.solidarity);
+  const affectedCities = sortedByHigherSolidarity.slice(0, maxAffectableCount);
+  
   // Base effectiveness is higher when more cities have solidarity > 10
-  const affectedCities = globalCities.filter(city => city.solidarity > 10);
-  const effectiveness = Math.min(1.5, 0.5 + (affectedCities.length / globalCities.length));
+  const effectiveness = Math.min(1.5, 0.5 + (affectedCities.length / Math.max(1, potentialCities.length)));
   
   // Show feedback about the action
   let actionFeedback = '';
@@ -582,8 +642,24 @@ function performCollectiveAction(actionType) {
     feedback.style.backgroundColor = 'rgba(0, 100, 0, 0.8)';
     feedback.style.display = 'block';
     
-    // Hide feedback after 3 seconds
-    setTimeout(() => feedback.style.display = 'none', 3000);
+    // Show which cities were affected in a follow-up message
+    if (affectedCities.length > 0) {
+      setTimeout(() => {
+        const cityList = affectedCities.length <= 5 ? 
+          affectedCities.map(city => city.name).join(', ') : 
+          affectedCities.slice(0, 5).map(city => city.name).join(', ') + ` and ${affectedCities.length - 5} more`;
+        
+        feedback.textContent = `Affected cities: ${cityList}`;
+        feedback.style.backgroundColor = 'rgba(0, 0, 100, 0.8)';
+        feedback.style.display = 'block';
+        
+        // Hide feedback after 3 more seconds
+        setTimeout(() => feedback.style.display = 'none', 3000);
+      }, 3500);
+    } else {
+      // Hide feedback after 3 seconds if no cities were affected
+      setTimeout(() => feedback.style.display = 'none', 3000);
+    }
   }
 
   updateGlobalMetrics();

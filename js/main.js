@@ -7,9 +7,25 @@ const globalMetricsData = {
   solidarity: 0 // Solidarity Index
 };
 
+// Game state flags
+let gameInitialized = false;
+
 // Initialize the game
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Initializing Solidarity Overthrow game...');
+  
+  // Initialize game components but wait for intro to complete
+  initializeGameComponents();
+  
+  // The actual game will start after the intro system calls startGame()
+  // See intro.js for the implementation
+  
+  console.log('Game components initialized, waiting for intro sequence to complete');
+});
+
+// Initialize all game components
+function initializeGameComponents() {
+  if (gameInitialized) return;
   
   // Merge additional cities into the global cities array
   mergeAdditionalCities();
@@ -47,8 +63,9 @@ document.addEventListener('DOMContentLoaded', () => {
     updateGlobalMetrics();
   }, 10000); // Check every 10 seconds
   
+  gameInitialized = true;
   console.log('Game initialization complete');
-});
+}
 
 // Update global metrics display in the UI
 function updateGlobalMetrics() {
@@ -149,8 +166,14 @@ function mergeAdditionalCities() {
     populateDropdown();
   }
   
-  // Update all city markers
-  if (typeof updateAllCitiesInBatches === 'function') {
+  // Update all city markers on the map
+  if (typeof initializeMap === 'function') {
+    initializeMap();
+  } else if (typeof updateAllCitiesInBatches === 'function') {
     updateAllCitiesInBatches();
   }
 }
+
+// Make some functions globally available for the intro system
+window.updateGlobalMetrics = updateGlobalMetrics;
+window.restartGame = restartGame;
