@@ -85,6 +85,24 @@ function createSplashScreen() {
   }, 500);
 }
 
+// Shared function to initialize the game
+function onGameStart() {
+  gameStarted = true;
+
+  // Call the global initializer
+  if (typeof window.initializeGame === 'function') {
+    window.initializeGame();
+  } else {
+    console.error("Game initializer not found!");
+  }
+
+  // If it's first time playing, show a quick tip
+  if (!localStorage.getItem('hasPlayedBefore')) {
+    setTimeout(showQuickTips, 2000);
+    localStorage.setItem('hasPlayedBefore', 'true');
+  }
+}
+
 // Start the game
 function startGame() {
   const splashScreen = document.getElementById('splash-screen');
@@ -93,14 +111,9 @@ function startGame() {
   // Remove splash screen after fade out
   setTimeout(() => {
     splashScreen.remove();
-    gameStarted = true;
-    
-    // If it's first time playing, show a quick tip
-    if (!localStorage.getItem('hasPlayedBefore')) {
-      setTimeout(showQuickTips, 2000);
-      localStorage.setItem('hasPlayedBefore', 'true');
-    }
   }, 1000);
+
+  onGameStart();
 }
 
 // Show quick tips for first-time players
@@ -385,8 +398,8 @@ function finishTutorial() {
   setTimeout(() => {
     introSlides.remove();
     tutorialComplete = true;
-    startGame();
   }, 500);
+  onGameStart();
 }
 
 // Create help panel

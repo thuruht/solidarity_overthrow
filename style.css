@@ -1,13 +1,15 @@
 body {
   margin: 0;
   padding: 0;
- font-family: 'Special Elite', monospaced;
+  font-family: 'Special Elite', monospaced;
+  height: 100vh; /* Ensure body takes full viewport height */
+  padding-top: 70px; /* Add padding to push content below the fixed top bar */
+  box-sizing: border-box; /* Include padding in the element's total width and height */
 }
 
 /* Map container */
 #map {
-  height: 100vh;
-  margin-top: 70px; /* Added margin to account for the top bar */
+  height: 100%; /* Make map fill the padded body */
 }
 
 .retaliation-alert {
