@@ -1,4 +1,7 @@
-// Main.js - Initializes and coordinates all game components
+// js/main_new.js - Initializes and coordinates all game components
+
+// Game state flags
+let gameInitialized = false;
 
 // Global variables for tracking game state
 const globalMetricsData = {
@@ -7,45 +10,59 @@ const globalMetricsData = {
   solidarity: 0 // Solidarity Index
 };
 
-// Initialize the game
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('Initializing Solidarity Overthrow game...');
+// Globally accessible function to initialize the game
+window.initializeGame = function() {
+  if (gameInitialized) {
+    console.log("Game already initialized.");
+    return;
+  }
   
-  // Initialize global metrics display
+  console.log("1. Initializing game components...");
+
+  console.log("2. Merging additional cities...");
+  mergeAdditionalCities();
+  console.log("...Merging complete.");
+
+  console.log("3. Setting up map...");
+  if (typeof window.setupMap === 'function') {
+    window.setupMap();
+    console.log("...Map setup complete.");
+  } else {
+    console.error('setupMap function not found!');
+  }
+
+  console.log("4. Setting up city interactions...");
+  if (typeof window.setupCityInteractions === 'function') {
+    window.setupCityInteractions();
+    console.log("...City interactions setup complete.");
+  } else {
+    console.error('setupCityInteractions function not found!');
+  }
+
+  console.log("5. Setting up collective actions...");
+  if (typeof window.setupCollectiveActions === 'function') {
+    window.setupCollectiveActions();
+    console.log("...Collective actions setup complete.");
+  } else {
+    console.error('setupCollectiveActions function not found!');
+  }
+  
+  console.log("6. Initializing global metrics...");
   updateGlobalMetrics();
-  
-  // Check if game modules are properly loaded
-  if (typeof initMap === 'function') {
-    console.log('Map module loaded');
-  } else {
-    console.error('Map module not loaded properly!');
-  }
-  
-  if (typeof gameLogic !== 'undefined') {
-    console.log('Game logic module loaded');
-  } else {
-    console.error('Game logic module not loaded properly!');
-  }
-  
-  if (typeof coupPlanner !== 'undefined') {
-    console.log('Coup planner module loaded');
-  } else {
-    console.error('Coup planner module not loaded properly!');
-  }
-  
-  // Set up periodic checks for game state
+  console.log("...Global metrics initialized.");
+
+  console.log("7. Setting up periodic checks...");
   setInterval(() => {
-    // Check game state (win/lose conditions)
-    if (typeof gameLogic !== 'undefined') {
+    if (typeof gameLogic !== 'undefined' && gameLogic.checkGameState) {
       gameLogic.checkGameState();
     }
-    
-    // Update global metrics
     updateGlobalMetrics();
-  }, 10000); // Check every 10 seconds
+  }, 10000);
+  console.log("...Periodic checks set up.");
   
-  console.log('Game initialization complete');
-});
+  gameInitialized = true;
+  console.log("8. Game initialization complete.");
+};
 
 // Update global metrics display in the UI
 function updateGlobalMetrics() {
@@ -113,3 +130,30 @@ function restartGame() {
   
   console.log('Game restart complete');
 }
+
+// Function to merge the additional cities into the global cities array
+function mergeAdditionalCities() {
+  if (typeof additionalCities === 'undefined' || typeof globalCities === 'undefined') {
+    console.error('City data not loaded properly!');
+    return;
+  }
+
+  // Filter out duplicate cities
+  const filteredAdditionalCities = additionalCities.filter(newCity => {
+    return !globalCities.some(existingCity =>
+      existingCity.name === newCity.name ||
+      (Math.abs(existingCity.lat - newCity.lat) < 0.01 &&
+       Math.abs(existingCity.lon - newCity.lon) < 0.01)
+    );
+  });
+
+  // Add the filtered additional cities to the global cities array
+  globalCities = globalCities.concat(filteredAdditionalCities);
+
+  console.log(`Merged ${filteredAdditionalCities.length} new cities. Total: ${globalCities.length}`);
+}
+
+// Make key functions globally available
+window.updateGlobalMetrics = updateGlobalMetrics;
+window.restartGame = restartGame;
+window.globalMetricsData = globalMetricsData;

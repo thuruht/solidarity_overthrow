@@ -1,4 +1,4 @@
- const globalCities = [
+ let globalCities = [
   { name: 'Melbourne, AR', lat: 36.0592, lon: -91.9110, ipi: 92, propaganda: 96, solidarity: 7 },
   { name: 'El Paso, TX', lat: 31.7619, lon: -106.4850, ipi: 97, propaganda: 99, solidarity: 6 },
   { name: 'Laredo, TX', lat: 27.5036, lon: -99.5075, ipi: 93, propaganda: 95, solidarity: 9 },
