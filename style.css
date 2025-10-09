@@ -199,7 +199,7 @@ body {
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     font-family: 'Oswald', sans-serif;
-    z-index: 2000;
+    z-index: 2500; /* Increased z-index */
     animation: fadeInOut 3s ease-in-out;
     display: none;
 }
@@ -349,6 +349,11 @@ span {
 
 .action-btn:hover {
   background-color: #6B8E23;
+}
+
+/* Set a specific z-index for the popup container to ensure proper layering */
+.leaflet-popup-pane {
+  z-index: 1800;
 }
 
 /* Custom marker styling */
@@ -1001,7 +1006,7 @@ span {
   color: white;
   padding: 15px;
   border-radius: 5px;
-  z-index: 1700;
+  z-index: 2400; /* Increased z-index */
   font-family: 'Special Elite', monospace;
   max-width: 300px;
   opacity: 0;
