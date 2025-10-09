@@ -5,25 +5,30 @@ window.setupCityInteractions = function() {
   populateDropdown();
   initializeCityMarkers();
   setupDropdownListener();
+  setupSearchListener();
 };
 
 // Populate the dropdown with global cities and custom city option
-function populateDropdown() {
+function populateDropdown(filter = '') {
   const citySelector = document.getElementById('cityDropdown');
   if (!citySelector) return;
   
+  const lowerCaseFilter = filter.toLowerCase();
+
   // Clear existing options except the default
   let currentCity = citySelector.value;
   while (citySelector.options.length > 1) {
     citySelector.remove(1);
   }
   
-  // Add cities to dropdown
+  // Add cities to dropdown that match the filter
   globalCities.forEach(city => {
-    const option = document.createElement('option');
-    option.value = city.name;
-    option.textContent = city.name;
-    citySelector.appendChild(option);
+    if (city.name.toLowerCase().includes(lowerCaseFilter)) {
+        const option = document.createElement('option');
+        option.value = city.name;
+        option.textContent = city.name;
+        citySelector.appendChild(option);
+    }
   });
   
   // Add option for custom city
@@ -32,8 +37,8 @@ function populateDropdown() {
   customOption.textContent = "Add Custom City...";
   citySelector.appendChild(customOption);
 
-  // Restore previous selection if it still exists
-  if (currentCity && globalCities.some(c => c.name === currentCity)) {
+  // Restore previous selection if it still exists and matches filter
+  if (currentCity && globalCities.some(c => c.name === currentCity && c.name.toLowerCase().includes(lowerCaseFilter))) {
     citySelector.value = currentCity;
   }
 }
@@ -46,6 +51,16 @@ function initializeCityMarkers() {
     setTimeout(() => {
       placeStaticMarker(city);
     }, index * 50); // 50ms delay between each city
+  });
+}
+
+// Set up the listener for the city search input
+function setupSearchListener() {
+  const searchInput = document.getElementById('citySearch');
+  if (!searchInput) return;
+
+  searchInput.addEventListener('input', (e) => {
+    populateDropdown(e.target.value);
   });
 }
 
@@ -101,17 +116,40 @@ async function fetchAndIntegrateWeather(city, marker) {
 }
 window.fetchAndIntegrateWeather = fetchAndIntegrateWeather; // Make it globally accessible
 
+// Helper to get a description of the weather's effect
+function getWeatherEffectDescription(weatherDesc) {
+    if (!weatherDesc) return '';
+    const desc = weatherDesc.toLowerCase();
+    if (desc.includes('rain') || desc.includes('storm') || desc.includes('drizzle')) {
+        return 'Public actions may be less effective.';
+    } else if (desc.includes('snow')) {
+        return 'Public actions may be significantly less effective.';
+    } else if (desc.includes('clear')) {
+        return 'Public actions may be more effective.';
+    }
+    return '';
+}
+
 // Create popup content for a city
 function createCityPopup(city) {
   const popupContent = document.createElement('div');
   popupContent.className = 'city-popup';
   
+  let weatherEffectHint = '';
+  if (city.weather && city.weather.description) {
+      const effect = getWeatherEffectDescription(city.weather.description);
+      if (effect) {
+          weatherEffectHint = `<p class="weather-effect"><em>${effect}</em></p>`;
+      }
+  }
+
   popupContent.innerHTML = `
     <h3>${city.name}</h3>
     <div class="popup-metrics">
       <p><b>IPI:</b> ${city.ipi}%</p>
       <p><b>Solidarity:</b> ${city.solidarity}%</p>
       <p><b>Propaganda:</b> ${city.propaganda}%</p>
+      ${weatherEffectHint}
     </div>
     <div class="popup-actions">
       <p><b>Actions:</b></p>
@@ -119,6 +157,8 @@ function createCityPopup(city) {
       <button class="action-btn" data-action="strike" data-city="${city.name}">Strike</button>
       <button class="action-btn" data-action="network" data-city="${city.name}">Network</button>
       <button class="action-btn" data-action="sabotage" data-city="${city.name}">Sabotage</button>
+      <button class="action-btn" data-action="mutualAid" data-city="${city.name}">Mutual Aid</button>
+      <button class="action-btn" data-action="hackMedia" data-city="${city.name}">Hack Media</button>
     </div>
   `;
   
@@ -141,22 +181,55 @@ function performCityAction(action, cityName) {
   
   let ipiChange = 0, propagandaChange = 0, solidarityChange = 0, message = '';
   
+  // Define weather modifiers
+  let weatherModifier = 1.0;
+  let weatherMessage = '';
+  if (city.weather && city.weather.description) {
+      const weatherDesc = city.weather.description.toLowerCase();
+      if (weatherDesc.includes('rain') || weatherDesc.includes('storm') || weatherDesc.includes('drizzle')) {
+          weatherModifier = 0.8; // 20% less effective
+          weatherMessage = ' (Rain dampened turnout)';
+      } else if (weatherDesc.includes('snow')) {
+          weatherModifier = 0.7; // 30% less effective
+          weatherMessage = ' (Snow suppressed activity)';
+      } else if (weatherDesc.includes('clear')) {
+          weatherModifier = 1.2; // 20% more effective
+          weatherMessage = ' (Clear skies encouraged participation)';
+      }
+  }
+
   switch (action) {
     case 'protest':
-      ipiChange = -3; propagandaChange = -2; solidarityChange = 2;
+      ipiChange = -3 * weatherModifier;
+      propagandaChange = -2 * weatherModifier;
+      solidarityChange = 2 * weatherModifier;
       message = `Protest in ${cityName}!`;
       break;
     case 'strike':
-      ipiChange = -5; solidarityChange = 3;
+      ipiChange = -5 * weatherModifier;
+      solidarityChange = 3 * weatherModifier;
       message = `Strike in ${cityName}!`;
       break;
     case 'network':
-      solidarityChange = 7; propagandaChange = -1;
+      solidarityChange = 7;
+      propagandaChange = -1;
       message = `Network strengthened in ${cityName}!`;
       break;
     case 'sabotage':
-      ipiChange = -10; propagandaChange = 4; solidarityChange = -3;
+      ipiChange = -10;
+      propagandaChange = 4;
+      solidarityChange = -3;
       message = `Sabotage in ${cityName}!`;
+      break;
+    case 'mutualAid':
+      solidarityChange = 5;
+      message = `Mutual aid network established in ${cityName}!`;
+      break;
+    case 'hackMedia':
+      propagandaChange = -10;
+      solidarityChange = 1;
+      ipiChange = -1;
+      message = `State media hacked in ${cityName}!`;
       break;
   }
   
@@ -168,8 +241,8 @@ function performCityAction(action, cityName) {
   updateCityVisuals(city);
   window.updateGlobalMetrics();
   
-  // Show feedback
-  showFeedback(message, 'success');
+  // Show feedback using the new notification system
+  showNotification('Action Report', message + weatherMessage, 'info');
 }
 
 // Update marker color and popup content
