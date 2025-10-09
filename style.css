@@ -53,19 +53,6 @@ body {
   color: #6B8E23; text-align: center;
 }
 
-@media (max-width: 800px) {
-  #sidebar {
-    width: 220px;
-  }
-}
-
-@media (max-width: 592px) {
-  #sidebar {
-    width: 200px;
-    font-size: 0.9em;
-  }
-}
-
 /* Dropdown styling */
 .city-dropdown {
   position: absolute;
@@ -152,13 +139,6 @@ body {
  
 }
 
-@media (max-width: 600px) {
-  #banner h1 {
-    font-size: 2em;
-    letter-spacing: 2px;
-  }
-}
-
 .retaliation-alert {
     position: fixed;
     top: 10%;
@@ -216,66 +196,6 @@ body {
 
 .global-metrics span .material-icons {
   margin-right: 5px;
-}
-
-/* Media query for mobile devices */
-@media (max-width: 768px) {
-  #top-bar {
-    height: auto;
-    min-height: 80px;
-    padding: 10px;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .global-metrics {
-    flex-direction: column;
-    margin-top: 10px;
-    width: 100%;
-  }
-  
-  .global-metrics span {
-    margin: 3px 0;
-    font-size: 14px;
-  }
-  
-  #city-selector {
-    top: 100px;
-    left: 10px;
-    width: calc(100% - 20px);
-    max-width: 300px;
-    z-index: 1000;
-  }
-  
-  #sidebar {
-    bottom: 50px;
-    right: 10px;
-    max-height: 35vh;
-    width: 90%;
-    max-width: 300px;
-    overflow-y: auto;
-    z-index: 999;
-  }
-  
-  .leaflet-control-zoom {
-    margin-top: 150px !important;
-  }
-  
-  .reset-view-button {
-    top: 200px !important;
-    left: 10px !important;
-  }
-  
-  h1 {
-    font-size: 18px;
-    margin: 0;
-  }
-  
-  .city-metrics {
-    margin-top: 150px;
-    max-height: 30vh;
-    overflow-y: auto;
-  }
 }
 
 /* Dropdown for Collective Actions in Sidebar */
@@ -2423,101 +2343,4 @@ span {
 
 .game-notification.error h3 {
   color: #FF0000;
-}
-
-/* --- MOBILE LAYOUT FIXES --- */
-@media (max-width: 767px) {
-  body {
-    overflow: hidden; /* Prevent scrolling of the whole body */
-  }
-  
-  #map {
-    height: calc(100vh - 160px); /* Reduce map height to make room for UI elements */
-    margin-top: 100px; /* Create space for the top bar */
-    margin-bottom: 60px; /* Create space for the bottom banner */
-  }
-  
-  #top-bar {
-    height: auto;
-    min-height: 100px;
-    padding: 5px 0;
-    z-index: 1200;
-    background-color: rgba(0, 0, 0, 0.95); /* Darker background for better visibility */
-  }
-  
-  .global-metrics {
-    flex-direction: column;
-    align-items: flex-start;
-    padding-left: 10px;
-    width: 100%;
-  }
-  
-  .global-metrics span {
-    margin: 3px 0;
-    font-size: 0.9em; /* Smaller font size */
-  }
-  
-  .city-dropdown {
-    position: fixed !important;
-    top: 105px !important; /* Position right below the top bar */
-    left: 0 !important;
-    width: 100% !important;
-    padding: 0 10px;
-    z-index: 1150;
-    background-color: rgba(0, 0, 0, 0.8); /* Add background for visibility */
-    box-sizing: border-box;
-  }
-  
-  .city-dropdown select {
-    width: 100%;
-    margin: 5px 0;
-  }
-  
-  #sidebar {
-    position: fixed;
-    width: 100%;
-    left: 0;
-    right: 0;
-    top: auto;
-    bottom: 60px; /* Position right above the bottom banner */
-    max-height: 30vh; /* Limit height to 30% of viewport */
-    z-index: 1100;
-    border-radius: 0;
-    padding: 5px;
-    overflow-y: auto;
-  }
-  
-  .leaflet-control-zoom {
-    top: 50px !important; /* Move zoom controls down */
-  }
-  
-  .reset-view-button {
-    position: fixed !important;
-    top: 155px !important; /* Position below the city dropdown */
-    left: 10px !important;
-    z-index: 1150 !important;
-  }
-  
-  #banner {
-    height: 50px;
-    padding: 5px 0;
-    z-index: 1200;
-  }
-  
-  #banner h1 {
-    font-size: 1.5em; /* Smaller font size for the title */
-    letter-spacing: 2px;
-  }
-  
-  .leaflet-bottom.leaflet-left {
-    bottom: 60px !important; /* Move controls up to avoid bottom banner */
-  }
-  
-  .leaflet-bottom.leaflet-right {
-    bottom: 60px !important; /* Move controls up to avoid bottom banner */
-  }
-  
-  .info.legend {
-    display: none; /* Hide legend on mobile to save space */
-  }
 }

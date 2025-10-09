@@ -1,72 +1,130 @@
 /* Mobile Responsive Fixes */
+
+/* For slightly larger screens, adjust sidebar */
+@media (max-width: 800px) {
+  #sidebar {
+    width: 220px;
+  }
+}
+
+/* For smaller mobile screens, further adjust sidebar */
+@media (max-width: 592px) {
+  #sidebar {
+    width: 200px;
+    font-size: 0.9em;
+  }
+}
+
+/* --- MAIN MOBILE LAYOUT (Consolidated and Refined) --- */
 @media screen and (max-width: 768px) {
+  body {
+    /* Accommodate fixed top and bottom bars */
+    padding-top: 70px;
+    padding-bottom: 50px;
+    overflow: hidden;
+  }
+
+  #map {
+    height: 100%;
+  }
+
   #top-bar {
     height: auto;
-    min-height: 80px;
-    padding: 10px;
+    padding: 8px 10px;
+    z-index: 1200;
+    background-color: rgba(0, 0, 0, 0.95);
     flex-direction: column;
     align-items: flex-start;
   }
   
   #top-bar .global-metrics {
     flex-direction: column;
-    margin-top: 10px;
+    margin-top: 0;
     width: 100%;
+    align-items: flex-start;
+    padding-left: 0;
   }
   
   #top-bar .global-metrics span {
-    margin: 3px 0;
-    font-size: 14px;
+    margin: 4px 0;
+    font-size: 0.95em;
+  }
+
+  .city-dropdown {
+    position: fixed !important;
+    top: 70px !important; /* Position below top bar */
+    left: 0 !important;
+    right: 0 !important;
+    width: auto !important;
+    padding: 5px 10px;
+    z-index: 1150;
+    background-color: rgba(0, 0, 0, 0.9);
+    box-sizing: border-box;
   }
   
-  #city-selector {
-    top: 100px;
-    left: 10px;
-    width: calc(100% - 20px);
-    max-width: 300px;
-    z-index: 1000;
+  .city-dropdown select {
+    width: 100%;
+    margin: 0;
   }
   
   #sidebar {
     position: fixed;
-    bottom: 70px; /* Increased to ensure it stays above the footer */
-    right: 10px;
-    max-height: 35vh;
-    width: 90%;
-    max-width: 300px;
-    overflow-y: auto;
-    z-index: 999;
-    top: auto; /* Ensure it's not affected by top property */
-  }
-  
-  .leaflet-control-zoom {
-    margin-top: 150px !important;
-  }
-  
-  .reset-view-button {
-    top: 200px !important;
-    left: 10px !important;
-  }
-  
-  h1 {
-    font-size: 18px;
-    margin: 0;
-  }
-  
-  .city-metrics {
-    margin-top: 150px;
+    width: 100%;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 50px; /* Position above bottom banner */
     max-height: 30vh;
+    z-index: 1100;
+    border-radius: 0;
+    padding: 10px;
     overflow-y: auto;
+    max-width: 100%;
+    border-top: 1px solid #6B8E23;
+    background-color: rgba(0, 0, 0, 0.95);
+  }
+  
+  /* Removed large margin-top that broke mobile layout */
+  .city-metrics {
+    margin-top: 0 !important;
+    max-height: none;
+    overflow-y: visible;
+  }
+  
+  .leaflet-top.leaflet-left {
+    /* Push controls below the dropdown */
+    margin-top: 55px;
+  }
+
+  .reset-view-button {
+    /* Positioned below dropdown */
+    top: 125px !important;
+  }
+  
+  #banner {
+    height: 50px;
+    z-index: 1200;
+  }
+  
+  #banner h1 {
+    font-size: 1.4em;
+    letter-spacing: 2px;
+  }
+
+  .leaflet-bottom {
+    bottom: 50px !important;
+  }
+
+  .info.legend {
+    display: none; /* Hide legend on mobile to save space */
   }
 }
 
-/* Ensure the sidebar doesn't overlap the bottom banner */
 #bottom-banner {
   z-index: 1001;
   position: relative;
 }
 
-/* Add styles for action info section */
 .action-info {
   background-color: rgba(0, 0, 0, 0.5);
   padding: 10px;
@@ -87,7 +145,6 @@
   color: #6B8E23;
 }
 
-/* Make action feedback more visible */
 #retaliation-feedback {
   font-size: 1.1em;
   padding: 15px 20px;
