@@ -753,35 +753,6 @@ const coupPlanner = (() => {
     checkCoupPlanningAvailability();
   }
 
-  // Show a notification message
-  function showNotification(title, message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `game-notification ${type}`;
-    notification.innerHTML = `
-      <h3>${title}</h3>
-      <p>${message}</p>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Fade in
-    setTimeout(() => {
-      notification.style.opacity = '1';
-      notification.style.transform = 'translateY(0)';
-    }, 10);
-    
-    // Fade out and remove after 5 seconds
-    setTimeout(() => {
-      notification.style.opacity = '0';
-      notification.style.transform = 'translateY(20px)';
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.parentNode.removeChild(notification);
-        }
-      }, 500);
-    }, 5000);
-  }
-  
   // Public API
   return {
     init,
@@ -795,8 +766,7 @@ const coupPlanner = (() => {
     getLeadCity: () => plan.leadCity,
     getPreparation: () => plan.prepLevel,
     getSecrecy: () => plan.securityLevel,
-    isActive: () => plan.active,
-    showNotification
+    isActive: () => plan.active
   };
 })();
 
