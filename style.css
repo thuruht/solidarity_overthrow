@@ -220,26 +220,6 @@ span {
   margin: 5px 0;
 }
 
-/* Achievement notification */
-.achievement-notification {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 15px;
-  border-radius: 5px;
-  z-index: 1000;
-  transition: opacity 0.5s ease-in-out;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-  border: 1px solid gold;
-}
-
-.achievement-notification h3 {
-  color: gold;
-  margin-top: 0;
-}
-
 /* Game end message */
 #game-end-message {
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
@@ -600,69 +580,6 @@ span {
 .mini-bar {
   height: 100%;
   transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out;
-}
-
-.game-notification {
-  position: fixed;
-  bottom: 70px;
-  right: 20px;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 15px;
-  border-radius: 5px;
-  z-index: 1700;
-  font-family: 'Special Elite', monospace;
-  max-width: 300px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s, transform 0.5s;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-.game-notification.info {
-  border-left: 4px solid #6B8E23;
-}
-
-.game-notification.warning {
-  border-left: 4px solid #FFA500;
-}
-
-.game-notification.error {
-  border-left: 4px solid #FF0000;
-}
-
-.game-notification h3 {
-  margin-top: 0;
-  margin-bottom: 5px;
-  color: #6B8E23;
-}
-
-.game-notification.warning h3 {
-  color: #FFA500;
-}
-
-.game-notification.error h3 {
-  color: #FF0000;
-}
-
-/* Achievement notification */
-.achievement-notification {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 15px;
-  border-radius: 5px;
-  z-index: 1000;
-  transition: opacity 0.5s ease-in-out;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-  border: 1px solid gold;
-}
-
-.achievement-notification h3 {
-  color: gold;
-  margin-top: 0;
 }
 
 /* Game end message */
