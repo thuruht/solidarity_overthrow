@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="reset-view.css?v=1.0.0">
   <link rel="stylesheet" href="mobile-ui-fixes.css?v=1.0.1">
   <link rel="stylesheet" href="intro.css?v=1.0.0">
+  <link rel="stylesheet" href="notifications.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <!-- Google Fonts: Oswald for sidebar, IBM Plex Mono for h1, Special Elite for controls -->
@@ -53,12 +54,12 @@
   
 <div id="retaliation-feedback" class="retaliation-alert"></div>
 
-  <!-- Map container -->
-  <div id="map"></div>
+    <!-- Map container -->
+    <div id="map"></div>
 
-  <!-- Dropdown for City Selection -->
-  <div class="city-dropdown">
-    <select id="cityDropdown" aria-label="Select a city">
+    <!-- Dropdown for City Selection -->
+    <div class="city-dropdown">
+      <select id="cityDropdown" aria-label="Select a city">
       <option value="" disabled selected>Select a city...</option>
       <!-- Cities dynamically populated by solid0p2.js -->
     </select>
@@ -71,6 +72,8 @@
   <script src="js/additionalCities.js?v=1.0.0"></script>
   <!-- Add GSAP for animations -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+  <!-- Unified Notification System -->
+  <script src="js/notifications.js"></script>
   <!-- Game logic modules -->
   <script src="js/solid0p1.js"></script>
   <script src="js/solid0p2.js"></script>

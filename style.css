@@ -53,19 +53,6 @@ body {
   color: #6B8E23; text-align: center;
 }
 
-@media (max-width: 800px) {
-  #sidebar {
-    width: 220px;
-  }
-}
-
-@media (max-width: 592px) {
-  #sidebar {
-    width: 200px;
-    font-size: 0.9em;
-  }
-}
-
 /* Dropdown styling */
 .city-dropdown {
   position: absolute;
@@ -152,13 +139,6 @@ body {
  
 }
 
-@media (max-width: 600px) {
-  #banner h1 {
-    font-size: 2em;
-    letter-spacing: 2px;
-  }
-}
-
 .retaliation-alert {
     position: fixed;
     top: 10%;
@@ -218,66 +198,6 @@ body {
   margin-right: 5px;
 }
 
-/* Media query for mobile devices */
-@media (max-width: 768px) {
-  #top-bar {
-    height: auto;
-    min-height: 80px;
-    padding: 10px;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .global-metrics {
-    flex-direction: column;
-    margin-top: 10px;
-    width: 100%;
-  }
-  
-  .global-metrics span {
-    margin: 3px 0;
-    font-size: 14px;
-  }
-  
-  #city-selector {
-    top: 100px;
-    left: 10px;
-    width: calc(100% - 20px);
-    max-width: 300px;
-    z-index: 1000;
-  }
-  
-  #sidebar {
-    bottom: 50px;
-    right: 10px;
-    max-height: 35vh;
-    width: 90%;
-    max-width: 300px;
-    overflow-y: auto;
-    z-index: 999;
-  }
-  
-  .leaflet-control-zoom {
-    margin-top: 150px !important;
-  }
-  
-  .reset-view-button {
-    top: 200px !important;
-    left: 10px !important;
-  }
-  
-  h1 {
-    font-size: 18px;
-    margin: 0;
-  }
-  
-  .city-metrics {
-    margin-top: 150px;
-    max-height: 30vh;
-    overflow-y: auto;
-  }
-}
-
 /* Dropdown for Collective Actions in Sidebar */
 #collectiveActionsDropdown {
   margin-top: 20px;
@@ -300,24 +220,366 @@ span {
   margin: 5px 0;
 }
 
-/* Achievement notification */
-.achievement-notification {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 15px;
-  border-radius: 5px;
-  z-index: 1000;
-  transition: opacity 0.5s ease-in-out;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-  border: 1px solid gold;
+/* Game end message */
+#game-end-message {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  max-width: 500px;
 }
 
-.achievement-notification h3 {
-  color: gold;
+#game-end-message h2 {
   margin-top: 0;
+  color: white;
+}
+
+#restart-game {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-family: 'Special Elite', monospaced;
+  font-weight: bold;
+}
+
+#restart-game:hover {
+  background-color: white;
+}
+
+/* City Popup Styling */
+.city-popup {
+  font-family: 'Special Elite', monospace;
+  min-width: 200px;
+}
+
+.city-popup h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  text-align: center;
+  color: #6B8E23;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 5px;
+}
+
+.popup-metrics {
+  margin-bottom: 10px;
+}
+
+.popup-metrics p {
+  margin: 5px 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.metric-value {
+  font-weight: bold;
+}
+
+.popup-actions {
+  border-top: 1px solid #ccc;
+  padding-top: 8px;
+}
+
+.popup-actions p {
+  margin: 5px 0;
+  text-align: center;
+}
+
+.action-btn {
+  background-color: #444;
+  color: white;
+  border: none;
+  padding: 5px 8px;
+  margin: 3px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: 'Special Elite', monospace;
+  font-size: 0.8em;
+  transition: background-color 0.2s;
+}
+
+.action-btn:hover {
+  background-color: #6B8E23;
+}
+
+/* Custom marker styling */
+.custom-marker {
+  transition: transform 0.2s ease-in-out;
+}
+
+.custom-marker:hover {
+  transform: scale(1.2);
+}
+
+/* Revolution Planning Styles */
+.coup-button {
+  display: block;
+  width: 100%;
+  background-color: #333;
+  color: white;
+  border: 1px solid #6B8E23;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 15px;
+  font-family: 'Special Elite', monospace;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.coup-button:hover {
+  background-color: #6B8E23;
+}
+
+.coup-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 500px;
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid #6B8E23;
+  z-index: 1500;
+  font-family: 'Special Elite', monospace;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Revolution Planning Styles */
+.coup-button {
+  display: block;
+  width: 100%;
+  background-color: #333;
+  color: white;
+  border: 1px solid #6B8E23;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 15px;
+  font-family: 'Special Elite', monospace;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coup-button:hover {
+  background-color: #6B8E23;
+}
+
+.coup-button .material-icons {
+  margin-right: 5px;
+}
+
+.coup-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 500px;
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid #6B8E23;
+  z-index: 1500;
+  font-family: 'Special Elite', monospace;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.coup-panel h3 {
+  color: #6B8E23;
+  text-align: center;
+  margin-top: 0;
+  border-bottom: 1px solid #6B8E23;
+  padding-bottom: 10px;
+}
+
+.coup-panel h4 {
+  color: #6B8E23;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.status-bars {
+  margin: 20px 0;
+}
+
+.status-item {
+  margin-bottom: 15px;
+}
+
+.status-item label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.progress-bar {
+  background-color: #333;
+  border-radius: 3px;
+  height: 20px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out;
+}
+
+.cells-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cells-list li {
+  padding: 8px;
+  margin-bottom: 5px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.lead-cell {
+  background-color: rgba(107, 142, 35, 0.3) !important;
+  border-left: 3px solid #6B8E23;
+}
+
+.cell-status {
+  display: flex;
+  align-items: center;
+}
+
+.cell-status .material-icons {
+  font-size: 16px;
+  margin-right: 3px;
+}
+
+.coup-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.coup-execute {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.execute-btn {
+  background-color: #8B0000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-family: 'Special Elite', monospace;
+  cursor: pointer;
+  font-size: 1.1em;
+  transition: background-color 0.3s;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.execute-btn:hover {
+  background-color: #FF0000;
+}
+
+.execute-btn.disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.cancel-btn {
+  background-color: #333;
+  color: white;
+  border: 1px solid #777;
+  border-radius: 5px;
+  padding: 8px 15px;
+  font-family: 'Special Elite', monospace;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.cancel-btn:hover {
+  background-color: #555;
+}
+
+.selection-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 400px;
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid #6B8E23;
+  z-index: 1600;
+  font-family: 'Special Elite', monospace;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.selection-dialog h3 {
+  color: #6B8E23;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.city-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 15px 0;
+}
+
+.city-option {
+  padding: 10px;
+  margin-bottom: 5px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  transition: background-color 0.2s;
+}
+
+.city-option:hover {
+  background-color: rgba(107, 142, 35, 0.3);
+}
+
+.coup-indicator {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 3px 8px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mini-progress {
+  width: 50px;
+  height: 8px;
+  background-color: #333;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0 10px 0 3px;
+}
+
+.mini-bar {
+  height: 100%;
+  transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out;
 }
 
 /* Game end message */
@@ -1998,526 +2260,4 @@ span {
 
 .game-notification.error h3 {
   color: #FF0000;
-}
-
-/* Achievement notification */
-.achievement-notification {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 15px;
-  border-radius: 5px;
-  z-index: 1000;
-  transition: opacity 0.5s ease-in-out;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-  border: 1px solid gold;
-}
-
-.achievement-notification h3 {
-  color: gold;
-  margin-top: 0;
-}
-
-/* Game end message */
-#game-end-message {
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-  max-width: 500px;
-}
-
-#game-end-message h2 {
-  margin-top: 0;
-  color: white;
-}
-
-#restart-game {
-  background-color: rgba(255, 255, 255, 0.8);
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  margin-top: 10px;
-  cursor: pointer;
-  font-family: 'Special Elite', monospaced;
-  font-weight: bold;
-}
-
-#restart-game:hover {
-  background-color: white;
-}
-
-/* City Popup Styling */
-.city-popup {
-  font-family: 'Special Elite', monospace;
-  min-width: 200px;
-}
-
-.city-popup h3 {
-  margin-top: 0;
-  margin-bottom: 8px;
-  text-align: center;
-  color: #6B8E23;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 5px;
-}
-
-.popup-metrics {
-  margin-bottom: 10px;
-}
-
-.popup-metrics p {
-  margin: 5px 0;
-  display: flex;
-  justify-content: space-between;
-}
-
-.metric-value {
-  font-weight: bold;
-}
-
-.popup-actions {
-  border-top: 1px solid #ccc;
-  padding-top: 8px;
-}
-
-.popup-actions p {
-  margin: 5px 0;
-  text-align: center;
-}
-
-.action-btn {
-  background-color: #444;
-  color: white;
-  border: none;
-  padding: 5px 8px;
-  margin: 3px;
-  border-radius: 3px;
-  cursor: pointer;
-  font-family: 'Special Elite', monospace;
-  font-size: 0.8em;
-  transition: background-color 0.2s;
-}
-
-.action-btn:hover {
-  background-color: #6B8E23;
-}
-
-/* Custom marker styling */
-.custom-marker {
-  transition: transform 0.2s ease-in-out;
-}
-
-.custom-marker:hover {
-  transform: scale(1.2);
-}
-
-/* Revolution Planning Styles */
-.coup-button {
-  display: block;
-  width: 100%;
-  background-color: #333;
-  color: white;
-  border: 1px solid #6B8E23;
-  border-radius: 5px;
-  padding: 10px;
-  margin-top: 15px;
-  font-family: 'Special Elite', monospace;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.coup-button:hover {
-  background-color: #6B8E23;
-}
-
-.coup-panel {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 500px;
-  background-color: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 20px;
-  border-radius: 5px;
-  border: 1px solid #6B8E23;
-  z-index: 1500;
-  font-family: 'Special Elite', monospace;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-/* Revolution Planning Styles */
-.coup-button {
-  display: block;
-  width: 100%;
-  background-color: #333;
-  color: white;
-  border: 1px solid #6B8E23;
-  border-radius: 5px;
-  padding: 10px;
-  margin-top: 15px;
-  font-family: 'Special Elite', monospace;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.coup-button:hover {
-  background-color: #6B8E23;
-}
-
-.coup-button .material-icons {
-  margin-right: 5px;
-}
-
-.coup-panel {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 500px;
-  background-color: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 20px;
-  border-radius: 5px;
-  border: 1px solid #6B8E23;
-  z-index: 1500;
-  font-family: 'Special Elite', monospace;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-.coup-panel h3 {
-  color: #6B8E23;
-  text-align: center;
-  margin-top: 0;
-  border-bottom: 1px solid #6B8E23;
-  padding-bottom: 10px;
-}
-
-.coup-panel h4 {
-  color: #6B8E23;
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-
-.status-bars {
-  margin: 20px 0;
-}
-
-.status-item {
-  margin-bottom: 15px;
-}
-
-.status-item label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.progress-bar {
-  background-color: #333;
-  border-radius: 3px;
-  height: 20px;
-  width: 100%;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out;
-}
-
-.cells-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.cells-list li {
-  padding: 8px;
-  margin-bottom: 5px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.lead-cell {
-  background-color: rgba(107, 142, 35, 0.3) !important;
-  border-left: 3px solid #6B8E23;
-}
-
-.cell-status {
-  display: flex;
-  align-items: center;
-}
-
-.cell-status .material-icons {
-  font-size: 16px;
-  margin-right: 3px;
-}
-
-.coup-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.coup-execute {
-  margin: 20px 0;
-  text-align: center;
-}
-
-.execute-btn {
-  background-color: #8B0000;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
-  font-family: 'Special Elite', monospace;
-  cursor: pointer;
-  font-size: 1.1em;
-  transition: background-color 0.3s;
-  margin-bottom: 10px;
-  width: 100%;
-}
-
-.execute-btn:hover {
-  background-color: #FF0000;
-}
-
-.execute-btn.disabled {
-  background-color: #555;
-  cursor: not-allowed;
-}
-
-.cancel-btn {
-  background-color: #333;
-  color: white;
-  border: 1px solid #777;
-  border-radius: 5px;
-  padding: 8px 15px;
-  font-family: 'Special Elite', monospace;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.cancel-btn:hover {
-  background-color: #555;
-}
-
-.selection-dialog {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 400px;
-  background-color: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 20px;
-  border-radius: 5px;
-  border: 1px solid #6B8E23;
-  z-index: 1600;
-  font-family: 'Special Elite', monospace;
-  max-height: 70vh;
-  overflow-y: auto;
-}
-
-.selection-dialog h3 {
-  color: #6B8E23;
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 15px;
-}
-
-.city-list {
-  max-height: 300px;
-  overflow-y: auto;
-  margin: 15px 0;
-}
-
-.city-option {
-  padding: 10px;
-  margin-bottom: 5px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  transition: background-color 0.2s;
-}
-
-.city-option:hover {
-  background-color: rgba(107, 142, 35, 0.3);
-}
-
-.coup-indicator {
-  display: flex;
-  align-items: center;
-  margin-left: 20px;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 3px 8px;
-  border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.mini-progress {
-  width: 50px;
-  height: 8px;
-  background-color: #333;
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 0 10px 0 3px;
-}
-
-.mini-bar {
-  height: 100%;
-  transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out;
-}
-
-.game-notification {
-  position: fixed;
-  bottom: 70px;
-  right: 20px;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 15px;
-  border-radius: 5px;
-  z-index: 1700;
-  font-family: 'Special Elite', monospace;
-  max-width: 300px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s, transform 0.5s;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-.game-notification.info {
-  border-left: 4px solid #6B8E23;
-}
-
-.game-notification.warning {
-  border-left: 4px solid #FFA500;
-}
-
-.game-notification.error {
-  border-left: 4px solid #FF0000;
-}
-
-.game-notification h3 {
-  margin-top: 0;
-  margin-bottom: 5px;
-  color: #6B8E23;
-}
-
-.game-notification.warning h3 {
-  color: #FFA500;
-}
-
-.game-notification.error h3 {
-  color: #FF0000;
-}
-
-/* --- MOBILE LAYOUT FIXES --- */
-@media (max-width: 767px) {
-  body {
-    overflow: hidden; /* Prevent scrolling of the whole body */
-  }
-  
-  #map {
-    height: calc(100vh - 160px); /* Reduce map height to make room for UI elements */
-    margin-top: 100px; /* Create space for the top bar */
-    margin-bottom: 60px; /* Create space for the bottom banner */
-  }
-  
-  #top-bar {
-    height: auto;
-    min-height: 100px;
-    padding: 5px 0;
-    z-index: 1200;
-    background-color: rgba(0, 0, 0, 0.95); /* Darker background for better visibility */
-  }
-  
-  .global-metrics {
-    flex-direction: column;
-    align-items: flex-start;
-    padding-left: 10px;
-    width: 100%;
-  }
-  
-  .global-metrics span {
-    margin: 3px 0;
-    font-size: 0.9em; /* Smaller font size */
-  }
-  
-  .city-dropdown {
-    position: fixed !important;
-    top: 105px !important; /* Position right below the top bar */
-    left: 0 !important;
-    width: 100% !important;
-    padding: 0 10px;
-    z-index: 1150;
-    background-color: rgba(0, 0, 0, 0.8); /* Add background for visibility */
-    box-sizing: border-box;
-  }
-  
-  .city-dropdown select {
-    width: 100%;
-    margin: 5px 0;
-  }
-  
-  #sidebar {
-    position: fixed;
-    width: 100%;
-    left: 0;
-    right: 0;
-    top: auto;
-    bottom: 60px; /* Position right above the bottom banner */
-    max-height: 30vh; /* Limit height to 30% of viewport */
-    z-index: 1100;
-    border-radius: 0;
-    padding: 5px;
-    overflow-y: auto;
-  }
-  
-  .leaflet-control-zoom {
-    top: 50px !important; /* Move zoom controls down */
-  }
-  
-  .reset-view-button {
-    position: fixed !important;
-    top: 155px !important; /* Position below the city dropdown */
-    left: 10px !important;
-    z-index: 1150 !important;
-  }
-  
-  #banner {
-    height: 50px;
-    padding: 5px 0;
-    z-index: 1200;
-  }
-  
-  #banner h1 {
-    font-size: 1.5em; /* Smaller font size for the title */
-    letter-spacing: 2px;
-  }
-  
-  .leaflet-bottom.leaflet-left {
-    bottom: 60px !important; /* Move controls up to avoid bottom banner */
-  }
-  
-  .leaflet-bottom.leaflet-right {
-    bottom: 60px !important; /* Move controls up to avoid bottom banner */
-  }
-  
-  .info.legend {
-    display: none; /* Hide legend on mobile to save space */
-  }
 }

@@ -58,5 +58,36 @@ const additionalCities = [
   { name: "Oslo", country: "Norway", lat: 59.9139, lon: 10.7522, ipi: 58, propaganda: 53, solidarity: 42 },
   { name: "Helsinki", country: "Finland", lat: 60.1699, lon: 24.9384, ipi: 59, propaganda: 54, solidarity: 41 },
   { name: "Tehran", country: "Iran", lat: 35.6892, lon: 51.3890, ipi: 80, propaganda: 85, solidarity: 20 },
-  { name: "Riyadh", country: "Saudi Arabia", lat: 24.7136, lon: 46.6753, ipi: 85, propaganda: 88, solidarity: 15 }
+  { name: "Riyadh", country: "Saudi Arabia", lat: 24.7136, lon: 46.6753, ipi: 85, propaganda: 88, solidarity: 15 },
+
+  // Australia
+  { name: "Sydney", country: "Australia", lat: -33.8678, lon: 151.2100, ipi: 70, propaganda: 65, solidarity: 30 },
+  { name: "Brisbane", country: "Australia", lat: -27.4678, lon: 153.0281, ipi: 72, propaganda: 68, solidarity: 28 },
+  { name: "Perth", country: "Australia", lat: -31.9559, lon: 115.8606, ipi: 71, propaganda: 67, solidarity: 29 },
+  { name: "Adelaide", country: "Australia", lat: -34.9275, lon: 138.6000, ipi: 73, propaganda: 69, solidarity: 27 },
+  { name: "Canberra", country: "Australia", lat: -35.2931, lon: 149.1269, ipi: 75, propaganda: 72, solidarity: 25 },
+  { name: "Hobart", country: "Australia", lat: -42.8806, lon: 147.3250, ipi: 68, propaganda: 64, solidarity: 32 },
+
+  // Mongolia
+  { name: "Ulaanbaatar", country: "Mongolia", lat: 47.9203, lon: 106.9172, ipi: 80, propaganda: 82, solidarity: 18 },
+  { name: "Erdenet", country: "Mongolia", lat: 49.0278, lon: 104.0444, ipi: 78, propaganda: 80, solidarity: 20 },
+  { name: "Darhan", country: "Mongolia", lat: 49.4689, lon: 105.9575, ipi: 79, propaganda: 81, solidarity: 19 },
+  { name: "Choibalsan", country: "Mongolia", lat: 48.0783, lon: 114.5350, ipi: 77, propaganda: 79, solidarity: 21 },
+
+  // More Canada
+  { name: "Edmonton", country: "Canada", lat: 53.5461, lon: -113.4938, ipi: 74, propaganda: 71, solidarity: 26 },
+  { name: "Ottawa", country: "Canada", lat: 45.4215, lon: -75.6972, ipi: 76, propaganda: 73, solidarity: 24 },
+  { name: "Quebec City", country: "Canada", lat: 46.8139, lon: -71.2080, ipi: 69, propaganda: 66, solidarity: 31 },
+  { name: "Winnipeg", country: "Canada", lat: 49.8951, lon: -97.1384, ipi: 72, propaganda: 69, solidarity: 28 },
+
+  // More Russia
+  { name: "Kazan", country: "Russia", lat: 55.7964, lon: 49.1089, ipi: 81, propaganda: 86, solidarity: 19 },
+  { name: "Samara", country: "Russia", lat: 53.2028, lon: 50.1408, ipi: 83, propaganda: 87, solidarity: 17 },
+  { name: "Omsk", country: "Russia", lat: 54.9833, lon: 73.3667, ipi: 82, propaganda: 86, solidarity: 18 },
+  { name: "Krasnoyarsk", country: "Russia", lat: 56.0089, lon: 92.8719, ipi: 80, propaganda: 84, solidarity: 20 },
+
+  // More Asia
+  { name: "Tokyo", country: "Japan", lat: 35.6895, lon: 139.6917, ipi: 70, propaganda: 68, solidarity: 30 },
+  { name: "Seoul", country: "South Korea", lat: 37.5665, lon: 126.9780, ipi: 72, propaganda: 70, solidarity: 28 },
+  { name: "Taipei", country: "Taiwan", lat: 25.0330, lon: 121.5654, ipi: 68, propaganda: 65, solidarity: 32 }
 ];

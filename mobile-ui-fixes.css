@@ -1,72 +1,105 @@
 /* Mobile Responsive Fixes */
-@media screen and (max-width: 768px) {
-  #top-bar {
-    height: auto;
-    min-height: 80px;
-    padding: 10px;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  #top-bar .global-metrics {
-    flex-direction: column;
-    margin-top: 10px;
-    width: 100%;
-  }
-  
-  #top-bar .global-metrics span {
-    margin: 3px 0;
-    font-size: 14px;
-  }
-  
-  #city-selector {
-    top: 100px;
-    left: 10px;
-    width: calc(100% - 20px);
-    max-width: 300px;
-    z-index: 1000;
-  }
-  
+
+@media (max-width: 800px) {
   #sidebar {
-    position: fixed;
-    bottom: 70px; /* Increased to ensure it stays above the footer */
-    right: 10px;
-    max-height: 35vh;
-    width: 90%;
-    max-width: 300px;
-    overflow-y: auto;
-    z-index: 999;
-    top: auto; /* Ensure it's not affected by top property */
-  }
-  
-  .leaflet-control-zoom {
-    margin-top: 150px !important;
-  }
-  
-  .reset-view-button {
-    top: 200px !important;
-    left: 10px !important;
-  }
-  
-  h1 {
-    font-size: 18px;
-    margin: 0;
-  }
-  
-  .city-metrics {
-    margin-top: 150px;
-    max-height: 30vh;
-    overflow-y: auto;
+    width: 220px;
   }
 }
 
-/* Ensure the sidebar doesn't overlap the bottom banner */
+@media (max-width: 592px) {
+  #sidebar {
+    width: 200px;
+    font-size: 0.9em;
+  }
+}
+
+/* --- MAIN MOBILE LAYOUT (Revised and Corrected) --- */
+@media screen and (max-width: 768px) {
+  body {
+    padding-top: 60px; /* Space for top bar */
+    padding-bottom: 50px; /* Space for bottom banner */
+    overflow: hidden; /* Prevent body scroll */
+  }
+
+  #map {
+    height: 100%; /* Map fills the viewport between bars */
+  }
+
+  #top-bar {
+    height: auto; /* Allow height to grow */
+    padding: 5px 10px;
+  }
+
+  .global-metrics {
+    flex-wrap: wrap; /* Allow metrics to wrap to the next line */
+    justify-content: center;
+  }
+
+  .global-metrics span {
+    font-size: 0.85em; /* Slightly smaller font for mobile */
+    margin: 2px 5px; /* Adjust margin for tighter packing */
+  }
+
+  /* Make city dropdown visible and functional below top-bar */
+  .city-dropdown {
+    position: fixed;
+    top: 60px; /* Below top bar */
+    left: 10px;
+    right: 10px;
+    z-index: 1100;
+    background: rgba(0,0,0,0.8);
+    padding: 5px;
+    border-radius: 0 0 5px 5px;
+  }
+  
+  .city-dropdown select {
+    width: 100%;
+  }
+
+  /* Make sidebar a compact, floating panel */
+  #sidebar {
+    position: fixed;
+    bottom: 60px; /* Above bottom banner */
+    right: 10px;
+    width: 90%;
+    max-width: 300px; /* Not full screen width */
+    max-height: 35vh; /* Limit height */
+    z-index: 1100;
+    overflow-y: auto;
+    border: 1px solid #6B8E23;
+    border-radius: 5px;
+    background: rgba(0,0,0,0.9);
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  }
+
+  /* Ensure city metrics inside the sidebar don't have weird margins */
+  .city-metrics {
+    margin-top: 0 !important;
+  }
+
+  /* Adjust leaflet controls to not overlap */
+  .leaflet-top.leaflet-left {
+    margin-top: 55px; /* Space for the dropdown */
+  }
+
+  .leaflet-bottom.leaflet-right {
+    margin-bottom: 0; /* Align with bottom of map */
+  }
+  
+  #banner {
+    height: 50px;
+  }
+
+  #banner h1 {
+    font-size: 1.2em;
+  }
+}
+
 #bottom-banner {
   z-index: 1001;
   position: relative;
 }
 
-/* Add styles for action info section */
 .action-info {
   background-color: rgba(0, 0, 0, 0.5);
   padding: 10px;
@@ -87,7 +120,6 @@
   color: #6B8E23;
 }
 
-/* Make action feedback more visible */
 #retaliation-feedback {
   font-size: 1.1em;
   padding: 15px 20px;
@@ -95,4 +127,23 @@
   text-align: center;
   border-radius: 10px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+}
+
+/* --- Landscape Mobile Adjustments --- */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+  .help-button {
+    bottom: 10px;
+    left: auto;
+    right: 10px;
+    top: auto;
+  }
+
+  #sidebar {
+    max-height: 50vh;
+    width: 280px; /* Fixed width in landscape */
+  }
+
+  .leaflet-bottom.leaflet-left {
+    bottom: 5px;
+  }
 }
