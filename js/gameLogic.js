@@ -267,35 +267,15 @@ const gameLogic = (() => {
   // Display achievement notification
   function unlockAchievement(achievementId) {
     achievements[achievementId].unlocked = true;
+    const achievement = achievements[achievementId];
     
-    const notification = document.createElement('div');
-    notification.className = 'achievement-notification';
-    notification.innerHTML = `
-      <h3>Achievement Unlocked!</h3>
-      <p>${achievements[achievementId].name}</p>
-      <p>${achievements[achievementId].description}</p>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Add styles
-    notification.style.position = 'fixed';
-    notification.style.bottom = '20px';
-    notification.style.right = '20px';
-    notification.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-    notification.style.color = 'white';
-    notification.style.padding = '15px';
-    notification.style.borderRadius = '5px';
-    notification.style.zIndex = '1000';
-    notification.style.transition = 'opacity 0.5s ease-in-out';
-    
-    // Fade out and remove after 5 seconds
-    setTimeout(() => {
-      notification.style.opacity = '0';
-      setTimeout(() => {
-        document.body.removeChild(notification);
-      }, 500);
-    }, 5000);
+    // Use the new global notification system
+    showNotification(
+      `🏆 ${achievement.name}`,
+      achievement.description,
+      'achievement',
+      10000 // 10 seconds for achievements
+    );
   }
   
   // Public methods
