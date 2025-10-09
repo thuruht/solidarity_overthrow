@@ -19,6 +19,27 @@ window.initializeGame = function() {
   
   console.log("1. Initializing game components...");
 
+  // Initialize Accordion Sidebar
+  const accordionToggles = document.querySelectorAll('.accordion-toggle');
+  accordionToggles.forEach(toggle => {
+      toggle.addEventListener('click', () => {
+          const content = toggle.nextElementSibling;
+          toggle.classList.toggle('active');
+          if (content.style.display === 'block') {
+              content.style.display = 'none';
+          } else {
+              content.style.display = 'block';
+          }
+      });
+  });
+
+  // Make the first accordion item open by default
+  if (accordionToggles.length > 0) {
+      const firstToggle = accordionToggles[0];
+      firstToggle.classList.add('active');
+      firstToggle.nextElementSibling.style.display = 'block';
+  }
+
   console.log("2. Merging additional cities...");
   mergeAdditionalCities();
   console.log("...Merging complete.");
@@ -59,9 +80,14 @@ window.initializeGame = function() {
     updateGlobalMetrics();
   }, 10000);
   console.log("...Periodic checks set up.");
+
+  console.log("8. Initializing random events...");
+  if (typeof initRandomEvents === 'function') {
+    initRandomEvents();
+  }
   
   gameInitialized = true;
-  console.log("8. Game initialization complete.");
+  console.log("9. Game initialization complete.");
 };
 
 // Update global metrics display in the UI

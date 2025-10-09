@@ -33,23 +33,31 @@
 
   <!-- Sidebar for metrics -->
   <div id="sidebar">
-    <h4>Selected City</h4>
-    <div class="city-metrics">
-      <p>No city selected.</p>
+    <div class="accordion-item">
+      <button class="accordion-toggle"><h4>Selected City</h4></button>
+      <div class="accordion-content">
+        <div class="city-metrics">
+          <p>No city selected.</p>
+        </div>
+      </div>
     </div>
     
-    <h4>Do Your Part!</h4>
-    <div class="action-info">
-      <p class="action-tip"><span class="material-icons">info</span> <strong>City Actions:</strong> Use city popups for local impact</p>
-      <p class="action-tip"><span class="material-icons">info</span> <strong>Collective Actions:</strong> Affect multiple cities with solidarity > 10</p>
+    <div class="accordion-item">
+      <button class="accordion-toggle"><h4>Do Your Part!</h4></button>
+      <div class="accordion-content">
+        <div class="action-info">
+          <p class="action-tip"><span class="material-icons">info</span> <strong>City Actions:</strong> Use city popups for local impact</p>
+          <p class="action-tip"><span class="material-icons">info</span> <strong>Collective Actions:</strong> Affect multiple cities with solidarity > 10</p>
+        </div>
+        <select id="collectiveActionsDropdown" aria-label="Collective actions">
+          <option value="" disabled selected>Perform a collective action...</option>
+          <option value="protest">🏴 Protest (Multi-City)</option>
+          <option value="strike">⚒️ Strike (Multi-City)</option>
+          <option value="network">🔄 Build Network (Multi-City)</option>
+          <option value="sabotage">💥 Sabotage (Multi-City)</option>
+        </select>
+      </div>
     </div>
-    <select id="collectiveActionsDropdown" aria-label="Collective actions">
-    <option value="" disabled selected>Perform a collective action...</option>
-    <option value="protest">🏴 Protest (Multi-City)</option>
-    <option value="strike">⚒️ Strike (Multi-City)</option>
-    <option value="network">🔄 Build Network (Multi-City)</option>
-    <option value="sabotage">💥 Sabotage (Multi-City)</option>
-  </select>
   </div>
   
 <div id="retaliation-feedback" class="retaliation-alert"></div>
@@ -59,11 +67,12 @@
 
     <!-- Dropdown for City Selection -->
     <div class="city-dropdown">
+      <input type="text" id="citySearch" placeholder="Search for a city..." aria-label="Search for a city">
       <select id="cityDropdown" aria-label="Select a city">
-      <option value="" disabled selected>Select a city...</option>
-      <!-- Cities dynamically populated by solid0p2.js -->
-    </select>
-  </div>
+        <option value="" disabled selected>Select a city...</option>
+        <!-- Cities dynamically populated by solid0p2.js -->
+      </select>
+    </div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <!-- Load globalCities.js first so globalCities array is available -->
@@ -80,6 +89,7 @@
   <script src="js/solid0p3.js"></script>
   <script src="js/gameLogic.js"></script>
   <script src="js/coupPlanner.js"></script>
+  <script src="js/randomEvents.js"></script>
 
   <!-- Main entry point that coordinates everything -->
   <script src="js/main_new.js"></script>
