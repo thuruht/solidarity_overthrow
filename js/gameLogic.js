@@ -51,21 +51,13 @@ const gameLogic = (() => {
   function showGameEndMessage(outcome) {
     const messageContainer = document.createElement('div');
     messageContainer.id = 'game-end-message';
-    messageContainer.style.position = 'fixed';
-    messageContainer.style.top = '50%';
-    messageContainer.style.left = '50%';
-    messageContainer.style.transform = 'translate(-50%, -50%)';
-    messageContainer.style.padding = '20px';
-    messageContainer.style.borderRadius = '5px';
-    messageContainer.style.zIndex = '1000';
-    messageContainer.style.maxWidth = '80%';
-    messageContainer.style.textAlign = 'center';
+    messageContainer.classList.add('game-end-message');
 
     let message = '';
     
     switch(outcome) {
       case 'victory':
-        messageContainer.style.backgroundColor = 'rgba(0, 100, 0, 0.9)';
+        messageContainer.classList.add('victory');
         message = `
           <h2>Victory! Imperialism Has Been Overthrown!</h2>
           <p>Through solidarity and collective action, the people of the world have successfully dismantled the imperialist power structure!</p>
@@ -75,7 +67,7 @@ const gameLogic = (() => {
         `;
         break;
       case 'solidarity-victory':
-        messageContainer.style.backgroundColor = 'rgba(0, 100, 0, 0.9)';
+        messageContainer.classList.add('victory');
         message = `
           <h2>Solidarity Victory!</h2>
           <p>The world's people have united in an unprecedented show of solidarity. Imperialism cannot survive against such unity!</p>
@@ -85,7 +77,7 @@ const gameLogic = (() => {
         `;
         break;
       case 'truth-victory':
-        messageContainer.style.backgroundColor = 'rgba(0, 100, 0, 0.9)';
+        messageContainer.classList.add('victory');
         message = `
           <h2>Truth Victory!</h2>
           <p>Imperial propaganda has been countered with truth. The people now see through the lies and are rising up!</p>
@@ -95,7 +87,7 @@ const gameLogic = (() => {
         `;
         break;
       case 'revolution':
-        messageContainer.style.backgroundColor = 'rgba(0, 100, 0, 0.9)';
+        messageContainer.classList.add('victory');
         message = `
           <h2>Revolutionary Victory!</h2>
           <p>The secret revolutionary network you built has successfully executed a global coup! The imperialist structures have been overthrown and the people now control their own destiny.</p>
@@ -105,7 +97,7 @@ const gameLogic = (() => {
         `;
         break;
       case 'defeat':
-        messageContainer.style.backgroundColor = 'rgba(100, 0, 0, 0.9)';
+        messageContainer.classList.add('defeat');
         message = `
           <h2>Defeat!</h2>
           <p>The imperial powers have consolidated control. The struggle continues, but this battle is lost...</p>
@@ -115,7 +107,7 @@ const gameLogic = (() => {
         `;
         break;
       case 'coup-exposed':
-        messageContainer.style.backgroundColor = 'rgba(100, 0, 0, 0.9)';
+        messageContainer.classList.add('defeat');
         message = `
           <h2>Revolution Exposed!</h2>
           <p>Your revolutionary network has been infiltrated and exposed. The leaders have been arrested, and the movement is in disarray.</p>
@@ -124,7 +116,7 @@ const gameLogic = (() => {
         `;
         break;
       case 'revolution-failed':
-        messageContainer.style.backgroundColor = 'rgba(100, 0, 0, 0.9)';
+        messageContainer.classList.add('defeat');
         message = `
           <h2>Revolution Failed!</h2>
           <p>Despite meticulous planning, the revolution has been suppressed by overwhelming government forces.</p>

@@ -12,20 +12,6 @@ body {
   height: 100%; /* Make map fill the padded body */
 }
 
-.retaliation-alert {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 20px;
-  background-color: rgba(150, 0, 0, 0.9);
-  color: white;
-  border-radius: 5px;
-  z-index: 1000;
-  max-width: 80%;
-  text-align: center;
-  display: none;
-}
 #sidebar {
   background: rgba(0, 0, 0, 0.8);
   color: white;
@@ -135,16 +121,6 @@ body {
 .city-dropdown option {
   font-family: 'Special Elite', monospace;
 }
-/* Top bar specific styles */
-#top-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  min-height: 60px;
-  z-index: 1000;
-}
 
 /* Bottom banner styles */
 #banner {
@@ -189,19 +165,19 @@ body {
 }
 
 .retaliation-alert {
-    position: fixed;
-    top: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(255, 0, 0, 0.8);
-    color: white;
-    padding: 15px 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    font-family: 'Oswald', sans-serif;
-    z-index: 2500; /* Increased z-index */
-    animation: fadeInOut 3s ease-in-out;
-    display: none;
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 15px 20px;
+  background-color: rgba(255, 0, 0, 0.8);
+  color: white;
+  border-radius: 5px;
+  z-index: 2500;
+  font-family: 'Oswald', sans-serif;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  animation: fadeInOut 3s ease-in-out;
+  display: none;
 }
 
 @keyframes fadeInOut {
@@ -367,57 +343,19 @@ span {
 
 /* Revolution Planning Styles */
 .coup-button {
-  display: block;
-  width: 100%;
-  background-color: #333;
-  color: white;
-  border: 1px solid #6B8E23;
-  border-radius: 5px;
-  padding: 10px;
-  margin-top: 15px;
-  font-family: 'Special Elite', monospace;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.coup-button:hover {
-  background-color: #6B8E23;
-}
-
-.coup-panel {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 500px;
-  background-color: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 20px;
-  border-radius: 5px;
-  border: 1px solid #6B8E23;
-  z-index: 1500;
-  font-family: 'Special Elite', monospace;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-/* Revolution Planning Styles */
-.coup-button {
-  display: block;
-  width: 100%;
-  background-color: #333;
-  color: white;
-  border: 1px solid #6B8E23;
-  border-radius: 5px;
-  padding: 10px;
-  margin-top: 15px;
-  font-family: 'Special Elite', monospace;
-  cursor: pointer;
-  transition: background-color 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  background-color: #333;
+  color: white;
+  border: 1px solid #6B8E23;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 15px;
+  font-family: 'Special Elite', monospace;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .coup-button:hover {
@@ -636,176 +574,26 @@ span {
   transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out;
 }
 
-/* Game end message */
-#game-end-message {
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-  max-width: 500px;
-}
-
-#game-end-message h2 {
-  margin-top: 0;
-  color: white;
-}
-
-#restart-game {
-  background-color: rgba(255, 255, 255, 0.8);
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  margin-top: 10px;
-  cursor: pointer;
-  font-family: 'Special Elite', monospaced;
-  font-weight: bold;
-}
-
-#restart-game:hover {
-  background-color: white;
-}
-
-/* City Popup Styling */
-.city-popup {
-  font-family: 'Special Elite', monospace;
-  min-width: 200px;
-}
-
-.city-popup h3 {
-  margin-top: 0;
-  margin-bottom: 8px;
-  text-align: center;
-  color: #6B8E23;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 5px;
-}
-
-.popup-metrics {
-  margin-bottom: 10px;
-}
-
-.popup-metrics p {
-  margin: 5px 0;
-  display: flex;
-  justify-content: space-between;
-}
-
-.metric-value {
-  font-weight: bold;
-}
-
-.popup-actions {
-  border-top: 1px solid #ccc;
-  padding-top: 8px;
-}
-
-.popup-actions p {
-  margin: 5px 0;
-  text-align: center;
-}
-
-.action-btn {
-  background-color: #444;
-  color: white;
-  border: none;
-  padding: 5px 8px;
-  margin: 3px;
-  border-radius: 3px;
-  cursor: pointer;
-  font-family: 'Special Elite', monospace;
-  font-size: 0.8em;
-  transition: background-color 0.2s;
-}
-
-.action-btn:hover {
-  background-color: #6B8E23;
-}
-
-/* Custom marker styling */
-.custom-marker {
-  transition: transform 0.2s ease-in-out;
-}
-
-.custom-marker:hover {
-  transform: scale(1.2);
-}
-
-/* Revolution Planning Styles */
-.coup-button {
-  display: block;
-  width: 100%;
-  background-color: #333;
-  color: white;
-  border: 1px solid #6B8E23;
-  border-radius: 5px;
-  padding: 10px;
-  margin-top: 15px;
-  font-family: 'Special Elite', monospace;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.coup-button:hover {
-  background-color: #6B8E23;
-}
-
-.coup-panel {
+/* Game End Message Styles */
+.game-end-message {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 500px;
-  background-color: rgba(0, 0, 0, 0.9);
-  color: white;
   padding: 20px;
   border-radius: 5px;
-  border: 1px solid #6B8E23;
-  z-index: 1500;
-  font-family: 'Special Elite', monospace;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-/* Revolution Planning Styles */
-.coup-button {
-  display: block;
-  width: 100%;
-  background-color: #333;
+  z-index: 1000;
+  max-width: 80%;
+  text-align: center;
   color: white;
-  border: 1px solid #6B8E23;
-  border-radius: 5px;
-  padding: 10px;
-  margin-top: 15px;
-  font-family: 'Special Elite', monospace;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.coup-button:hover {
-  background-color: #6B8E23;
+.game-end-message.victory {
+  background-color: rgba(0, 100, 0, 0.9);
 }
 
-.coup-button .material-icons {
-  margin-right: 5px;
-}
-
-.coup-panel {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 500px;
-  background-color: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 20px;
-  border-radius: 5px;
-  border: 1px solid #6B8E23;
-  z-index: 1500;
-  font-family: 'Special Elite', monospace;
-  max-height: 80vh;
-  overflow-y: auto;
+.game-end-message.defeat {
+  background-color: rgba(100, 0, 0, 0.9);
 }
 
 .coup-panel h3 {
