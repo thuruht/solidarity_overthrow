@@ -62,13 +62,11 @@ body {
   align-items: center;
 }
 
-.accordion-toggle::after {
-  content: '\\25BC'; /* Down arrow */
-  font-size: 0.8em;
+.accordion-icon {
   transition: transform 0.3s ease;
 }
 
-.accordion-toggle.active::after {
+.accordion-toggle.active .accordion-icon {
   transform: rotate(180deg); /* Up arrow */
 }
 
@@ -827,4 +825,37 @@ span {
 
 .game-notification.error h3 {
   color: #FF0000;
+}
+
+/* Color Key Legend */
+#color-key-legend {
+  position: absolute;
+  top: 230px; /* Position below the city dropdown */
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 1000;
+  font-family: 'Special Elite', monospace;
+}
+
+#color-key-legend h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #6B8E23;
+}
+
+#color-key-legend p {
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+}
+
+.color-box {
+  width: 15px;
+  height: 15px;
+  margin-right: 10px;
+  border: 1px solid #fff;
 }
