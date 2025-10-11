@@ -34,7 +34,10 @@
   <!-- Sidebar for metrics -->
   <div id="sidebar">
     <div class="accordion-item">
-      <button class="accordion-toggle"><h4>Selected City</h4></button>
+      <button class="accordion-toggle">
+        <h4>Selected City</h4>
+        <span class="material-icons accordion-icon">expand_more</span>
+      </button>
       <div class="accordion-content">
         <div class="city-metrics">
           <p>No city selected.</p>
@@ -43,7 +46,10 @@
     </div>
     
     <div class="accordion-item">
-      <button class="accordion-toggle"><h4>Do Your Part!</h4></button>
+      <button class="accordion-toggle">
+        <h4>Do Your Part!</h4>
+        <span class="material-icons accordion-icon">expand_more</span>
+      </button>
       <div class="accordion-content">
         <div class="action-info">
           <p class="action-tip"><span class="material-icons">info</span> <strong>City Actions:</strong> Use city popups for local impact</p>
@@ -64,6 +70,25 @@
 
     <!-- Map container -->
     <div id="map"></div>
+
+    <!-- Color Key Legend -->
+    <div id="color-key-legend">
+      <h4>Solidarity Level</h4>
+      <p><span class="color-box" style="background-color: green;"></span> High (80-100%)</p>
+      <p><span class="color-box" style="background-color: gold;"></span> Medium (50-79%)</p>
+      <p><span class="color-box" style="background-color: orange;"></span> Low (20-49%)</p>
+      <p><span class="color-box" style="background-color: red;"></span> Critical (0-19%)</p>
+      <hr>
+      <h4>Other Indicators</h4>
+      <p><span class="color-box" style="background-color: #FFA500;"></span> Propaganda</p>
+      <p><span class="color-box" style="background-color: #FF0000;"></span> Imperialist Power</p>
+    </div>
+
+    <!-- Reset View Button -->
+    <button class="reset-view-button">
+        <span class="material-icons">refresh</span>
+        Reset View
+    </button>
 
     <!-- Dropdown for City Selection -->
     <div class="city-dropdown">
@@ -93,6 +118,7 @@
 
   <!-- Main entry point that coordinates everything -->
   <script src="js/main_new.js"></script>
+  <script src="js/reset-view.js"></script>
 
   <!-- Intro and tutorial system must be last, as it triggers the game start -->
   <script src="js/intro.js?v=1.0.0"></script>

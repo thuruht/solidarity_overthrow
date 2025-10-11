@@ -22,44 +22,9 @@ window.setupMap = function() {
     position: 'bottomright'
   }).addTo(window.map).setPrefix('');
 
-  // Add a legend to explain marker colors
-  addLegend();
-
-  // Add reset view button
-  addResetViewButton();
-
   // Initialize offline storage
   setupOfflineStorage();
 };
-
-// Add a legend to explain marker colors
-function addLegend() {
-  const legend = L.control({ position: 'bottomleft' });
-
-  legend.onAdd = function(map) {
-    const div = L.DomUtil.create('div', 'info legend');
-    div.innerHTML = `
-      <h4>Solidarity Level</h4>
-      <div><span style="background-color: green; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 5px;"></span> High (80-100%)</div>
-      <div><span style="background-color: gold; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 5px;"></span> Medium (50-79%)</div>
-      <div><span style="background-color: orange; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 5px;"></span> Low (20-49%)</div>
-      <div><span style="background-color: red; width: 12px; height: 12px; display: inline-block; border-radius: 50%; margin-right: 5px;"></span> Critical (0-19%)</div>
-    `;
-    
-    // Add custom styling
-    div.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    div.style.padding = '10px';
-    div.style.borderRadius = '5px';
-    div.style.color = 'white';
-    div.style.fontFamily = "'Special Elite', monospace";
-    div.style.fontSize = '0.8em';
-    div.style.maxWidth = '200px';
-    
-    return div;
-  };
-
-  legend.addTo(window.map);
-}
 
 // Add reset view button
 function addResetViewButton() {
