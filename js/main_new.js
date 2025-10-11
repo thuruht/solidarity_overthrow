@@ -114,48 +114,6 @@ function updateGlobalMetrics() {
   }
 }
 
-// Global function for restarting the game
-function restartGame() {
-  console.log('Restarting game...');
-  
-  // Reset global metrics
-  globalMetricsData.ipi = 100;
-  globalMetricsData.propaganda = 100;
-  globalMetricsData.solidarity = 0;
-  
-  // Reset all cities
-  if (typeof globalCities !== 'undefined') {
-    globalCities.forEach(city => {
-      city.ipi = Math.floor(Math.random() * 11) + 85; // 85-95
-      city.propaganda = Math.floor(Math.random() * 16) + 85; // 85-100
-      city.solidarity = Math.floor(Math.random() * 11); // 0-10
-    });
-  }
-  
-  // Update metrics display
-  updateGlobalMetrics();
-  
-  // If a city is selected, update its metrics display
-  const cityDropdown = document.getElementById('cityDropdown');
-  if (cityDropdown && cityDropdown.value) {
-    const selectedCity = globalCities.find(city => city.name === cityDropdown.value);
-    if (selectedCity && typeof updateCityMetrics === 'function') {
-      updateCityMetrics(selectedCity);
-    }
-  }
-  
-  // Reset markers if possible
-  if (typeof updateCityMarkers === 'function') {
-    updateCityMarkers();
-  }
-  
-  // Reset coup planner if it exists
-  if (typeof coupPlanner !== 'undefined' && coupPlanner.init) {
-    coupPlanner.init();
-  }
-  
-  console.log('Game restart complete');
-}
 
 // Function to merge the additional cities into the global cities array
 function mergeAdditionalCities() {
@@ -174,12 +132,12 @@ function mergeAdditionalCities() {
   });
 
   // Add the filtered additional cities to the global cities array
-  globalCities = globalCities.concat(filteredAdditionalCities);
+  globalCities.push(...filteredAdditionalCities);
 
   console.log(`Merged ${filteredAdditionalCities.length} new cities. Total: ${globalCities.length}`);
 }
 
 // Make key functions globally available
 window.updateGlobalMetrics = updateGlobalMetrics;
-window.restartGame = restartGame;
+window.restartGame = gameLogic.restartGame;
 window.globalMetricsData = globalMetricsData;
