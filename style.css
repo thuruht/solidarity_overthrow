@@ -62,19 +62,17 @@ body {
   align-items: center;
 }
 
-.accordion-toggle::after {
-  content: '\\25BC'; /* Down arrow */
-  font-size: 0.8em;
+.accordion-icon {
   transition: transform 0.3s ease;
 }
 
-.accordion-toggle.active::after {
+.accordion-toggle.active .accordion-icon {
   transform: rotate(180deg); /* Up arrow */
 }
 
 .accordion-content {
   display: none;
-  padding: 0 10px 10px;
+  padding: 5px 10px; /* Reduced padding */
   background-color: rgba(0, 0, 0, 0.2);
 }
 

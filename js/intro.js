@@ -7,8 +7,15 @@ let currentSlide = 0;
 
 // Initialize on window load
 document.addEventListener('DOMContentLoaded', function() {
-  // Create splash screen
-  createSplashScreen();
+  const urlParams = new URLSearchParams(window.location.search);
+  const skipIntro = urlParams.get('skipIntro');
+
+  if (!skipIntro) {
+    // Create splash screen
+    createSplashScreen();
+  } else {
+    onGameStart();
+  }
   
   // Create tutorial slides
   createTutorialSlides();
