@@ -17,15 +17,6 @@
 
 </head>
 <body>
-  <!-- Semi-Transparent Bar at the Top -->
-  <div id="top-bar" class="overlay">
-  <div class="global-metrics">
-    <span><b><span class="material-icons">military_tech</span> Imperialist Power Index:</b> 100%</span>
-    <span><b><span class="material-icons">campaign</span> Propaganda Level:</b> 100%</span>
-    <span><b><span class="material-icons">groups</span> Solidarity Index:</b> 0%</span>
-  </div>
-  </div>
-
   <!-- Floating Banner at the Bottom -->
   <div id="banner" class="overlay">
     <h1>S0LIDARITY 0VERTHR0W</h1>
@@ -47,12 +38,16 @@
       </div>
     </div>
 
-    <!-- Map Legend Control -->
+    <!-- Stats & Legend Control -->
     <div class="control-block">
       <button class="control-toggle" data-target="legend-panel">
-        <span class="material-icons">map</span> Map Legend
+        <span class="material-icons">leaderboard</span> Stats & Legend
       </button>
       <div id="legend-panel" class="control-panel">
+        <div class="global-metrics">
+          <!-- Populated by main_new.js -->
+        </div>
+        <hr>
         <h4>Solidarity Level</h4>
         <p><span class="color-box" style="background-color: green;"></span> High (80-100%)</p>
         <p><span class="color-box" style="background-color: gold;"></span> Medium (50-79%)</p>
@@ -72,6 +67,7 @@
             </div>
         </div>
     </div>
+  </div>
 
     <!-- Do Your Part Control -->
     <div class="control-block">
@@ -90,6 +86,16 @@
                 <option value="network">🔄 Build Network (Multi-City)</option>
                 <option value="sabotage">💥 Sabotage (Multi-City)</option>
             </select>
+        </div>
+    </div>
+
+    <!-- Log & Progress Control -->
+    <div class="control-block">
+        <button class="control-toggle" data-target="log-panel">
+            <span class="material-icons">history</span> Log & Progress
+        </button>
+        <div id="log-panel" class="control-panel">
+            <!-- Content will be added in later steps -->
         </div>
     </div>
   </div>

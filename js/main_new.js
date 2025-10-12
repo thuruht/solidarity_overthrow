@@ -84,13 +84,14 @@ function updateGlobalMetrics() {
     globalMetricsData.solidarity = parseFloat((totalSolidarity / globalCities.length).toFixed(1));
   }
   
-  // Update the display in the top bar
-  const globalMetricsDisplay = document.querySelector('.global-metrics');
+  // Update the display in the new stats panel
+  const globalMetricsDisplay = document.querySelector('#legend-panel .global-metrics');
   if (globalMetricsDisplay) {
     globalMetricsDisplay.innerHTML = `
-      <span><b><span class="material-icons">military_tech</span> Imperialist Power Index:</b> ${globalMetricsData.ipi.toFixed(1)}%</span>
-      <span><b><span class="material-icons">campaign</span> Propaganda Level:</b> ${globalMetricsData.propaganda.toFixed(1)}%</span>
-      <span><b><span class="material-icons">groups</span> Solidarity Index:</b> ${globalMetricsData.solidarity.toFixed(1)}%</span>
+      <h4>Global Stats</h4>
+      <p><b><span class="material-icons">military_tech</span> Imperialist Power Index:</b> ${globalMetricsData.ipi.toFixed(1)}%</p>
+      <p><b><span class="material-icons">campaign</span> Propaganda Level:</b> ${globalMetricsData.propaganda.toFixed(1)}%</p>
+      <p><b><span class="material-icons">groups</span> Solidarity Index:</b> ${globalMetricsData.solidarity.toFixed(1)}%</p>
     `;
   }
 }
