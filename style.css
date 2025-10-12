@@ -12,34 +12,55 @@ body {
   height: 100%; /* Make map fill the padded body */
 }
 
-#sidebar {
-  background: rgba(0, 0, 0, 0.8);
+/* Unified Controls Bar */
+#unified-controls {
+  position: fixed;
+  top: 80px;
+  left: 10px;
+  display: flex;
+  gap: 5px;
+  z-index: 1001; /* Above map, below modals */
+}
+
+.control-block {
+  position: relative;
+}
+
+.control-toggle {
+  background-color: rgba(0, 0, 0, 0.8);
   color: white;
-  padding: 10px;
-  border: 1px dotted #ddd;
+  border: 1px solid #6B8E23;
   border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  position: fixed; /* Changed from absolute to fixed */
-  top: 80px; /* Adjusted to avoid overlapping with top bar */
-  right: 10px;
-  width: 250px;
-  max-height: calc(100vh - 150px); /* Adjusted to avoid overlapping with bottom */
-  overflow-y: auto;
-  z-index: 1000;
-  font-family: 'Oswald', sans-serif; /* Keep Oswald for sidebar */
-  transition: width 0.2s ease-in-out;
-  bottom: auto; /* Ensure it's not affected by bottom property */
+  padding: 8px 12px;
+  font-family: 'Special Elite', monospace;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-#sidebar h3 { 
- color: #6B8E23; text-align: center;
+.control-toggle:hover {
+  background-color: #6B8E23;
 }
 
-#sidebar h4 {
-  color: #6B8E23;
-  text-align: center;
-  margin: 0;
-  padding: 0;
+.control-panel {
+  display: none;
+  position: fixed;
+  top: 114px; /* Position below the main control bar */
+  left: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  border-top: 1px solid #6B8E23;
+  border-bottom: 1px solid #6B8E23;
+  padding: 20px;
+  z-index: 1002;
+  font-family: 'Oswald', sans-serif;
+  box-sizing: border-box;
+}
+
+.control-panel.active {
+  display: block;
 }
 
 .accordion-item {
@@ -76,7 +97,6 @@ body {
   background-color: rgba(0, 0, 0, 0.2);
 }
 
-/* Dropdown styling */
 #citySearch {
   width: 100%;
   padding: 8px;
@@ -87,15 +107,7 @@ body {
   box-sizing: border-box;
 }
 
-.city-dropdown {
-  position: absolute;
-  top: 90px; /* Adjusted for the taller top bar */
-  left: 10px;
-  z-index: 1000;
-  width: 200px; /* Set fixed width */
-}
-
-.city-dropdown select {
+#cityDropdown {
   background: white;
   color: black;
   font-size: 1em;
@@ -105,19 +117,6 @@ body {
   font-family: 'Special Elite', monospace;
   width: 100%;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-/* Add spacing for leaflet controls to avoid overlapping */
-.leaflet-top.leaflet-left {
-  margin-top: 50px; /* Add space for dropdown and reset button */
-}
-
-.leaflet-top.leaflet-right {
-  margin-top: 10px; /* Add space for sidebar */
-}
-
-.city-dropdown option {
-  font-family: 'Special Elite', monospace;
 }
 
 /* Bottom banner styles */
@@ -827,27 +826,14 @@ span {
   color: #FF0000;
 }
 
-/* Color Key Legend */
-#color-key-legend {
-  position: absolute;
-  top: 230px; /* Position below the city dropdown */
-  left: 10px;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  z-index: 1000;
-  font-family: 'Special Elite', monospace;
-}
-
-#color-key-legend h4 {
+#legend-panel h4, #selected-city-panel h4, #do-your-part-panel h4 {
   margin-top: 0;
   margin-bottom: 10px;
   text-align: center;
   color: #6B8E23;
 }
 
-#color-key-legend p {
+#legend-panel p {
   margin: 5px 0;
   display: flex;
   align-items: center;
