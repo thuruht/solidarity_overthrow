@@ -19,26 +19,7 @@ window.initializeGame = function() {
   
   console.log("1. Initializing game components...");
 
-  // Initialize Accordion Sidebar
-  const accordionToggles = document.querySelectorAll('.accordion-toggle');
-  accordionToggles.forEach(toggle => {
-      toggle.addEventListener('click', () => {
-          const content = toggle.nextElementSibling;
-          toggle.classList.toggle('active');
-          if (content.style.display === 'block') {
-              content.style.display = 'none';
-          } else {
-              content.style.display = 'block';
-          }
-      });
-  });
-
-  // Make the first accordion item open by default
-  if (accordionToggles.length > 0) {
-      const firstToggle = accordionToggles[0];
-      firstToggle.classList.add('active');
-      firstToggle.nextElementSibling.style.display = 'block';
-  }
+  // The accordion logic is now handled by unified-controls.js, so we can remove it from here.
 
   console.log("2. Merging additional cities...");
   mergeAdditionalCities();
