@@ -45,18 +45,18 @@ body {
 
 .control-panel {
   display: none;
-  position: absolute;
-  top: 100%;
+  position: fixed;
+  top: 114px; /* Position below the main control bar */
   left: 0;
+  width: 100%;
   background-color: rgba(0, 0, 0, 0.9);
   color: white;
-  border: 1px solid #6B8E23;
-  border-radius: 5px;
-  padding: 15px;
-  width: 280px; /* Increased width */
+  border-top: 1px solid #6B8E23;
+  border-bottom: 1px solid #6B8E23;
+  padding: 20px;
   z-index: 1002;
-  margin-top: 5px;
   font-family: 'Oswald', sans-serif;
+  box-sizing: border-box;
 }
 
 .control-panel.active {
