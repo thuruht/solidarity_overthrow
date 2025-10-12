@@ -223,17 +223,18 @@ function createTutorialSlides() {
       content: `
         <p>Collective actions affect multiple cities at once:</p>
         <ol>
-          <li>Use the dropdown in the sidebar labeled "Perform a collective action..."</li>
-          <li>Select the action you want to perform</li>
-          <li>The action will affect all cities with solidarity above 10%</li>
+          <li>Click the "Do Your Part!" button in the top control bar.</li>
+          <li>Use the dropdown labeled "Perform a collective action..."</li>
+          <li>Select the action you want to perform.</li>
+          <li>The action will affect all cities with solidarity above 10%.</li>
         </ol>
         <p>Important notes about collective actions:</p>
         <ul>
-          <li>The number of cities affected depends on global solidarity</li>
-          <li>Higher global solidarity means more coordinated action</li>
-          <li>Cities with higher solidarity are prioritized</li>
-          <li>The effectiveness increases with more cities involved</li>
-          <li>Watch for notifications showing which cities were affected</li>
+          <li>The number of cities affected depends on global solidarity.</li>
+          <li>Higher global solidarity means more coordinated action.</li>
+          <li>Cities with higher solidarity are prioritized.</li>
+          <li>The effectiveness increases with more cities involved.</li>
+          <li>Watch for notifications showing which cities were affected.</li>
         </ul>
       `
     },
@@ -256,12 +257,12 @@ function createTutorialSlides() {
       content: `
         <p>To win the game, you must organize a revolutionary coup:</p>
         <ol>
-          <li>Build solidarity in multiple cities (ideally above 70%)</li>
-          <li>Open the coup planning panel (button will appear in sidebar)</li>
-          <li>Establish revolutionary cells in cities with high solidarity</li>
-          <li>Balance preparation speed with maintaining secrecy</li>
-          <li>Designate a lead city to coordinate the revolution</li>
-          <li>Execute the coup when preparation and secrecy are high enough</li>
+          <li>Build solidarity in multiple cities (ideally above 70%).</li>
+          <li>Open the coup planning panel (button will appear in the "Do Your Part!" dropdown).</li>
+          <li>Establish revolutionary cells in cities with high solidarity.</li>
+          <li>Balance preparation speed with maintaining secrecy.</li>
+          <li>Designate a lead city to coordinate the revolution.</li>
+          <li>Execute the coup when preparation and secrecy are high enough.</li>
         </ol>
         <p>Requirements for a successful coup:</p>
         <ul>
@@ -297,13 +298,13 @@ function createTutorialSlides() {
         <p>You now understand the basics of Solidarity Overthrow!</p>
         <p>Remember:</p>
         <ul>
-          <li>Start by building solidarity in key cities</li>
-          <li>Use a mix of city-specific and collective actions</li>
-          <li>Watch for and counter state retaliation</li>
-          <li>Begin revolutionary planning when global solidarity is high</li>
+          <li>Start by building solidarity in key cities.</li>
+          <li>Use a mix of city-specific and collective actions.</li>
+          <li>Watch for and counter state retaliation.</li>
+          <li>Begin revolutionary planning when global solidarity is high.</li>
         </ul>
         <p>Click "Start Game" to begin your revolutionary journey.</p>
-        <p>You can access the help guide at any time by clicking the "?" button in the bottom-left corner.</p>
+        <p>You can access the help guide at any time by clicking the "?" button in the bottom-right corner.</p>
       `
     }
   ];
@@ -470,17 +471,17 @@ function createHelpPanel() {
     
     <h3>Map Navigation</h3>
     <ul>
-      <li>Click and drag to move the map</li>
-      <li>Use the zoom controls or mouse wheel to zoom in/out</li>
-      <li>Click the "Reset View" button to return to the default view</li>
-      <li>Click on city markers to view detailed information and take city-specific actions</li>
+      <li>Click and drag to move the map.</li>
+      <li>Use the zoom controls or mouse wheel to zoom in/out.</li>
+      <li>Click the "Reset View" button to return to the default view.</li>
+      <li>Click on city markers to view detailed information and take city-specific actions.</li>
     </ul>
     
-    <h3>City Selection</h3>
+    <h3>City Selection & Info</h3>
     <ul>
-      <li>Use the dropdown in the top-left to select a city</li>
-      <li>The "Add Custom City..." option lets you add new cities to the map</li>
-      <li>Selected city metrics appear in the sidebar</li>
+      <li>Use the "City Search" dropdown in the top control bar to find and jump to cities.</li>
+      <li>The "Add Custom City..." option lets you add new cities to the map.</li>
+      <li>Once a city is selected (either via the map or the dropdown), its metrics will appear in the "Selected City" dropdown.</li>
     </ul>
   `;
   
@@ -499,7 +500,7 @@ function createHelpPanel() {
     </ul>
     
     <h3>Collective Actions</h3>
-    <p>These actions affect multiple cities and are accessed from the sidebar dropdown:</p>
+    <p>These actions affect multiple cities and are accessed from the "Do Your Part!" dropdown in the top control bar:</p>
     <ul>
       <li><strong>Protest</strong>: Affects cities with solidarity > 10%</li>
       <li><strong>Strike</strong>: More effective with higher global solidarity</li>
