@@ -19,26 +19,7 @@ window.initializeGame = function() {
   
   console.log("1. Initializing game components...");
 
-  // Initialize Accordion Sidebar
-  const accordionToggles = document.querySelectorAll('.accordion-toggle');
-  accordionToggles.forEach(toggle => {
-      toggle.addEventListener('click', () => {
-          const content = toggle.nextElementSibling;
-          toggle.classList.toggle('active');
-          if (content.style.display === 'block') {
-              content.style.display = 'none';
-          } else {
-              content.style.display = 'block';
-          }
-      });
-  });
-
-  // Make the first accordion item open by default
-  if (accordionToggles.length > 0) {
-      const firstToggle = accordionToggles[0];
-      firstToggle.classList.add('active');
-      firstToggle.nextElementSibling.style.display = 'block';
-  }
+  // The accordion logic is now handled by unified-controls.js, so we can remove it from here.
 
   console.log("2. Merging additional cities...");
   mergeAdditionalCities();
@@ -103,13 +84,14 @@ function updateGlobalMetrics() {
     globalMetricsData.solidarity = parseFloat((totalSolidarity / globalCities.length).toFixed(1));
   }
   
-  // Update the display in the top bar
-  const globalMetricsDisplay = document.querySelector('.global-metrics');
+  // Update the display in the new stats panel
+  const globalMetricsDisplay = document.querySelector('#legend-panel .global-metrics');
   if (globalMetricsDisplay) {
     globalMetricsDisplay.innerHTML = `
-      <span><b><span class="material-icons">military_tech</span> Imperialist Power Index:</b> ${globalMetricsData.ipi.toFixed(1)}%</span>
-      <span><b><span class="material-icons">campaign</span> Propaganda Level:</b> ${globalMetricsData.propaganda.toFixed(1)}%</span>
-      <span><b><span class="material-icons">groups</span> Solidarity Index:</b> ${globalMetricsData.solidarity.toFixed(1)}%</span>
+      <h4>Global Stats</h4>
+      <p><b><span class="material-icons">military_tech</span> Imperialist Power Index:</b> ${globalMetricsData.ipi.toFixed(1)}%</p>
+      <p><b><span class="material-icons">campaign</span> Propaganda Level:</b> ${globalMetricsData.propaganda.toFixed(1)}%</p>
+      <p><b><span class="material-icons">groups</span> Solidarity Index:</b> ${globalMetricsData.solidarity.toFixed(1)}%</p>
     `;
   }
 }

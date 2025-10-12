@@ -1,10 +1,18 @@
-// Notification System
+// Notification System with History
 const notificationQueue = [];
 let isNotificationVisible = false;
+window.notificationHistory = [];
 
 function showNotification(title, message, type = 'info', duration = 8000) {
     // Add notification to the queue
     notificationQueue.push({ title, message, type, duration });
+
+    // Add to history
+    const timestamp = new Date().toLocaleTimeString();
+    window.notificationHistory.push({ title, message, type, timestamp });
+    if (window.notificationHistory.length > 50) {
+        window.notificationHistory.shift();
+    }
 
     // If a notification is not already visible, show the next one
     if (!isNotificationVisible) {
