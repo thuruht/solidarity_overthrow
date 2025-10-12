@@ -127,7 +127,7 @@ function startGame() {
 function showQuickTips() {
   const tips = [
     "Click on city markers to view and take actions specific to that city.",
-    "Use collective actions from the sidebar to affect multiple cities at once.",
+    "Use the 'Actions' panel in the top control bar to affect multiple cities at once.",
     "Build solidarity in cities first before attempting more radical actions.",
     "Watch out for state retaliation when you challenge the imperial power.",
     "Press '?' anytime to view the help panel."
@@ -223,17 +223,17 @@ function createTutorialSlides() {
       content: `
         <p>Collective actions affect multiple cities at once:</p>
         <ol>
-          <li>Use the dropdown in the sidebar labeled "Perform a collective action..."</li>
-          <li>Select the action you want to perform</li>
-          <li>The action will affect all cities with solidarity above 10%</li>
+          <li>Open the "Actions" panel in the top control bar.</li>
+          <li>Select an action from the "Perform a collective action..." dropdown.</li>
+          <li>The action will affect all cities with solidarity above 10%.</li>
         </ol>
         <p>Important notes about collective actions:</p>
         <ul>
-          <li>The number of cities affected depends on global solidarity</li>
-          <li>Higher global solidarity means more coordinated action</li>
-          <li>Cities with higher solidarity are prioritized</li>
-          <li>The effectiveness increases with more cities involved</li>
-          <li>Watch for notifications showing which cities were affected</li>
+          <li>The number of cities affected depends on global solidarity.</li>
+          <li>Higher global solidarity means more coordinated action.</li>
+          <li>Cities with higher solidarity are prioritized.</li>
+          <li>The effectiveness increases with more cities involved.</li>
+          <li>Watch for toast notifications showing which cities were affected.</li>
         </ul>
       `
     },
@@ -256,12 +256,12 @@ function createTutorialSlides() {
       content: `
         <p>To win the game, you must organize a revolutionary coup:</p>
         <ol>
-          <li>Build solidarity in multiple cities (ideally above 70%)</li>
-          <li>Open the coup planning panel (button will appear in sidebar)</li>
-          <li>Establish revolutionary cells in cities with high solidarity</li>
-          <li>Balance preparation speed with maintaining secrecy</li>
-          <li>Designate a lead city to coordinate the revolution</li>
-          <li>Execute the coup when preparation and secrecy are high enough</li>
+          <li>Build solidarity in multiple cities (ideally above 70%).</li>
+          <li>Open the "Actions" panel; the "Plan Revolution" button will appear when conditions are right.</li>
+          <li>Establish revolutionary cells in cities with high solidarity.</li>
+          <li>Balance preparation speed with maintaining secrecy.</li>
+          <li>Designate a lead city to coordinate the revolution.</li>
+          <li>Execute the coup when preparation and secrecy are high enough.</li>
         </ol>
         <p>Requirements for a successful coup:</p>
         <ul>
@@ -478,9 +478,10 @@ function createHelpPanel() {
     
     <h3>City Selection</h3>
     <ul>
-      <li>Use the dropdown in the top-left to select a city</li>
-      <li>The "Add Custom City..." option lets you add new cities to the map</li>
-      <li>Selected city metrics appear in the sidebar</li>
+      <li>Open the "Search" panel in the top control bar.</li>
+      <li>Type a city name to see a live list of results.</li>
+      <li>Click a city to fly to it on the map.</li>
+      <li>Selected city metrics appear in the "City" panel.</li>
     </ul>
   `;
   
@@ -499,7 +500,7 @@ function createHelpPanel() {
     </ul>
     
     <h3>Collective Actions</h3>
-    <p>These actions affect multiple cities and are accessed from the sidebar dropdown:</p>
+    <p>These actions affect multiple cities and are accessed from the "Actions" panel in the top control bar:</p>
     <ul>
       <li><strong>Protest</strong>: Affects cities with solidarity > 10%</li>
       <li><strong>Strike</strong>: More effective with higher global solidarity</li>

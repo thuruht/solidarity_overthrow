@@ -1,56 +1,41 @@
-// Notification System
-const notificationQueue = [];
-let isNotificationVisible = false;
-
-function showNotification(title, message, type = 'info', duration = 8000) {
-    // Add notification to the queue
-    notificationQueue.push({ title, message, type, duration });
-
-    // If a notification is not already visible, show the next one
-    if (!isNotificationVisible) {
-        displayNextNotification();
-    }
-}
-
-function displayNextNotification() {
-    // If the queue is empty, do nothing
-    if (notificationQueue.length === 0) {
-        isNotificationVisible = false;
+function showToast(title, message, type = 'info', duration = 5000) {
+    const container = document.getElementById('notification-container');
+    if (!container) {
+        console.error('Notification container not found!');
         return;
     }
 
-    // Get the next notification from the queue
-    const { title, message, type, duration } = notificationQueue.shift();
-    isNotificationVisible = true;
-
-    // Create the notification element
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.innerHTML = `
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
         <h3>${title}</h3>
         <p>${message}</p>
     `;
 
-    document.body.appendChild(notification);
+    // Set animation duration via JS
+    toast.style.animationDuration = `${duration / 1000}s, ${duration / 1000}s`;
+    toast.style.animation = `slideIn 0.5s ease forwards, fadeOut 0.5s ease ${duration / 1000 - 0.5}s forwards`;
 
-    // Animate the notification in
-    setTimeout(() => {
-        notification.classList.add('visible');
-    }, 10);
+    container.appendChild(toast);
 
-    // Set a timer to hide and remove the notification
-    setTimeout(() => {
-        notification.classList.remove('visible');
+    // Also log the notification to the history
+    if (window.addLogEntry) {
+        window.addLogEntry(`${title}: ${message}`, type);
+    }
 
-        // Remove the element from the DOM after the transition ends
-        notification.addEventListener('transitionend', () => {
-            notification.remove();
-
-            // Show the next notification in the queue
-            displayNextNotification();
-        });
-    }, duration);
+    // Remove the element after the animation finishes
+    toast.addEventListener('animationend', (e) => {
+        if (e.animationName === 'fadeOut') {
+            toast.remove();
+        }
+    });
 }
 
-// Expose the showNotification function globally
-window.showNotification = showNotification;
+// Expose the showToast function globally, replacing the old showNotification
+window.showToast = showToast;
+
+// Overwrite the old function just in case other scripts still call it
+window.showNotification = (title, message, type = 'info', duration = 5000) => {
+    console.warn('showNotification is deprecated. Use showToast instead.');
+    showToast(title, message, type, duration);
+};

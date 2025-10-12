@@ -1,87 +1,99 @@
-/* --- Unified Notification System --- */
+/* --- Toast Notification System --- */
 
-.notification {
+#notification-container {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 300px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.toast {
+    width: 320px;
     padding: 15px;
     border-radius: 8px;
-    background-color: #2c3e50; /* Dark blue-gray */
-    color: #ecf0f1; /* Light gray */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    z-index: 2000;
+    background-color: rgba(44, 62, 80, 0.9);
+    color: #ecf0f1;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border-left: 5px solid #3498db; /* Default: info */
+    font-family: 'Oswald', sans-serif;
+    animation: slideIn 0.5s ease forwards, fadeOut 0.5s ease 4.5s forwards;
     opacity: 0;
     transform: translateX(100%);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    border-left: 5px solid #3498db; /* Default to info blue */
-    font-family: 'Oswald', sans-serif;
 }
 
-.notification.visible {
-    opacity: 1;
-    transform: translateX(0);
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-.notification h3 {
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateX(50%);
+    }
+}
+
+.toast h3 {
     margin-top: 0;
     margin-bottom: 8px;
     font-size: 1.1em;
     font-weight: bold;
 }
 
-.notification p {
+.toast p {
     margin: 0;
     font-size: 0.95em;
     line-height: 1.4;
 }
 
-/* --- Notification Types --- */
+/* --- Toast Types --- */
 
-.notification.info {
+.toast.info {
     border-left-color: #3498db; /* Blue */
 }
-
-.notification.info h3 {
+.toast.info h3 {
     color: #3498db;
 }
 
-.notification.warning {
+.toast.warning {
     border-left-color: #f1c40f; /* Yellow */
 }
-
-.notification.warning h3 {
+.toast.warning h3 {
     color: #f1c40f;
 }
 
-.notification.error {
+.toast.error {
     border-left-color: #e74c3c; /* Red */
 }
-
-.notification.error h3 {
+.toast.error h3 {
     color: #e74c3c;
 }
 
-.notification.achievement {
+.toast.achievement {
     border-left-color: #f1c40f; /* Gold */
-    background-color: #34495e; /* Slightly different dark blue */
+    background-color: rgba(52, 73, 94, 0.95);
 }
-
-.notification.achievement h3 {
-    color: #f1c40f; /* Gold */
+.toast.achievement h3 {
+    color: #f1c40f;
 }
 
 /* --- Mobile Adjustments --- */
 @media (max-width: 768px) {
-    .notification {
-        width: auto;
+    #notification-container {
         left: 10px;
         right: 10px;
-        bottom: 70px; /* Position above bottom banner and sidebar */
-        transform: translateY(100%);
+        bottom: 10px;
+        align-items: center;
     }
 
-    .notification.visible {
-        transform: translateY(0);
+    .toast {
+        width: 100%;
+        max-width: 400px;
     }
 }

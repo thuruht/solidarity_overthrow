@@ -242,7 +242,7 @@ function performCityAction(action, cityName) {
   window.updateGlobalMetrics();
   
   // Show feedback using the new notification system
-  showNotification('Action Report', message + weatherMessage, 'info');
+  showToast('Action Report', message + weatherMessage, 'info');
 }
 
 // Update marker color and popup content

@@ -1,861 +1,245 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Special Elite', monospaced;
-  height: 100vh; /* Ensure body takes full viewport height */
-  padding-top: 70px; /* Add padding to push content below the fixed top bar */
-  box-sizing: border-box; /* Include padding in the element's total width and height */
+/* Basic Setup */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+    background-color: #000;
 }
 
-/* Map container */
 #map {
-  height: 100%; /* Make map fill the padded body */
+    height: 100%;
+    width: 100%;
+    background-color: #a2d1f5; /* Light blue, like a map background */
 }
 
-#sidebar {
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 10px;
-  border: 1px dotted #ddd;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  position: fixed; /* Changed from absolute to fixed */
-  top: 80px; /* Adjusted to avoid overlapping with top bar */
-  right: 10px;
-  width: 250px;
-  max-height: calc(100vh - 150px); /* Adjusted to avoid overlapping with bottom */
-  overflow-y: auto;
-  z-index: 1000;
-  font-family: 'Oswald', sans-serif; /* Keep Oswald for sidebar */
-  transition: width 0.2s ease-in-out;
-  bottom: auto; /* Ensure it's not affected by bottom property */
+/* Unified Controls */
+#unified-controls {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    width: 95%;
+    max-width: 800px;
 }
 
-#sidebar h3 { 
- color: #6B8E23; text-align: center;
+.control-block {
+    position: relative;
 }
 
-#sidebar h4 {
-  color: #6B8E23;
-  text-align: center;
-  margin: 0;
-  padding: 0;
+.control-toggle {
+    font-family: 'Special Elite', cursive;
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s;
 }
 
-.accordion-item {
-  border-bottom: 1px solid #444;
+.control-toggle:hover, .control-toggle.active {
+    background-color: #555;
 }
 
-.accordion-toggle {
-  background-color: transparent;
-  border: none;
-  color: white;
-  cursor: pointer;
-  padding: 10px;
-  width: 100%;
-  text-align: left;
-  font-family: 'Oswald', sans-serif;
-  font-size: 1em;
-  font-weight: bold;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.control-panel {
+    display: none;
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    width: 300px; /* Default width for wider screens */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    z-index: 1001;
+    border: 1px solid #444;
 }
 
-.accordion-icon {
-  transition: transform 0.3s ease;
+/* Panel Content Styling */
+.control-panel h4 {
+    margin-top: 0;
+    color: #ffc107;
+    font-family: 'Oswald', sans-serif;
 }
 
-.accordion-toggle.active .accordion-icon {
-  transform: rotate(180deg); /* Up arrow */
+.control-panel p, .control-panel .action-tip {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
-.accordion-content {
-  display: none;
-  padding: 0 10px 10px;
-  background-color: rgba(0, 0, 0, 0.2);
+.control-panel .material-icons {
+    font-size: 1.1rem;
 }
 
-/* Dropdown styling */
-#citySearch {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 5px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-family: 'Special Elite', monospace;
-  box-sizing: border-box;
+#citySearch, #collectiveActionsDropdown {
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+    border-radius: 4px;
+    border: 1px solid #666;
+    background-color: #222;
+    color: #fff;
 }
 
-.city-dropdown {
-  position: absolute;
-  top: 90px; /* Adjusted for the taller top bar */
-  left: 10px;
-  z-index: 1000;
-  width: 200px; /* Set fixed width */
+#city-search-results {
+    margin-top: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #555;
+    border-radius: 4px;
 }
 
-.city-dropdown select {
-  background: white;
-  color: black;
-  font-size: 1em;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-family: 'Special Elite', monospace;
-  width: 100%;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+.search-result-item {
+    padding: 8px;
+    cursor: pointer;
+    border-bottom: 1px solid #444;
 }
 
-/* Add spacing for leaflet controls to avoid overlapping */
-.leaflet-top.leaflet-left {
-  margin-top: 50px; /* Add space for dropdown and reset button */
+.search-result-item:last-child {
+    border-bottom: none;
 }
 
-.leaflet-top.leaflet-right {
-  margin-top: 10px; /* Add space for sidebar */
+.search-result-item:hover {
+    background-color: #555;
 }
 
-.city-dropdown option {
-  font-family: 'Special Elite', monospace;
-}
-
-/* Bottom banner styles */
-#banner {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1001;
-}
-
-/* Attribution styling */
-.leaflet-control-attribution {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%) rotate(-90deg);
-  transform-origin: center right;
-  background: none;
-  color: white;
-  font-size: 0.8em;
-  padding: 0;
-  border: none;
-}
-
-#banner h1 {
-  color: #6B8E23;
-  margin: 0;
-  font-size: 2.5em;
-  font-family: 'IBM Plex Mono', monospace; /* Use IBM Plex Mono for H1 */
-  opacity: 1;
-  text-transform: uppercase;
-  letter-spacing: 5px;
-  max-width: 98%;
-  text-align: center;
- 
-}
-
-.retaliation-alert {
-  position: fixed;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 15px 20px;
-  background-color: rgba(255, 0, 0, 0.8);
-  color: white;
-  border-radius: 5px;
-  z-index: 2500;
-  font-family: 'Oswald', sans-serif;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  animation: fadeInOut 3s ease-in-out;
-  display: none;
-}
-
-@keyframes fadeInOut {
-    0% { opacity: 0; transform: translate(-50%, -10%); }
-    20% { opacity: 1; transform: translate(-50%, 0); }
-    80% { opacity: 1; transform: translate(-50%, 0); }
-    100% { opacity: 0; transform: translate(-50%, -10%); }
-}
-
-/* Top Bar with Global Metrics */
-#top-bar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.9);
-  color: white;
-  font-family: 'IBM Plex Mono', monospace;
-  height: 70px; /* Increased height */
-  width: 100%;
-  z-index: 1000;
-  position: fixed;
-  top: 0;
-  padding: 5px 0; /* Add some padding */
-}
-
+/* Global Metrics in Panel */
 .global-metrics {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px; /* Limit width on large screens */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.9em;
 }
 
 .global-metrics span {
-  display: flex;
-  align-items: center;
-  margin: 0 15px;
-  white-space: nowrap; /* Prevent line breaks within metrics */
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.global-metrics span .material-icons {
-  margin-right: 5px;
-}
-
-/* Dropdown for Collective Actions in Sidebar */
-#collectiveActionsDropdown {
-  margin-top: 20px;
-  width: 100%;
-  padding: 8px;
-  background: #333;
-  color: #fff;
-  border: 1px solid #6B8E23;
-  border-radius: 5px;
-  font-family: 'Special Elite', monospace;
-}
-
-span .material-icons { 
-display: inline;
-}
- 
-span {
-  display: inline-flex;
-  align-items: center;
-  margin: 5px 0;
-}
-
-/* Game end message */
-#game-end-message {
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-  max-width: 500px;
-}
-
-#game-end-message h2 {
-  margin-top: 0;
-  color: white;
-}
-
-#restart-game {
-  background-color: rgba(255, 255, 255, 0.8);
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  margin-top: 10px;
-  cursor: pointer;
-  font-family: 'Special Elite', monospaced;
-  font-weight: bold;
-}
-
-#restart-game:hover {
-  background-color: white;
-}
-
-/* City Popup Styling */
-.city-popup {
-  font-family: 'Special Elite', monospace;
-  min-width: 200px;
-}
-
-.city-popup h3 {
-  margin-top: 0;
-  margin-bottom: 8px;
-  text-align: center;
-  color: #6B8E23;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 5px;
-}
-
-.popup-metrics {
-  margin-bottom: 10px;
-}
-
-.popup-metrics p {
-  margin: 5px 0;
-  display: flex;
-  justify-content: space-between;
-}
-
-.metric-value {
-  font-weight: bold;
-}
-
-.popup-actions {
-  border-top: 1px solid #ccc;
-  padding-top: 8px;
-}
-
-.popup-actions p {
-  margin: 5px 0;
-  text-align: center;
-}
-
-.action-btn {
-  background-color: #444;
-  color: white;
-  border: none;
-  padding: 5px 8px;
-  margin: 3px;
-  border-radius: 3px;
-  cursor: pointer;
-  font-family: 'Special Elite', monospace;
-  font-size: 0.8em;
-  transition: background-color 0.2s;
-}
-
-.action-btn:hover {
-  background-color: #6B8E23;
-}
-
-/* Set a specific z-index for the popup container to ensure proper layering */
-.leaflet-popup-pane {
-  z-index: 1800;
-}
-
-/* Custom marker styling */
-.custom-marker {
-  transition: transform 0.2s ease-in-out;
-}
-
-.custom-marker:hover {
-  transform: scale(1.2);
-}
-
-/* Revolution Planning Styles */
-.coup-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  background-color: #333;
-  color: white;
-  border: 1px solid #6B8E23;
-  border-radius: 5px;
-  padding: 10px;
-  margin-top: 15px;
-  font-family: 'Special Elite', monospace;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.coup-button:hover {
-  background-color: #6B8E23;
-}
-
-.coup-button .material-icons {
-  margin-right: 5px;
-}
-
-.coup-panel {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 500px;
-  background-color: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 20px;
-  border-radius: 5px;
-  border: 1px solid #6B8E23;
-  z-index: 1500;
-  font-family: 'Special Elite', monospace;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-
-.coup-panel h3 {
-  color: #6B8E23;
-  text-align: center;
-  margin-top: 0;
-  border-bottom: 1px solid #6B8E23;
-  padding-bottom: 10px;
-}
-
-.coup-panel h4 {
-  color: #6B8E23;
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-
-.status-bars {
-  margin: 20px 0;
-}
-
-.status-item {
-  margin-bottom: 15px;
-}
-
-.status-item label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.progress-bar {
-  background-color: #333;
-  border-radius: 3px;
-  height: 20px;
-  width: 100%;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out;
-}
-
-.cells-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.cells-list li {
-  padding: 8px;
-  margin-bottom: 5px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.lead-cell {
-  background-color: rgba(107, 142, 35, 0.3) !important;
-  border-left: 3px solid #6B8E23;
-}
-
-.cell-status {
-  display: flex;
-  align-items: center;
-}
-
-.cell-status .material-icons {
-  font-size: 16px;
-  margin-right: 3px;
-}
-
-.coup-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.coup-execute {
-  margin: 20px 0;
-  text-align: center;
-}
-
-.execute-btn {
-  background-color: #8B0000;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
-  font-family: 'Special Elite', monospace;
-  cursor: pointer;
-  font-size: 1.1em;
-  transition: background-color 0.3s;
-  margin-bottom: 10px;
-  width: 100%;
-}
-
-.execute-btn:hover {
-  background-color: #FF0000;
-}
-
-.execute-btn.disabled {
-  background-color: #555;
-  cursor: not-allowed;
-}
-
-.cancel-btn {
-  background-color: #333;
-  color: white;
-  border: 1px solid #777;
-  border-radius: 5px;
-  padding: 8px 15px;
-  font-family: 'Special Elite', monospace;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.cancel-btn:hover {
-  background-color: #555;
-}
-
-.selection-dialog {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 400px;
-  background-color: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 20px;
-  border-radius: 5px;
-  border: 1px solid #6B8E23;
-  z-index: 1600;
-  font-family: 'Special Elite', monospace;
-  max-height: 70vh;
-  overflow-y: auto;
-}
-
-.selection-dialog h3 {
-  color: #6B8E23;
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 15px;
-}
-
-.city-list {
-  max-height: 300px;
-  overflow-y: auto;
-  margin: 15px 0;
-}
-
-.city-option {
-  padding: 10px;
-  margin-bottom: 5px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  transition: background-color 0.2s;
-}
-
-.city-option:hover {
-  background-color: rgba(107, 142, 35, 0.3);
-}
-
-.coup-indicator {
-  display: flex;
-  align-items: center;
-  margin-left: 20px;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 3px 8px;
-  border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.mini-progress {
-  width: 50px;
-  height: 8px;
-  background-color: #333;
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 0 10px 0 3px;
-}
-
-.mini-bar {
-  height: 100%;
-  transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out;
-}
-
-/* Game End Message Styles */
-.game-end-message {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 20px;
-  border-radius: 5px;
-  z-index: 1000;
-  max-width: 80%;
-  text-align: center;
-  color: white;
-}
-
-.game-end-message.victory {
-  background-color: rgba(0, 100, 0, 0.9);
-}
-
-.game-end-message.defeat {
-  background-color: rgba(100, 0, 0, 0.9);
-}
-
-.coup-panel h3 {
-  color: #6B8E23;
-  text-align: center;
-  margin-top: 0;
-  border-bottom: 1px solid #6B8E23;
-  padding-bottom: 10px;
-}
-
-.coup-panel h4 {
-  color: #6B8E23;
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-
-.status-bars {
-  margin: 20px 0;
-}
-
-.status-item {
-  margin-bottom: 15px;
-}
-
-.status-item label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.progress-bar {
-  background-color: #333;
-  border-radius: 3px;
-  height: 20px;
-  width: 100%;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out;
-}
-
-.cells-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.cells-list li {
-  padding: 8px;
-  margin-bottom: 5px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.lead-cell {
-  background-color: rgba(107, 142, 35, 0.3) !important;
-  border-left: 3px solid #6B8E23;
-}
-
-.cell-status {
-  display: flex;
-  align-items: center;
-}
-
-.cell-status .material-icons {
-  font-size: 16px;
-  margin-right: 3px;
-}
-
-.coup-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.coup-execute {
-  margin: 20px 0;
-  text-align: center;
-}
-
-.execute-btn {
-  background-color: #8B0000;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
-  font-family: 'Special Elite', monospace;
-  cursor: pointer;
-  font-size: 1.1em;
-  transition: background-color 0.3s;
-  margin-bottom: 10px;
-  width: 100%;
-}
-
-.execute-btn:hover {
-  background-color: #FF0000;
-}
-
-.execute-btn.disabled {
-  background-color: #555;
-  cursor: not-allowed;
-}
-
-.cancel-btn {
-  background-color: #333;
-  color: white;
-  border: 1px solid #777;
-  border-radius: 5px;
-  padding: 8px 15px;
-  font-family: 'Special Elite', monospace;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.cancel-btn:hover {
-  background-color: #555;
-}
-
-.selection-dialog {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 400px;
-  background-color: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 20px;
-  border-radius: 5px;
-  border: 1px solid #6B8E23;
-  z-index: 1600;
-  font-family: 'Special Elite', monospace;
-  max-height: 70vh;
-  overflow-y: auto;
-}
-
-.selection-dialog h3 {
-  color: #6B8E23;
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 15px;
-}
-
-.city-list {
-  max-height: 300px;
-  overflow-y: auto;
-  margin: 15px 0;
-}
-
-.city-option {
-  padding: 10px;
-  margin-bottom: 5px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  transition: background-color 0.2s;
-}
-
-.city-option:hover {
-  background-color: rgba(107, 142, 35, 0.3);
-}
-
-.coup-indicator {
-  display: flex;
-  align-items: center;
-  margin-left: 20px;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 3px 8px;
-  border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.mini-progress {
-  width: 50px;
-  height: 8px;
-  background-color: #333;
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 0 10px 0 3px;
-}
-
-.mini-bar {
-  height: 100%;
-  transition: width 0.5s ease-in-out, background-color 0.5s ease-in-out;
-}
-
-.game-notification {
-  position: fixed;
-  bottom: 70px;
-  right: 20px;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 15px;
-  border-radius: 5px;
-  z-index: 2400; /* Increased z-index */
-  font-family: 'Special Elite', monospace;
-  max-width: 300px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s, transform 0.5s;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-.game-notification.info {
-  border-left: 4px solid #6B8E23;
-}
-
-.game-notification.warning {
-  border-left: 4px solid #FFA500;
-}
-
-.game-notification.error {
-  border-left: 4px solid #FF0000;
-}
-
-.game-notification h3 {
-  margin-top: 0;
-  margin-bottom: 5px;
-  color: #6B8E23;
-}
-
-.game-notification.warning h3 {
-  color: #FFA500;
-}
-
-.game-notification.error h3 {
-  color: #FF0000;
-}
-
-/* Color Key Legend */
-#color-key-legend {
-  position: absolute;
-  top: 230px; /* Position below the city dropdown */
-  left: 10px;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  z-index: 1000;
-  font-family: 'Special Elite', monospace;
-}
-
-#color-key-legend h4 {
-  margin-top: 0;
-  margin-bottom: 10px;
-  text-align: center;
-  color: #6B8E23;
-}
-
-#color-key-legend p {
-  margin: 5px 0;
-  display: flex;
-  align-items: center;
-}
-
+/* Legend in Panel */
 .color-box {
-  width: 15px;
-  height: 15px;
-  margin-right: 10px;
-  border: 1px solid #fff;
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 1px solid #ccc;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+/* Log Panel */
+#log-history {
+    max-height: 150px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+#log-history .log-entry {
+    padding: 4px;
+    border-bottom: 1px solid #444;
+    font-size: 0.85rem;
+}
+#log-history .log-entry:last-child {
+    border-bottom: none;
+}
+
+/* Progress Trackers */
+#progress-trackers {
+    margin-top: 10px;
+}
+.progress-bar-container {
+    margin-bottom: 8px;
+}
+.progress-bar-label {
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+}
+.progress-bar {
+    width: 100%;
+    background-color: #444;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.progress-bar-fill {
+    height: 12px;
+    background-color: #4caf50;
+    width: 0%; /* Updated by JS */
+    border-radius: 4px;
+    transition: width 0.5s ease-in-out;
+}
+
+/* Leaflet Customizations */
+.leaflet-popup-content-wrapper {
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border: 2px solid #ffc107;
+    border-radius: 10px;
+}
+
+.leaflet-popup-content {
+    font-family: 'Special Elite', cursive;
+}
+
+.leaflet-popup-tip {
+    background: #ffc107;
+}
+
+.leaflet-popup-close-button {
+    color: #fff !important;
+}
+
+/* Retaliation Feedback Alert */
+.retaliation-alert {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #d9534f;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 2000;
+    display: none; /* Initially hidden */
+    font-family: 'Oswald', sans-serif;
+    box-shadow: 0 0 15px rgba(217, 83, 79, 0.7);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    #unified-controls {
+        width: 100%;
+        top: 0;
+        border-radius: 0;
+        flex-wrap: wrap; /* Allow buttons to wrap */
+    }
+
+    .control-toggle {
+        font-size: 0.8rem; /* Smaller font on mobile */
+        padding: 6px 8px;
+    }
+
+    .control-panel {
+        width: 95vw; /* Full width panels on mobile */
+        left: 50%;
+        transform: translateX(-50%);
+        max-height: 70vh; /* Prevent panel from being too tall */
+        overflow-y: auto;
+    }
 }
