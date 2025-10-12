@@ -1,9 +1,0 @@
-# wrangler.toml
-name = "solidarity-overthrow"
-compatibility_date = "2025-07-26"
-
-[site]
-bucket = "."
-
-[pages]
-pages_build_output_dir = "."
