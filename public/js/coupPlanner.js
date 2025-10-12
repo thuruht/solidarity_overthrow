@@ -68,7 +68,7 @@ const coupPlanner = (() => {
 
   // Check if coup planning should be available based on global metrics
   function checkCoupPlanningAvailability() {
-    const controlsContainer = document.getElementById('unified-controls');
+    const sidebarElem = document.getElementById('sidebar');
     const existingBtn = document.getElementById('coup-plan-btn');
     
     // Conditions for coup planning to become available
@@ -77,17 +77,19 @@ const coupPlanner = (() => {
     
     if (globalMetricsData.solidarity >= minSolidarity && globalMetricsData.ipi <= maxIPI) {
       // Add button if it doesn't exist
-      if (!existingBtn && controlsContainer) {
-        const coupControlBlock = document.createElement('div');
-        coupControlBlock.className = 'control-block';
-
+      if (!existingBtn && sidebarElem) {
         const coupBtn = document.createElement('button');
         coupBtn.id = 'coup-plan-btn';
-        coupBtn.className = 'control-toggle';
+        coupBtn.className = 'coup-button';
         coupBtn.innerHTML = `<span class="material-icons">vpn_key</span> Plan Revolution`;
         
-        coupControlBlock.appendChild(coupBtn);
-        controlsContainer.appendChild(coupControlBlock);
+        // Add to sidebar after the collectiveActionsDropdown
+        const actionsDropdown = document.getElementById('collectiveActionsDropdown');
+        if (actionsDropdown) {
+          actionsDropdown.parentNode.insertBefore(coupBtn, actionsDropdown.nextSibling);
+        } else {
+          sidebarElem.appendChild(coupBtn);
+        }
         
         // Highlight button effect
         if (typeof gsap !== 'undefined') {
@@ -103,11 +105,11 @@ const coupPlanner = (() => {
         }
         
         // Show notification that revolution planning is available
-        showNotification('Revolution Planning Available!', 'You can now begin planning the final overthrow of the imperialist system.');
+        showToast('Revolution Planning Available!', 'You can now begin planning the final overthrow of the imperialist system.');
       }
     } else if (existingBtn && (globalMetricsData.solidarity < minSolidarity || globalMetricsData.ipi > maxIPI)) {
       // Remove button if conditions no longer met
-      existingBtn.parentElement.remove();
+      existingBtn.remove();
     }
   }
 
@@ -243,7 +245,7 @@ const coupPlanner = (() => {
     plan.leadCity = null;
     plan.lastAction = Date.now();
     
-    showNotification('Revolution Planning Started', 'You have begun planning the revolution. Maintain secrecy and establish cells in strategic cities.');
+    showToast('Revolution Planning Started', 'You have begun planning the revolution. Maintain secrecy and establish cells in strategic cities.');
     
     // Update the planning panel
     toggleCoupPlanningPanel();
@@ -254,7 +256,7 @@ const coupPlanner = (() => {
 
   // Add a status indicator for the coup to the top bar
   function addCoupStatusIndicator() {
-    const topBar = document.getElementById('unified-controls');
+    const topBar = document.getElementById('top-bar');
     
     // Check if indicator already exists
     if (document.getElementById('coup-status-indicator')) return;
@@ -304,7 +306,7 @@ const coupPlanner = (() => {
     );
     
     if (eligibleCities.length === 0) {
-      showNotification('No Eligible Cities', 'You need cities with at least 50% solidarity to establish revolutionary cells.');
+      showToast('No Eligible Cities', 'You need cities with at least 50% solidarity to establish revolutionary cells.');
       return;
     }
     
@@ -351,6 +353,7 @@ const coupPlanner = (() => {
     const city = globalCities.find(c => c.name === cityName);
     const prepIncrease = Math.floor(city.solidarity / 10); // Higher solidarity = more prep
     plan.prepLevel = Math.min(100, plan.prepLevel + prepIncrease);
+    window.updateProgress('revolution', plan.prepLevel);
     
     // Small security risk
     const securityDecrease = Math.floor(Math.random() * 5) + 1; // 1-5% decrease
@@ -377,7 +380,7 @@ const coupPlanner = (() => {
       map.setView([cityData.lat, cityData.lon], 6);
     }
     
-    showNotification('Cell Established', `Revolutionary cell established in ${cityName}. Preparation +${prepIncrease}%, Security -${securityDecrease}%`);
+    showToast('Cell Established', `Revolutionary cell established in ${cityName}. Preparation +${prepIncrease}%, Security -${securityDecrease}%`);
   }
 
   // Select a lead city for the revolution
@@ -386,7 +389,7 @@ const coupPlanner = (() => {
     if (!checkCoupActionCooldown()) return;
     
     if (plan.cells.length === 0) {
-      showNotification('No Cells Available', 'You need to establish at least one revolutionary cell first.');
+      showToast('No Cells Available', 'You need to establish at least one revolutionary cell first.');
       return;
     }
     
@@ -434,6 +437,7 @@ const coupPlanner = (() => {
     // Lead city selection gives a boost to preparation
     const prepBoost = 10;
     plan.prepLevel = Math.min(100, plan.prepLevel + prepBoost);
+    window.updateProgress('revolution', plan.prepLevel);
     
     // Medium security risk
     const securityDecrease = Math.floor(Math.random() * 10) + 5; // 5-15% decrease
@@ -455,7 +459,7 @@ const coupPlanner = (() => {
       map.setView([cityData.lat, cityData.lon], 6);
     }
     
-    showNotification('Lead City Designated', `${cityName} has been designated as the lead city for the revolution. Preparation +${prepBoost}%, Security -${securityDecrease}%`);
+    showToast('Lead City Designated', `${cityName} has been designated as the lead city for the revolution. Preparation +${prepBoost}%, Security -${securityDecrease}%`);
   }
 
   // Improve security for the coup plan
@@ -470,12 +474,13 @@ const coupPlanner = (() => {
     // Small negative impact on preparation
     const prepDecrease = Math.floor(Math.random() * 5) + 1; // 1-5% decrease
     plan.prepLevel = Math.max(0, plan.prepLevel - prepDecrease);
+    window.updateProgress('revolution', plan.prepLevel);
     
     // Update UI
     updateCoupPlanningPanel();
     updateCoupIndicator();
     
-    showNotification('Security Improved', `Improved operational security measures. Security +${securityImprovement}%, Preparation -${prepDecrease}%`);
+    showToast('Security Improved', `Improved operational security measures. Security +${securityImprovement}%, Preparation -${prepDecrease}%`);
   }
 
   // Accelerate preparation for the coup
@@ -485,6 +490,7 @@ const coupPlanner = (() => {
     
     const prepImprovement = Math.floor(Math.random() * 15) + 10; // 10-25% increase
     plan.prepLevel = Math.min(100, plan.prepLevel + prepImprovement);
+    window.updateProgress('revolution', plan.prepLevel);
     plan.lastAction = Date.now();
     
     // Significant security risk
@@ -501,7 +507,7 @@ const coupPlanner = (() => {
     updateCoupPlanningPanel();
     updateCoupIndicator();
     
-    showNotification('Preparation Accelerated', `Accelerated revolutionary preparations. Preparation +${prepImprovement}%, Security -${securityDecrease}%`);
+    showToast('Preparation Accelerated', `Accelerated revolutionary preparations. Preparation +${prepImprovement}%, Security -${securityDecrease}%`);
   }
 
   // Increase suspicion when detected
@@ -519,7 +525,7 @@ const coupPlanner = (() => {
     updateCoupPlanningPanel();
     updateCoupIndicator();
     
-    showNotification('Suspicion Increased', `The authorities are becoming suspicious of unusual activity. Security -${suspicionIncrease}%`, 'warning');
+    showToast('Suspicion Increased', `The authorities are becoming suspicious of unusual activity. Security -${suspicionIncrease}%`, 'warning');
   }
 
   // Check if enough time has passed since the last coup action
@@ -529,7 +535,7 @@ const coupPlanner = (() => {
     
     if (timeSinceLastAction < plan.cooldown) {
       const remainingSeconds = Math.ceil((plan.cooldown - timeSinceLastAction) / 1000);
-      showNotification('Action Cooldown', `You must wait ${remainingSeconds} seconds before taking another revolutionary action.`, 'warning');
+      showToast('Action Cooldown', `You must wait ${remainingSeconds} seconds before taking another revolutionary action.`, 'warning');
       return false;
     }
     
@@ -540,7 +546,7 @@ const coupPlanner = (() => {
   function executeCoup() {
     // Check required conditions
     if (plan.prepLevel < plan.requiredPrep || !plan.leadCity) {
-      showNotification('Not Ready', 'The revolution is not ready to be executed yet.', 'warning');
+      showToast('Not Ready', 'The revolution is not ready to be executed yet.', 'warning');
       return;
     }
     
@@ -716,7 +722,7 @@ const coupPlanner = (() => {
     }
     
     // Show cancellation message
-    showNotification('Plans Canceled', 'Revolutionary plans have been safely canceled and all traces removed.');
+    showToast('Plans Canceled', 'Revolutionary plans have been safely canceled and all traces removed.');
     
     // Reset coup plan
     resetCoupPlan();

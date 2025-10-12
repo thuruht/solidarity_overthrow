@@ -2,14 +2,6 @@
 
 // Create a gameLogic object to expose functions to other modules
 const gameLogic = (() => {
-  // Victory condition thresholds
-  const victoryConditions = {
-    ipi: 25,
-    solidarity: 75,
-    propaganda: 25,
-    revolution: 100 // Placeholder, handled in coupPlanner.js
-  };
-
   // Check if the game is won or lost after each action
   function checkGameState() {
     // Check for revolutionary victory if coup planner is active
@@ -270,7 +262,7 @@ const gameLogic = (() => {
     const achievement = achievements[achievementId];
     
     // Use the new global notification system
-    showNotification(
+    showToast(
       `🏆 ${achievement.name}`,
       achievement.description,
       'achievement',
@@ -286,8 +278,7 @@ const gameLogic = (() => {
     checkAchievements,
     restartGame,
     unlockAchievement,
-    performedActions,
-    victoryConditions
+    performedActions
   };
 })();
 

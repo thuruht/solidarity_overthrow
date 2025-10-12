@@ -1,125 +1,203 @@
-// js/main_new.js - Initializes and coordinates all game components
+document.addEventListener('DOMContentLoaded', function() {
+    // Check for skipIntro parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const skipIntro = urlParams.get('skipIntro') === 'true';
 
-// Game state flags
-let gameInitialized = false;
+    // Combine city data from different files
+    mergeAdditionalCities();
 
-// Global variables for tracking game state
-const globalMetricsData = {
-  ipi: 100, // Imperialist Power Index
-  propaganda: 100, // Propaganda Level
-  solidarity: 0 // Solidarity Index
-};
+    // Initialize the game map
+    const map = L.map('map', {
+        center: [20, 0],
+        zoom: 2,
+        minZoom: 2,
+        maxZoom: 6,
+        worldCopyJump: true,
+        attributionControl: false,
+    });
 
-// Globally accessible function to initialize the game
-window.initializeGame = function() {
-  if (gameInitialized) {
-    console.log("Game already initialized.");
-    return;
-  }
-  
-  console.log("1. Initializing game components...");
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    }).addTo(map);
 
-  // The accordion logic is now handled by unified-controls.js, so we can remove it from here.
+    // Initialize various game components
+    initializeCityMarkers(map);
+    initializeGameLogic(map);
+    initializeRandomEvents(map);
+    initializeControls(map);
 
-  console.log("2. Merging additional cities...");
-  mergeAdditionalCities();
-  console.log("...Merging complete.");
+    // Initialize notification and log systems
+    window.initializeLog();
+    window.initializeProgressTrackers();
 
-  console.log("3. Setting up map...");
-  if (typeof window.setupMap === 'function') {
-    window.setupMap();
-    console.log("...Map setup complete.");
-  } else {
-    console.error('setupMap function not found!');
-  }
-
-  console.log("4. Setting up city interactions...");
-  if (typeof window.setupCityInteractions === 'function') {
-    window.setupCityInteractions();
-    console.log("...City interactions setup complete.");
-  } else {
-    console.error('setupCityInteractions function not found!');
-  }
-
-  console.log("5. Setting up collective actions...");
-  if (typeof window.setupCollectiveActions === 'function') {
-    window.setupCollectiveActions();
-    console.log("...Collective actions setup complete.");
-  } else {
-    console.error('setupCollectiveActions function not found!');
-  }
-  
-  console.log("6. Initializing global metrics...");
-  updateGlobalMetrics();
-  console.log("...Global metrics initialized.");
-
-  console.log("7. Setting up periodic checks...");
-  setInterval(() => {
-    if (typeof gameLogic !== 'undefined' && gameLogic.checkGameState) {
-      gameLogic.checkGameState();
+    // Start the game, skipping intro if specified
+    if (skipIntro) {
+        document.getElementById('intro-splash').style.display = 'none';
+        startGame(map);
+    } else {
+        // Event listener for the start button in the intro
+        const startButton = document.getElementById('start-game-btn');
+        if (startButton) {
+            startButton.addEventListener('click', () => {
+                document.getElementById('intro-splash').style.display = 'none';
+                startGame(map);
+            });
+        }
     }
-    updateGlobalMetrics();
-  }, 10000);
-  console.log("...Periodic checks set up.");
+});
 
-  console.log("8. Initializing random events...");
-  if (typeof initRandomEvents === 'function') {
-    initRandomEvents();
-  }
-  
-  gameInitialized = true;
-  console.log("9. Game initialization complete.");
-};
-
-// Update global metrics display in the UI
-function updateGlobalMetrics() {
-  // Calculate global metrics based on all cities
-  if (typeof globalCities !== 'undefined' && globalCities.length > 0) {
-    const totalIpi = globalCities.reduce((sum, city) => sum + city.ipi, 0);
-    const totalPropaganda = globalCities.reduce((sum, city) => sum + city.propaganda, 0);
-    const totalSolidarity = globalCities.reduce((sum, city) => sum + city.solidarity, 0);
-    
-    globalMetricsData.ipi = parseFloat((totalIpi / globalCities.length).toFixed(1));
-    globalMetricsData.propaganda = parseFloat((totalPropaganda / globalCities.length).toFixed(1));
-    globalMetricsData.solidarity = parseFloat((totalSolidarity / globalCities.length).toFixed(1));
-  }
-  
-  // Update the display in the new stats panel
-  const globalMetricsDisplay = document.querySelector('#legend-panel .global-metrics');
-  if (globalMetricsDisplay) {
-    globalMetricsDisplay.innerHTML = `
-      <h4>Global Stats</h4>
-      <p><b><span class="material-icons">military_tech</span> Imperialist Power Index:</b> ${globalMetricsData.ipi.toFixed(1)}%</p>
-      <p><b><span class="material-icons">campaign</span> Propaganda Level:</b> ${globalMetricsData.propaganda.toFixed(1)}%</p>
-      <p><b><span class="material-icons">groups</span> Solidarity Index:</b> ${globalMetricsData.solidarity.toFixed(1)}%</p>
-    `;
-  }
-}
-
-
-// Function to merge the additional cities into the global cities array
 function mergeAdditionalCities() {
-  if (typeof additionalCities === 'undefined' || typeof globalCities === 'undefined') {
-    console.error('City data not loaded properly!');
-    return;
-  }
-
-  // Filter out duplicate cities
-  const filteredAdditionalCities = additionalCities.filter(newCity => {
-    return !globalCities.some(existingCity =>
-      existingCity.name === newCity.name ||
-      (Math.abs(existingCity.lat - newCity.lat) < 0.01 &&
-       Math.abs(existingCity.lon - newCity.lon) < 0.01)
-    );
-  });
-
-  // Add the filtered additional cities to the global cities array
-  globalCities.push(...filteredAdditionalCities);
-
-  console.log(`Merged ${filteredAdditionalCities.length} new cities. Total: ${globalCities.length}`);
+    if (typeof additionalCities !== 'undefined' && Array.isArray(additionalCities)) {
+        // Use push to add elements to the existing array, which is more robust
+        globalCities.push(...additionalCities);
+    }
 }
 
-// Make key functions globally available
+function initializeControls(map) {
+    const controlToggles = document.querySelectorAll('.control-toggle');
+    let activePanel = null;
+
+    controlToggles.forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const targetPanelId = this.getAttribute('data-target');
+            const targetPanel = document.getElementById(targetPanelId);
+
+            // Deactivate previously active toggle and hide its panel
+            const currentActiveToggle = document.querySelector('.control-toggle.active');
+            if (currentActiveToggle && currentActiveToggle !== this) {
+                currentActiveToggle.classList.remove('active');
+                const currentActivePanelId = currentActiveToggle.getAttribute('data-target');
+                document.getElementById(currentActivePanelId).style.display = 'none';
+            }
+
+            // Toggle current button and panel
+            this.classList.toggle('active');
+            if (this.classList.contains('active')) {
+                targetPanel.style.display = 'block';
+                activePanel = targetPanel;
+                // Special handling for panels that need dynamic content
+                if (targetPanelId === 'legend-panel') {
+                    updateGlobalMetrics();
+                }
+            } else {
+                targetPanel.style.display = 'none';
+                activePanel = null;
+            }
+        });
+    });
+
+    // Close panel if clicking outside
+    document.addEventListener('click', function(event) {
+        if (activePanel && !activePanel.contains(event.target) && !event.target.closest('.control-toggle')) {
+            const currentActiveToggle = document.querySelector('.control-toggle.active');
+            if (currentActiveToggle) {
+                currentActiveToggle.classList.remove('active');
+                activePanel.style.display = 'none';
+                activePanel = null;
+            }
+        }
+    });
+
+    // Initialize city search
+    initializeCitySearch(map);
+    // Initialize collective actions
+    initializeCollectiveActions(map);
+}
+
+function updateGlobalMetrics() {
+    const metricsContainer = document.querySelector('#legend-panel .global-metrics');
+    if (!metricsContainer) return;
+
+    const ipi = window.totalIPI;
+    const propaganda = window.totalPropaganda;
+    const solidarity = window.totalSolidarity;
+
+    metricsContainer.innerHTML = `
+        <span><span class="material-icons">military_tech</span> IPI: <strong>${ipi.toFixed(2)}%</strong></span>
+        <span><span class="material-icons">campaign</span> Propaganda: <strong>${propaganda.toFixed(2)}%</strong></span>
+        <span><span class="material-icons">groups</span> Solidarity: <strong>${solidarity.toFixed(2)}%</strong></span>
+    `;
+
+    // Update progress trackers
+    if (window.updateProgress) {
+        window.updateProgress('solidarity', solidarity);
+        window.updateProgress('ipi', ipi);
+    }
+}
+
+function updateSelectedCityMetrics(city) {
+    const metricsContainer = document.querySelector('#selected-city-panel .city-metrics');
+    if (!metricsContainer) return;
+
+    if (city) {
+        metricsContainer.innerHTML = `
+            <h4>${city.name}</h4>
+            <p>IPI: ${city.ipi.toFixed(2)}%</p>
+            <p>Propaganda: ${city.propaganda.toFixed(2)}%</p>
+            <p>Solidarity: ${city.solidarity.toFixed(2)}%</p>
+        `;
+    } else {
+        metricsContainer.innerHTML = `<p>No city selected.</p>`;
+    }
+}
+
+function initializeCitySearch(map) {
+    const citySearchInput = document.getElementById('citySearch');
+    const searchResultsContainer = document.getElementById('city-search-results');
+
+    citySearchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        searchResultsContainer.innerHTML = ''; // Clear previous results
+
+        if (searchTerm.length === 0) {
+            return;
+        }
+
+        const filteredCities = globalCities.filter(city => city.name.toLowerCase().includes(searchTerm));
+
+        filteredCities.forEach(city => {
+            const resultItem = document.createElement('div');
+            resultItem.classList.add('search-result-item');
+            resultItem.textContent = city.name;
+            resultItem.addEventListener('click', () => {
+                map.flyTo([city.lat, city.lon], 6);
+                updateSelectedCityMetrics(city);
+                this.value = city.name; // Populate input with selected city
+                searchResultsContainer.innerHTML = ''; // Clear results
+                // Close the panel after selection
+                const toggle = document.querySelector('.control-toggle[data-target="city-search-panel"]');
+                if (toggle) {
+                    toggle.click();
+                }
+            });
+            searchResultsContainer.appendChild(resultItem);
+        });
+    });
+}
+
+function initializeCollectiveActions(map) {
+    const dropdown = document.getElementById('collectiveActionsDropdown');
+    dropdown.addEventListener('change', function() {
+        const action = this.value;
+        if (action) {
+            performCollectiveAction(action, map);
+            this.value = ''; // Reset dropdown
+            // Close the panel after selection
+            const toggle = document.querySelector('.control-toggle[data-target="do-your-part-panel"]');
+            if (toggle) {
+                toggle.click();
+            }
+        }
+    });
+}
+
+function startGame(map) {
+    // This function is called after the intro is dismissed
+    console.log("Game has started!");
+    // You can trigger any post-intro game mechanics here
+    startRandomEvents();
+}
+
+// Make key functions globally accessible if they are called from other scripts
 window.updateGlobalMetrics = updateGlobalMetrics;
-window.restartGame = gameLogic.restartGame;
-window.globalMetricsData = globalMetricsData;
+window.updateSelectedCityMetrics = updateSelectedCityMetrics;

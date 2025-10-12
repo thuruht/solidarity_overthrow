@@ -7,7 +7,7 @@ const randomEvents = [
         effect: () => {
             const city = globalCities[Math.floor(Math.random() * globalCities.length)];
             city.solidarity = Math.max(0, city.solidarity - 5);
-            showNotification("Economic Boom", `A sudden economic boom in ${city.name} has distracted the populace, slightly reducing solidarity.`, "warning");
+            showToast("Economic Boom", `A sudden economic boom in ${city.name} has distracted the populace, slightly reducing solidarity.`, "warning");
             updateCityVisuals(city);
         }
     },
@@ -17,7 +17,7 @@ const randomEvents = [
         effect: () => {
             const city = globalCities[Math.floor(Math.random() * globalCities.length)];
             city.solidarity = Math.min(100, city.solidarity + 5);
-            showNotification("Viral Video", `A viral video exposing state corruption has boosted solidarity in ${city.name}.`, "info");
+            showToast("Viral Video", `A viral video exposing state corruption has boosted solidarity in ${city.name}.`, "info");
             updateCityVisuals(city);
         }
     },
@@ -26,7 +26,7 @@ const randomEvents = [
         description: "A new state-sponsored propaganda campaign has been unusually effective, increasing global propaganda levels.",
         effect: () => {
             globalMetricsData.propaganda = Math.min(100, globalMetricsData.propaganda + 3);
-            showNotification("Successful Propaganda", "A new state-sponsored propaganda campaign has been unusually effective, increasing global propaganda levels.", "error");
+            showToast("Successful Propaganda", "A new state-sponsored propaganda campaign has been unusually effective, increasing global propaganda levels.", "error");
         }
     },
     {
@@ -35,7 +35,7 @@ const randomEvents = [
         effect: () => {
             const city = globalCities[Math.floor(Math.random() * globalCities.length)];
             city.solidarity = Math.min(100, city.solidarity + 3);
-            showNotification("International Aid", `An international aid package has improved conditions in ${city.name}, slightly increasing solidarity.`, "info");
+            showToast("International Aid", `An international aid package has improved conditions in ${city.name}, slightly increasing solidarity.`, "info");
             updateCityVisuals(city);
         }
     },
@@ -48,7 +48,7 @@ const randomEvents = [
                 const city = highSolidarityCities[Math.floor(Math.random() * highSolidarityCities.length)];
                 city.solidarity = Math.max(0, city.solidarity - 10);
                 city.ipi = Math.min(100, city.ipi + 5);
-                showNotification("State Crackdown", `The state has launched a crackdown on dissent in ${city.name}, reducing solidarity and increasing IPI.`, "error");
+                showToast("State Crackdown", `The state has launched a crackdown on dissent in ${city.name}, reducing solidarity and increasing IPI.`, "error");
                 updateCityVisuals(city);
             }
         }

@@ -86,7 +86,7 @@ function placeStaticMarker(city) {
 
 // Fetch weather data and integrate it with the city marker
 async function fetchAndIntegrateWeather(city, marker) {
-  const url = `/weather?lat=${city.lat}&lon=${city.lon}`;
+  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${city.lat}&lon=${city.lon}&units=metric&appid=955034a79abe8e7bc9df0666a15f1b06`;
   try {
     const response = await fetch(url);
     const data = await response.json();
@@ -242,7 +242,7 @@ function performCityAction(action, cityName) {
   window.updateGlobalMetrics();
   
   // Show feedback using the new notification system
-  showNotification('Action Report', message + weatherMessage, 'info');
+  showToast('Action Report', message + weatherMessage, 'info');
 }
 
 // Update marker color and popup content
