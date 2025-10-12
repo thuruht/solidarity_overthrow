@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeControls(map);
 
     // Initialize notification and log systems
-    window.initializeNotifications();
     window.initializeLog();
     window.initializeProgressTrackers();
 

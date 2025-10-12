@@ -33,5 +33,7 @@ def test_unified_controls(page: Page):
         page.get_by_placeholder("Search for a city...").type("London")
         expect(page.locator("#city-search-results")).to_contain_text("London")
 
+        print("Verification script ran successfully.")
+
     except Exception as e:
         print(f"An error occurred: {e}")
