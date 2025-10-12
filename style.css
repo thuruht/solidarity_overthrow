@@ -93,7 +93,7 @@ body {
 
 .accordion-content {
   display: none;
-  padding: 0 10px 10px;
+  padding: 5px 10px; /* Reduced padding */
   background-color: rgba(0, 0, 0, 0.2);
 }
 
