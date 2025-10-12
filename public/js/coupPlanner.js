@@ -68,7 +68,7 @@ const coupPlanner = (() => {
 
   // Check if coup planning should be available based on global metrics
   function checkCoupPlanningAvailability() {
-    const sidebarElem = document.getElementById('sidebar');
+    const controlsContainer = document.getElementById('unified-controls');
     const existingBtn = document.getElementById('coup-plan-btn');
     
     // Conditions for coup planning to become available
@@ -77,19 +77,17 @@ const coupPlanner = (() => {
     
     if (globalMetricsData.solidarity >= minSolidarity && globalMetricsData.ipi <= maxIPI) {
       // Add button if it doesn't exist
-      if (!existingBtn && sidebarElem) {
+      if (!existingBtn && controlsContainer) {
+        const coupControlBlock = document.createElement('div');
+        coupControlBlock.className = 'control-block';
+
         const coupBtn = document.createElement('button');
         coupBtn.id = 'coup-plan-btn';
-        coupBtn.className = 'coup-button';
+        coupBtn.className = 'control-toggle';
         coupBtn.innerHTML = `<span class="material-icons">vpn_key</span> Plan Revolution`;
         
-        // Add to sidebar after the collectiveActionsDropdown
-        const actionsDropdown = document.getElementById('collectiveActionsDropdown');
-        if (actionsDropdown) {
-          actionsDropdown.parentNode.insertBefore(coupBtn, actionsDropdown.nextSibling);
-        } else {
-          sidebarElem.appendChild(coupBtn);
-        }
+        coupControlBlock.appendChild(coupBtn);
+        controlsContainer.appendChild(coupControlBlock);
         
         // Highlight button effect
         if (typeof gsap !== 'undefined') {
@@ -109,7 +107,7 @@ const coupPlanner = (() => {
       }
     } else if (existingBtn && (globalMetricsData.solidarity < minSolidarity || globalMetricsData.ipi > maxIPI)) {
       // Remove button if conditions no longer met
-      existingBtn.remove();
+      existingBtn.parentElement.remove();
     }
   }
 
@@ -256,7 +254,7 @@ const coupPlanner = (() => {
 
   // Add a status indicator for the coup to the top bar
   function addCoupStatusIndicator() {
-    const topBar = document.getElementById('top-bar');
+    const topBar = document.getElementById('unified-controls');
     
     // Check if indicator already exists
     if (document.getElementById('coup-status-indicator')) return;

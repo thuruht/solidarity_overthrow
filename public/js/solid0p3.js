@@ -22,7 +22,7 @@ function performCollectiveAction(actionType) {
   const potentialCities = globalCities.filter(city => city.solidarity > 10);
 
   if (potentialCities.length === 0) {
-    window.showFeedback("No cities have enough solidarity (>10%) for collective action!", 'warning');
+    showNotification("No cities have enough solidarity (>10%) for collective action!", 'warning');
     return;
   }
 
@@ -64,7 +64,7 @@ function performCollectiveAction(actionType) {
     window.updateCityVisuals(city);
   });
 
-  window.showFeedback(actionFeedback, 'success');
+  window.showNotification(actionFeedback, 'success');
   window.updateGlobalMetrics();
   triggerStateRetaliation(actionType, affectedCities);
 }
@@ -108,7 +108,7 @@ function triggerStateRetaliation(actionType, affectedCities) {
 
 // Apply the effects of state retaliation
 function applyRetaliation(type, message) {
-  window.showFeedback(message, 'danger');
+  showNotification(message, 'danger');
 
   const targetCityCount = Math.floor(Math.random() * 5) + 3;
   const highSolidarityCities = globalCities.filter(c => c.solidarity > 30)

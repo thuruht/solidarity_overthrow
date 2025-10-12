@@ -3,7 +3,7 @@ body {
   padding: 0;
   font-family: 'Special Elite', monospaced;
   height: 100vh; /* Ensure body takes full viewport height */
-  padding-top: 70px; /* Add padding to push content below the fixed top bar */
+  padding-top: 0; /* Add padding to push content below the fixed top bar */
   box-sizing: border-box; /* Include padding in the element's total width and height */
 }
 
@@ -15,8 +15,9 @@ body {
 /* Unified Controls Bar */
 #unified-controls {
   position: fixed;
-  top: 80px;
-  left: 10px;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   gap: 5px;
   z-index: 1001; /* Above map, below modals */
@@ -46,7 +47,7 @@ body {
 .control-panel {
   display: none;
   position: fixed;
-  top: 114px; /* Position below the main control bar */
+  top: 50px;
   left: 0;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.9);

@@ -286,7 +286,8 @@ const gameLogic = (() => {
     checkAchievements,
     restartGame,
     unlockAchievement,
-    performedActions
+    performedActions,
+    victoryConditions
   };
 })();
 
