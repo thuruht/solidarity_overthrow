@@ -262,7 +262,7 @@ const gameLogic = (() => {
     const achievement = achievements[achievementId];
     
     // Use the new global notification system
-    showNotification(
+    showToast(
       `🏆 ${achievement.name}`,
       achievement.description,
       'achievement',
