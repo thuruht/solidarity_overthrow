@@ -1,0 +1,12 @@
+{
+  "name": "solidarity-overthrow",
+  "compatibility_date": "2025-07-26",
+  "main": "./public/_worker.js",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "routes": [
+    "overthrow.distorted.work/*"
+  ]
+}

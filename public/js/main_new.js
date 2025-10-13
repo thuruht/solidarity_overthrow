@@ -46,7 +46,7 @@ function initializeGame() {
     // Initialize notification and log systems
     window.initializeLog();
     window.initializeProgressTrackers();
-
+    
     // Start the game
     startGame(map);
 }
