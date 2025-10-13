@@ -17,11 +17,6 @@
 
 </head>
 <body>
-  <!-- Floating Banner at the Bottom -->
-  <div id="banner" class="overlay">
-    <h1>S0LIDARITY 0VERTHR0W</h1>
-  </div>
-
   <!-- Unified Horizontal Control Bar -->
   <div id="unified-controls">
     <!-- City Search Control -->
@@ -105,6 +100,16 @@
 
   <!-- Map container -->
   <div id="map"></div>
+
+  <!-- Global State Initialization -->
+  <script>
+    // Define global state object to be used by other scripts
+    const globalMetricsData = {
+      ipi: 100,
+      propaganda: 100,
+      solidarity: 0
+    };
+  </script>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <!-- Load globalCities.js first so globalCities array is available -->

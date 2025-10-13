@@ -1,8 +1,25 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Check for skipIntro parameter
+    // This function will be called when the DOM is ready
+    // It will set up the initial UI and wait for the user to start the game
     const urlParams = new URLSearchParams(window.location.search);
     const skipIntro = urlParams.get('skipIntro') === 'true';
 
+    if (skipIntro) {
+        // If we skip the intro, we can start the game immediately
+        initializeGame();
+    } else {
+        // Otherwise, we wait for the user to click the start button
+        const startButton = document.getElementById('start-game-btn');
+        if (startButton) {
+            startButton.addEventListener('click', () => {
+                document.getElementById('intro-splash').style.display = 'none';
+                initializeGame();
+            });
+        }
+    }
+});
+
+function initializeGame() {
     // Combine city data from different files
     mergeAdditionalCities();
 
@@ -29,22 +46,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize notification and log systems
     window.initializeLog();
     window.initializeProgressTrackers();
-
-    // Start the game, skipping intro if specified
-    if (skipIntro) {
-        document.getElementById('intro-splash').style.display = 'none';
-        startGame(map);
-    } else {
-        // Event listener for the start button in the intro
-        const startButton = document.getElementById('start-game-btn');
-        if (startButton) {
-            startButton.addEventListener('click', () => {
-                document.getElementById('intro-splash').style.display = 'none';
-                startGame(map);
-            });
-        }
-    }
-});
+    
+    // Start the game
+    startGame(map);
+}
 
 function mergeAdditionalCities() {
     if (typeof additionalCities !== 'undefined' && Array.isArray(additionalCities)) {
@@ -108,20 +113,16 @@ function updateGlobalMetrics() {
     const metricsContainer = document.querySelector('#legend-panel .global-metrics');
     if (!metricsContainer) return;
 
-    const ipi = window.totalIPI;
-    const propaganda = window.totalPropaganda;
-    const solidarity = window.totalSolidarity;
-
     metricsContainer.innerHTML = `
-        <span><span class="material-icons">military_tech</span> IPI: <strong>${ipi.toFixed(2)}%</strong></span>
-        <span><span class="material-icons">campaign</span> Propaganda: <strong>${propaganda.toFixed(2)}%</strong></span>
-        <span><span class="material-icons">groups</span> Solidarity: <strong>${solidarity.toFixed(2)}%</strong></span>
+        <span><span class="material-icons">military_tech</span> IPI: <strong>${globalMetricsData.ipi.toFixed(2)}%</strong></span>
+        <span><span class="material-icons">campaign</span> Propaganda: <strong>${globalMetricsData.propaganda.toFixed(2)}%</strong></span>
+        <span><span class="material-icons">groups</span> Solidarity: <strong>${globalMetricsData.solidarity.toFixed(2)}%</strong></span>
     `;
 
     // Update progress trackers
     if (window.updateProgress) {
-        window.updateProgress('solidarity', solidarity);
-        window.updateProgress('ipi', ipi);
+        window.updateProgress('solidarity', globalMetricsData.solidarity);
+        window.updateProgress('ipi', globalMetricsData.ipi);
     }
 }
 
@@ -201,3 +202,4 @@ function startGame(map) {
 // Make key functions globally accessible if they are called from other scripts
 window.updateGlobalMetrics = updateGlobalMetrics;
 window.updateSelectedCityMetrics = updateSelectedCityMetrics;
+window.initializeGame = initializeGame;
