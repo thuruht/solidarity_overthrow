@@ -1,0 +1,38 @@
+{
+  "name": "solidarity-overthrow",
+  "compatibility_date": "2025-07-26",
+  "main": "./public/_worker.js",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "routes": ["overthrow.distorted.work/*"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "solidarity-leaderboard",
+      "database_id": "4ead60e2-4740-42b9-9d5e-3887fa3496fb"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "SESSIONS",
+      "id": "ac838e3d0a5e48fbb618a7fbcf2e17c0"
+    },
+    {
+      "binding": "SAVED_GAMES",
+      "id": "cf18e8ebdc3a43a5a0283626e958e4c0"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [{ "name": "CHAT_ROOM", "class_name": "ChatRoom" }]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_classes": [
+        "ChatRoom"
+      ]
+    }
+  }
+}
