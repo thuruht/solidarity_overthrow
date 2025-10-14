@@ -38,10 +38,6 @@ async function handleApiRequest(request, env) {
       return handleLoadGame(request, env);
     case "/api/saves":
       return handleListSaves(request, env);
-    case "/api/admin/chat-status":
-      return handleAdminChatStatus(request, env);
-    case "/api/admin/unmute":
-      return handleAdminUnmute(request, env);
     case "/api/chat":
       const id = env.CHAT_ROOM.idFromName("global");
       const room = env.CHAT_ROOM.get(id);
@@ -50,6 +46,10 @@ async function handleApiRequest(request, env) {
       return handleLeaderboardGet(request, env);
     case "/api/leaderboard/submit":
       return handleLeaderboardSubmit(request, env);
+    case "/api/admin/chat-status":
+      return withAdminAuth(handleAdminChatStatus)(request, env);
+    case "/api/admin/unmute":
+      return withAdminAuth(handleAdminUnmute)(request, env);
     default:
       return new Response("API route not found", { status: 404 });
   }
@@ -147,58 +147,43 @@ function handleLogout(request, env) {
   return new Response(null, { status: 302, headers });
 }
 
-async function handleAdminUnmute(request, env) {
-  if (request.method !== "POST") {
-    return new Response("Method Not Allowed", { status: 405 });
-  }
-
-  const sessionId = getSessionId(request);
-  if (!sessionId) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
-  const sessionData = await env.SESSIONS.get(sessionId);
-  if (!sessionData) {
-    return new Response("Invalid session", { status: 401 });
-  }
-
-  const { isAdmin } = JSON.parse(sessionData);
-  if (!isAdmin) {
-    return new Response("Forbidden", { status: 403 });
-  }
-
-  const id = env.CHAT_ROOM.idFromName("global");
-  const room = env.CHAT_ROOM.get(id);
-  return room.fetch(request); // Forward the request to the Durable Object
-}
-
-async function handleAdminChatStatus(request, env) {
-  const sessionId = getSessionId(request);
-  if (!sessionId) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
-  const sessionData = await env.SESSIONS.get(sessionId);
-  if (!sessionData) {
-    return new Response("Invalid session", { status: 401 });
-  }
-
-  const { isAdmin } = JSON.parse(sessionData);
-  if (!isAdmin) {
-    return new Response("Forbidden", { status: 403 });
-  }
-
-  const id = env.CHAT_ROOM.idFromName("global");
-  const room = env.CHAT_ROOM.get(id);
-  return room.fetch(request); // Forward the request to the Durable Object
-}
-
 function getSessionId(request) {
   const cookieHeader = request.headers.get("Cookie");
   if (!cookieHeader) return null;
   const cookies = cookieHeader.split(";").map((c) => c.trim());
   const sessionCookie = cookies.find((c) => c.startsWith("session_id="));
   return sessionCookie ? sessionCookie.split("=")[1] : null;
+}
+
+const withAdminAuth = (handler) => {
+  return async (request, env) => {
+    const sessionId = getSessionId(request);
+    if (!sessionId) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+    const sessionData = await env.SESSIONS.get(sessionId);
+    if (!sessionData) {
+      return new Response("Invalid session", { status: 401 });
+    }
+    const { isAdmin } = JSON.parse(sessionData);
+    if (!isAdmin) {
+      return new Response("Forbidden", { status: 403 });
+    }
+    // If all checks pass, call the original handler
+    return handler(request, env);
+  };
+};
+
+function handleAdminUnmute(request, env) {
+  const id = env.CHAT_ROOM.idFromName("global");
+  const room = env.CHAT_ROOM.get(id);
+  return room.fetch(request); // Forward the request to the Durable Object
+}
+
+function handleAdminChatStatus(request, env) {
+  const id = env.CHAT_ROOM.idFromName("global");
+  const room = env.CHAT_ROOM.get(id);
+  return room.fetch(request); // Forward the request to the Durable Object
 }
 
 async function handleLeaderboardGet(request, env) {

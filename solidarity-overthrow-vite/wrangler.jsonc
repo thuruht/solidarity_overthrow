@@ -1,11 +1,8 @@
 {
   "name": "solidarity-overthrow",
   "compatibility_date": "2025-07-26",
-  "main": "./public/_worker.js",
-  "assets": {
-    "directory": "./public",
-    "binding": "ASSETS"
-  },
+  "main": "_worker.js",
+  "assets": "./dist",
   "routes": ["overthrow.distorted.work/*"],
   "d1_databases": [
     {
@@ -30,9 +27,7 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_classes": [
-        "ChatRoom"
-      ]
+      "new_classes": ["ChatRoom"]
     }
-  }
+  ]
 }
