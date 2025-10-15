@@ -14,6 +14,10 @@ import { initializeLog } from "./log.js";
 import { initializeProgressTrackers, updateProgress } from "./progress.js";
 import { initializeIntro } from "./intro.js";
 import { initializeChat } from "./chat-client.js";
+import { showToast } from "./notifications.js";
+import "../css/style.css";
+import "../css/intro.css";
+import "../css/notifications.css";
 
 // Export map instance to be used across modules
 export let map;
@@ -37,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
       initializeIntro(initializeGame);
     }
   }
+  setupCityInteractions(); // From solid0p2.js
 });
 
 async function checkUserSession() {
@@ -88,7 +93,6 @@ export function initializeGame() {
   }).addTo(map);
 
   // Initialize various game components
-  setupCityInteractions(); // From solid0p2.js
   initializeControls(map);
   initRandomEvents(); // Initializes the system, but doesn't start the timer.
 
@@ -407,6 +411,32 @@ function initializeLoadGame() {
   });
 }
 
+async function handleLoadClick(event) {
+  const slotId = event.target.dataset.slotId;
+  try {
+    showToast("Loading...", `Loading game from ${slotId}.`, "info");
+    const response = await fetch(`/api/load?slotId=${slotId}`);
+    if (!response.ok) {
+      throw new Error(`Server responded with ${response.status}`);
+    }
+    const loadedData = await response.json();
+    if (loadedData.success) {
+      applyLoadedState(loadedData.gameState);
+      // Refresh UI elements that depend on the new state
+      updateGlobalMetrics();
+      // Potentially, you might need to redraw city markers if they've changed
+      // This is a placeholder for a function that would handle that
+      // refreshCityMarkers(); 
+      showToast("Game Loaded!", `Progress restored from ${slotId}.`, "success");
+    } else {
+      throw new Error(loadedData.message || "Unknown server error.");
+    }
+  } catch (error) {
+    console.error("Failed to load game:", error);
+    showToast("Load Failed", error.message, "error");
+  }
+}
+
 async function handleUnmuteClick(event) {
   const userIdToUnmute = event.target.dataset.userid;
   try {
@@ -431,46 +461,6 @@ async function handleUnmuteClick(event) {
   } catch (error) {
     showToast("Error", `Failed to unmute user: ${error.message}`, "error");
   }
-}
-
-function initializeLoadGame() {
-  const loadPanelToggle = document.querySelector(
-    '[data-target="load-game-panel"]'
-  );
-  if (!loadPanelToggle) return;
-
-  loadPanelToggle.addEventListener("click", async () => {
-    const slotsContainer = document.querySelector(
-      "#load-game-panel .load-slots"
-    );
-    slotsContainer.innerHTML = "<p>Fetching saves...</p>";
-
-    try {
-      const response = await fetch("/api/saves");
-      if (!response.ok) throw new Error("Could not fetch save list.");
-      const saves = await response.json();
-
-      slotsContainer.innerHTML = ""; // Clear loading message
-      if (saves.length === 0) {
-        slotsContainer.innerHTML = "<p>No saved games found.</p>";
-        return;
-      }
-
-      saves.forEach((save) => {
-        const slotButton = document.createElement("button");
-        slotButton.className = "action-btn";
-        const saveDate = save.metadata?.timestamp
-          ? new Date(save.metadata.timestamp).toLocaleString()
-          : "No date";
-        slotButton.innerHTML = `Load ${save.slotId}<br><small>${saveDate}</small>`;
-        slotButton.dataset.slotId = save.slotId;
-        slotButton.addEventListener("click", handleLoadClick);
-        slotsContainer.appendChild(slotButton);
-      });
-    } catch (error) {
-      slotsContainer.innerHTML = `<p style="color: red;">${error.message}</p>`;
-    }
-  });
 }
 
 function startGame(map) {
