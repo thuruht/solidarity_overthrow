@@ -1,141 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>S0lidarity 0verthr0w</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link rel="stylesheet" href="style.css?v=1.0.5">
-  <link rel="stylesheet" href="reset-view.css?v=1.0.0">
-  <link rel="stylesheet" href="mobile-ui-fixes.css?v=1.0.1">
-  <link rel="stylesheet" href="intro.css?v=1.0.0">
-  <link rel="stylesheet" href="notifications.css">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>S0lidarity 0verthr0w</title>
+    <link rel="stylesheet" href="/src/css/main.css" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
 
-  <!-- Google Fonts: Oswald for sidebar, IBM Plex Mono for h1, Special Elite for controls -->
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@700&family=Oswald:wght@700&family=Special+Elite&display=swap" rel="stylesheet">
-
-</head>
-<body>
-  <!-- Unified Horizontal Control Bar -->
-  <div id="unified-controls">
-    <!-- City Search Control -->
-    <div class="control-block">
-      <button class="control-toggle" data-target="city-search-panel">
-        <span class="material-icons">search</span> Search
-      </button>
-      <div id="city-search-panel" class="control-panel">
-        <input type="text" id="citySearch" placeholder="Search for a city..." aria-label="Search for a city">
-        <div id="city-search-results"></div>
-      </div>
-    </div>
-
-    <!-- Stats & Legend Control -->
-    <div class="control-block">
-      <button class="control-toggle" data-target="legend-panel">
-        <span class="material-icons">leaderboard</span> Stats
-      </button>
-      <div id="legend-panel" class="control-panel">
-        <div class="global-metrics">
-          <!-- Populated by main_new.js -->
+    <!-- Google Fonts: Oswald for sidebar, IBM Plex Mono for h1, Special Elite for controls -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@700&family=Oswald:wght@700&family=Special+Elite&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Unified Horizontal Control Bar -->
+    <div id="unified-controls">
+      <!-- City Search Control -->
+      <div class="control-block">
+        <button class="control-toggle" data-target="city-search-panel">
+          <span class="material-icons">search</span> Search
+        </button>
+        <div id="city-search-panel" class="control-panel">
+          <input
+            type="text"
+            id="citySearch"
+            placeholder="Search for a city..."
+            aria-label="Search for a city"
+          />
+          <div id="city-search-results"></div>
         </div>
-        <hr>
-        <h4>Solidarity Level</h4>
-        <p><span class="color-box" style="background-color: green;"></span> High (80-100%)</p>
-        <p><span class="color-box" style="background-color: gold;"></span> Medium (50-79%)</p>
-        <p><span class="color-box" style="background-color: orange;"></span> Low (20-49%)</p>
-        <p><span class="color-box" style="background-color: red;"></span> Critical (0-19%)</p>
       </div>
-    </div>
 
-    <!-- Selected City Control -->
-    <div class="control-block">
+      <!-- Stats & Legend Control -->
+      <div class="control-block">
+        <button class="control-toggle" data-target="legend-panel">
+          <span class="material-icons">leaderboard</span> Stats
+        </button>
+        <div id="legend-panel" class="control-panel">
+          <div class="global-metrics">
+            <!-- Populated by main_new.js -->
+          </div>
+          <hr />
+          <h4>Solidarity Level</h4>
+          <p>
+            <span class="color-box" style="background-color: green"></span> High
+            (80-100%)
+          </p>
+          <p>
+            <span class="color-box" style="background-color: gold"></span>
+            Medium (50-79%)
+          </p>
+          <p>
+            <span class="color-box" style="background-color: orange"></span> Low
+            (20-49%)
+          </p>
+          <p>
+            <span class="color-box" style="background-color: red"></span>
+            Critical (0-19%)
+          </p>
+        </div>
+      </div>
+
+      <!-- Selected City Control -->
+      <div class="control-block">
         <button class="control-toggle" data-target="selected-city-panel">
-            <span class="material-icons">location_city</span> City
+          <span class="material-icons">location_city</span> City
         </button>
         <div id="selected-city-panel" class="control-panel">
-            <div class="city-metrics">
-                <p>No city selected.</p>
-            </div>
+          <div class="city-metrics">
+            <p>No city selected.</p>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- Actions Control -->
-    <div class="control-block">
+      <!-- Actions Control -->
+      <div class="control-block">
         <button class="control-toggle" data-target="do-your-part-panel">
-            <span class="material-icons">construction</span> Actions
+          <span class="material-icons">construction</span> Actions
         </button>
         <div id="do-your-part-panel" class="control-panel">
-            <div class="action-info">
-                <p class="action-tip"><span class="material-icons">info</span> <strong>City Actions:</strong> Use city popups for local impact</p>
-                <p class="action-tip"><span class="material-icons">info</span> <strong>Collective Actions:</strong> Affect multiple cities with solidarity > 10</p>
-            </div>
-            <select id="collectiveActionsDropdown" aria-label="Collective actions">
-                <option value="" disabled selected>Perform a collective action...</option>
-                <option value="protest">🏴 Protest (Multi-City)</option>
-                <option value="strike">⚒️ Strike (Multi-City)</option>
-                <option value="network">🔄 Build Network (Multi-City)</option>
-                <option value="sabotage">💥 Sabotage (Multi-City)</option>
-            </select>
+          <div class="action-info">
+            <p class="action-tip">
+              <span class="material-icons">info</span>
+              <strong>City Actions:</strong> Use city popups for local impact
+            </p>
+            <p class="action-tip">
+              <span class="material-icons">info</span>
+              <strong>Collective Actions:</strong> Affect multiple cities with
+              solidarity > 10
+            </p>
+          </div>
+          <select
+            id="collectiveActionsDropdown"
+            aria-label="Collective actions"
+          >
+            <option value="" disabled selected>
+              Perform a collective action...
+            </option>
+            <option value="protest">🏴 Protest (Multi-City)</option>
+            <option value="strike">⚒️ Strike (Multi-City)</option>
+            <option value="network">🔄 Build Network (Multi-City)</option>
+            <option value="sabotage">💥 Sabotage (Multi-City)</option>
+          </select>
         </div>
-    </div>
+      </div>
 
-    <!-- Log & Progress Control -->
-    <div class="control-block">
+      <!-- Log & Progress Control -->
+      <div class="control-block">
         <button class="control-toggle" data-target="log-panel">
-            <span class="material-icons">history</span> Log
+          <span class="material-icons">history</span> Log
         </button>
         <div id="log-panel" class="control-panel">
-            <div id="log-history"></div>
-            <hr>
-            <div id="progress-trackers"></div>
+          <div id="log-history"></div>
+          <hr />
+          <div id="progress-trackers"></div>
         </div>
+      </div>
+
+      <!-- Save Game Control -->
+      <div class="control-block">
+        <button class="control-toggle" data-target="save-game-panel">
+          <span class="material-icons">save</span> Save
+        </button>
+        <div id="save-game-panel" class="control-panel">
+          <h4>Save Game Slot</h4>
+          <div class="save-slots"></div>
+        </div>
+      </div>
+      <!-- Load Game Control -->
+      <div class="control-block">
+        <button class="control-toggle" data-target="load-game-panel">
+          <span class="material-icons">file_open</span> Load
+        </button>
+        <div id="load-game-panel" class="control-panel">
+          <h4>Load Game Slot</h4>
+          <div class="load-slots"></div>
+        </div>
+      </div>
+
+      <!-- User Profile / Login Control -->
+      <div class="control-block" id="user-profile-controls">
+        <div id="user-info" style="display: none">
+          <img id="user-avatar" src="" alt="User avatar" />
+          <span id="user-name"></span>
+          <a href="/api/logout" id="logout-btn" class="control-toggle">
+            <span class="material-icons">logout</span> Logout
+          </a>
+        </div>
+        <a href="/api/login" id="login-btn" class="control-toggle">
+          <span class="material-icons">login</span> Login with GitHub
+        </a>
+      </div>
     </div>
-  </div>
 
-  <div id="retaliation-feedback" class="retaliation-alert"></div>
+    <div id="retaliation-feedback" class="retaliation-alert"></div>
 
-  <!-- Notification Container -->
-  <div id="notification-container"></div>
+    <!-- Notification Container -->
+    <div id="notification-container"></div>
 
-  <!-- Map container -->
-  <div id="map"></div>
+    <!-- Map container -->
+    <div id="map"></div>
 
-  <!-- Global State Initialization -->
-  <script>
-    // Define global state object to be used by other scripts
-    const globalMetricsData = {
-      ipi: 100,
-      propaganda: 100,
-      solidarity: 0
-    };
-  </script>
-
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <!-- Load globalCities.js first so globalCities array is available -->
-  <script src="js/globalCities.js?v=1.0.1"></script>
-  <!-- Load additional cities for better global coverage -->
-  <script src="js/additionalCities.js?v=1.0.0"></script>
-  <!-- Add GSAP for animations -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
-  <!-- Unified Notification System -->
-  <script src="js/notifications.js"></script>
-  <!-- Game logic modules -->
-  <script src="js/solid0p1.js"></script>
-  <script src="js/solid0p2.js"></script>
-  <script src="js/solid0p3.js"></script>
-  <script src="js/gameLogic.js"></script>
-  <script src="js/coupPlanner.js"></script>
-  <script src="js/randomEvents.js"></script>
-  <script src="js/log.js"></script>
-  <script src="js/progress.js"></script>
-
-  <!-- Main entry point that coordinates everything -->
-  <script src="js/main_new.js"></script>
-  <script src="js/reset-view.js"></script>
-
-  <!-- Intro and tutorial system must be last, as it triggers the game start -->
-  <script src="js/intro.js?v=1.0.0"></script>
-
-</body>
+    <!-- Main entry point that coordinates everything -->
+    <script type="module" src="/src/js/main_new.js"></script>
+  </body>
 </html>

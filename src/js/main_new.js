@@ -15,9 +15,7 @@ import { initializeProgressTrackers, updateProgress } from "./progress.js";
 import { initializeIntro } from "./intro.js";
 import { initializeChat } from "./chat-client.js";
 import { showToast } from "./notifications.js";
-import "../css/style.css";
-import "../css/intro.css";
-import "../css/notifications.css";
+import "../css/main.css";
 
 // Export map instance to be used across modules
 export let map;

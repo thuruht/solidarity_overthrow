@@ -1,4 +1,5 @@
-import { globalMetricsData, updateGlobalMetrics } from "./main_new.js";
+import { globalMetricsData } from "./gameState.js";
+import { updateGlobalMetrics } from "./main_new.js";
 import { showFeedback, updateCityVisuals } from "./solid0p2.js";
 
 // File: solid0p3.js
