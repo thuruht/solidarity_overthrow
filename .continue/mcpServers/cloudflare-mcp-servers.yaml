@@ -1,0 +1,52 @@
+name: Cloudflare MCP Servers
+version: 0.0.1
+schema: v1
+mcpServers:
+  - name: Cloudflare Documentation
+    command: npx
+    args:
+      - -y
+      - mcp-remote
+      - --mcp-server-url
+      - https://docs.mcp.cloudflare.com/sse
+    env: {}
+  - name: Cloudflare Workers Builds
+    command: npx
+    args:
+      - -y
+      - mcp-remote
+      - --mcp-server-url
+      - https://builds.mcp.cloudflare.com/sse
+    env: {}
+  - name: Cloudflare Observability
+    command: npx
+    args:
+      - -y
+      - mcp-remote
+      - --mcp-server-url
+      - https://observability.mcp.cloudflare.com/sse
+    env: {}
+  - name: Cloudflare AI Gateway
+    command: npx
+    args:
+      - -y
+      - mcp-remote
+      - --mcp-server-url
+      - https://ai-gateway.mcp.cloudflare.com/sse
+    env: {}
+  - name: Cloudflare Browser Rendering
+    command: npx
+    args:
+      - -y
+      - mcp-remote
+      - --mcp-server-url
+      - https://browser.mcp.cloudflare.com/sse
+    env: {}
+  - name: Cloudflare CASB
+    command: npx
+    args:
+      - -y
+      - mcp-remote
+      - --mcp-server-url
+      - https://casb.mcp.cloudflare.com/sse
+    env: {}
