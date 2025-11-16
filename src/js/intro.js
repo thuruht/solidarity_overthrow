@@ -483,7 +483,6 @@ function createHelpPanel() {
     <ul>
       <li>Click and drag to move the map</li>
       <li>Use the zoom controls or mouse wheel to zoom in/out</li>
-      <li>Click the "Reset View" button to return to the default view</li>
       <li>Click on city markers to view detailed information and take city-specific actions</li>
     </ul>
     
@@ -492,7 +491,7 @@ function createHelpPanel() {
       <li>Open the "Search" panel in the top control bar.</li>
       <li>Type a city name to see a live list of results.</li>
       <li>Click a city to fly to it on the map.</li>
-      <li>Selected city metrics appear in the "City" panel.</li>
+      <li>Selected city metrics appear in the "Selected City" panel.</li>
     </ul>
   `;
 
