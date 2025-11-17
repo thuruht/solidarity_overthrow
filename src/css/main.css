@@ -677,53 +677,7 @@ html {
   background-color: #555;
 }
 
-/* Admin Panel Styles */
-#admin-panel li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px 0;
-}
-.admin-badge,
-.muted-badge {
-  font-size: 0.7rem;
-  padding: 2px 5px;
-  border-radius: 3px;
-  margin-left: 8px;
-  font-weight: bold;
-}
-.admin-badge {
-  background-color: #ffc107;
-  color: #000;
-}
-.muted-badge {
-  background-color: #dc3545;
-  color: #fff;
-}
 
-/* Admin Panel Styles */
-#admin-panel li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px 0;
-}
-.admin-badge,
-.muted-badge {
-  font-size: 0.7rem;
-  padding: 2px 5px;
-  border-radius: 3px;
-  margin-left: 8px;
-  font-weight: bold;
-}
-.admin-badge {
-  background-color: #ffc107;
-  color: #000;
-}
-.muted-badge {
-  background-color: #dc3545;
-  color: #fff;
-}
 
 /* Global Metrics in Panel */
 .global-metrics {

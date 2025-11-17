@@ -9,6 +9,7 @@ import {
 import { setupCityInteractions, updateCityMetrics } from "./solid0p2.js";
 import { initializeCollectiveActions as initCollectiveActions } from "./solid0p3.js";
 import { gameLoopManager } from "./gameLoop.js";
+import { initializeGameLogic } from "./gameLogic.js";
 import { initRandomEvents } from "./randomEvents.js";
 import { initializeLog } from "./log.js";
 import { initializeProgressTrackers, updateProgress } from "./progress.js";
