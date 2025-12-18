@@ -16,15 +16,17 @@ const gameLoopManager = (() => {
   function tick() {
     // --- Every Tick: Calculate Global Metrics ---
     if (globalCities.length > 0) {
-      const totalIpi = globalCities.reduce((sum, city) => sum + city.ipi, 0);
-      const totalPropaganda = globalCities.reduce(
-        (sum, city) => sum + city.propaganda,
-        0
-      );
-      const totalSolidarity = globalCities.reduce(
-        (sum, city) => sum + city.solidarity,
-        0
-      );
+      let totalIpi = 0;
+      let totalPropaganda = 0;
+      let totalSolidarity = 0;
+
+      // Single pass optimization
+      for (const city of globalCities) {
+        totalIpi += city.ipi;
+        totalPropaganda += city.propaganda;
+        totalSolidarity += city.solidarity;
+      }
+
       globalMetricsData.ipi = totalIpi / globalCities.length;
       globalMetricsData.propaganda = totalPropaganda / globalCities.length;
       globalMetricsData.solidarity = totalSolidarity / globalCities.length;

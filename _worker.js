@@ -1,4 +1,4 @@
-// public/_worker.js
+// _worker.js
 
 export { ChatRoom } from "./chat.js";
 
@@ -17,7 +17,27 @@ export default {
     }
 
     // Serve static assets
-    return env.ASSETS.fetch(request);
+    let response = await env.ASSETS.fetch(request);
+    if (response.status === 404 && !url.pathname.startsWith("/api/")) {
+      const accept = request.headers.get("Accept");
+      if (accept && accept.includes("text/html")) {
+        response = await env.ASSETS.fetch(
+          new Request(new URL("/index.html", request.url), request)
+        );
+      }
+    }
+
+    // Add security headers
+    const newHeaders = new Headers(response.headers);
+    newHeaders.set("X-Content-Type-Options", "nosniff");
+    newHeaders.set("X-Frame-Options", "DENY");
+    newHeaders.set("Referrer-Policy", "strict-origin-when-cross-origin");
+
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: newHeaders,
+    });
   },
 };
 
@@ -31,7 +51,7 @@ async function handleApiRequest(request, env) {
     case "/api/me":
       return handleMe(request, env);
     case "/api/logout":
-      return handleLogout(request, env);
+      return handleLogout(request, env); // Now async
     case "/api/save":
       return handleSaveGame(request, env);
     case "/api/load":
@@ -56,15 +76,33 @@ async function handleApiRequest(request, env) {
 }
 
 function handleLogin(request, env) {
+  const state = crypto.randomUUID();
   const githubUrl = new URL("https://github.com/login/oauth/authorize");
   githubUrl.searchParams.set("client_id", env.GITHUB_CLIENT_ID);
   githubUrl.searchParams.set("scope", "read:user"); // Request user profile data
-  return Response.redirect(githubUrl.toString(), 302);
+  githubUrl.searchParams.set("state", state);
+
+  const headers = new Headers({
+    Location: githubUrl.toString(),
+    "Set-Cookie": `oauth_state=${state}; HttpOnly; Secure; Path=/; SameSite=Lax; Max-Age=600`,
+  });
+
+  return new Response(null, { status: 302, headers });
 }
 
 async function handleAuthCallback(request, env) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
+  const state = url.searchParams.get("state");
+
+  const cookieHeader = request.headers.get("Cookie") || "";
+  const cookies = cookieHeader.split(";").map((c) => c.trim());
+  const stateCookie = cookies.find((c) => c.startsWith("oauth_state="));
+  const storedState = stateCookie ? stateCookie.split("=")[1] : null;
+
+  if (!state || !storedState || state !== storedState) {
+    return new Response("Invalid state parameter", { status: 400 });
+  }
 
   // Exchange the code for an access token
   const tokenResponse = await fetch(
@@ -114,6 +152,7 @@ async function handleAuthCallback(request, env) {
     Location: "/", // Redirect back to the homepage
     "Set-Cookie": `session_id=${sessionId}; HttpOnly; Secure; Path=/; SameSite=Lax`,
   });
+  headers.append("Set-Cookie", "oauth_state=; HttpOnly; Secure; Path=/; Max-Age=0"); // Clear state cookie
 
   return new Response(null, { status: 302, headers });
 }
@@ -138,12 +177,16 @@ async function handleMe(request, env) {
   });
 }
 
-function handleLogout(request, env) {
+async function handleLogout(request, env) {
+  const sessionId = getSessionId(request);
+  if (sessionId) {
+    await env.SESSIONS.delete(sessionId);
+  }
+
   const headers = new Headers({
     Location: "/", // Redirect back to the homepage
     "Set-Cookie": `session_id=; HttpOnly; Secure; Path=/; SameSite=Lax; Max-Age=0`, // Expire the cookie
   });
-  // In a real app, you might also want to delete the session from KV.
   return new Response(null, { status: 302, headers });
 }
 
@@ -205,9 +248,19 @@ async function handleLeaderboardSubmit(request, env) {
     return new Response("Method Not Allowed", { status: 405 });
   }
 
+  const sessionId = getSessionId(request);
+  if (!sessionId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+  const sessionData = await env.SESSIONS.get(sessionId);
+  if (!sessionData) {
+    return new Response("Invalid session", { status: 401 });
+  }
+  const { username } = JSON.parse(sessionData);
+
   try {
-    const { username, score } = await request.json();
-    if (!username || typeof score !== "number") {
+    const { score } = await request.json();
+    if (typeof score !== "number") {
       return new Response("Invalid score submission", { status: 400 });
     }
 
@@ -351,15 +404,34 @@ async function handleWeatherRequest(request, env) {
     return new Response("Missing OWM_API_KEY secret", { status: 500 });
   }
 
+  const cacheUrl = new URL(request.url);
+  const cacheKey = new Request(cacheUrl.toString(), request);
+  const cache = caches.default;
+
+  // Check for cached response
+  let response = await cache.match(cacheKey);
+  if (response) {
+    return response;
+  }
+
   const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
 
   try {
-    const response = await fetch(apiUrl);
-    const data = await response.json();
+    const apiResponse = await fetch(apiUrl);
+    const data = await apiResponse.json();
 
-    return new Response(JSON.stringify(data), {
-      headers: { "Content-Type": "application/json" },
+    // Create a new response with Cache-Control headers
+    response = new Response(JSON.stringify(data), {
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "public, max-age=600", // Cache for 10 minutes
+      },
     });
+
+    // Store in cache (wait for it to complete to ensure it's stored)
+    await cache.put(cacheKey, response.clone());
+
+    return response;
   } catch (error) {
     return new Response("Error fetching weather data", { status: 500 });
   }

@@ -1,13 +1,14 @@
-// public/chat.js
+// chat.js
 
 export class ChatRoom {
   constructor(state, env) {
     this.state = state;
     this.env = env; // Store env to access SESSIONS KV
     this.sessions = [];
+    this.muted = new Set();
     // Load muted users from durable storage on startup
-    this.state.storage.get("muted").then((muted) => {
-      this.muted = muted || new Set();
+    this.state.blockConcurrencyWhile(async () => {
+      this.muted = (await this.state.storage.get("muted")) || new Set();
     });
   }
 
@@ -45,7 +46,8 @@ export class ChatRoom {
       return new Response("Missing session cookie", { status: 401 });
     }
 
-    const sessionId = cookieHeader.match(/session_id=([^;]+)/)[1];
+    const match = cookieHeader.match(/session_id=([^;]+)/);
+    const sessionId = match ? match[1] : null;
     if (!sessionId) {
       return new Response("Invalid session cookie", { status: 401 });
     }

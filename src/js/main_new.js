@@ -187,7 +187,7 @@ function initializeLeaderboard() {
 
 async function fetchLeaderboard() {
   const list = document.getElementById("leaderboard-list");
-  list.innerHTML = "<li>Loading...</li>";
+  list.innerHTML = '<div style="text-align:center; padding: 10px;"><div class="loading-spinner"></div></div>';
   try {
     const response = await fetch("/api/leaderboard");
     if (!response.ok) throw new Error("Failed to fetch leaderboard");
@@ -279,7 +279,7 @@ function initializeAdminPanel() {
 
   adminToggle.addEventListener("click", async () => {
     const container = document.getElementById("admin-chat-users");
-    container.innerHTML = "Loading...";
+    container.innerHTML = '<div class="loading-spinner"></div>';
     try {
       const response = await fetch("/api/admin/chat-status");
       if (!response.ok) {
@@ -380,7 +380,7 @@ function initializeLoadGame() {
     const slotsContainer = document.querySelector(
       "#load-game-panel .load-slots"
     );
-    slotsContainer.innerHTML = "<p>Fetching saves...</p>";
+    slotsContainer.innerHTML = '<div class="loading-spinner"></div>';
 
     try {
       const response = await fetch("/api/saves");
@@ -415,20 +415,26 @@ async function handleLoadClick(event) {
   try {
     showToast("Loading...", `Loading game from ${slotId}.`, "info");
     const response = await fetch(`/api/load?slotId=${slotId}`);
+    
     if (!response.ok) {
-      throw new Error(`Server responded with ${response.status}`);
+       // Try to parse error message if possible
+       let errorMsg = `Server responded with ${response.status}`;
+       try {
+         const errData = await response.json();
+         if (errData.error) errorMsg = errData.error;
+       } catch (e) {}
+       throw new Error(errorMsg);
     }
+
     const loadedData = await response.json();
-    if (loadedData.success) {
-      applyLoadedState(loadedData.gameState);
-      // Refresh UI elements that depend on the new state
+    
+    // The worker returns the raw game state object
+    if (loadedData && loadedData.cities && loadedData.metrics) {
+      applyLoadedState(loadedData);
       updateGlobalMetrics();
-      // Potentially, you might need to redraw city markers if they've changed
-      // This is a placeholder for a function that would handle that
-      // refreshCityMarkers(); 
       showToast("Game Loaded!", `Progress restored from ${slotId}.`, "success");
     } else {
-      throw new Error(loadedData.message || "Unknown server error.");
+      throw new Error("Invalid save file format.");
     }
   } catch (error) {
     console.error("Failed to load game:", error);

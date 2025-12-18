@@ -1,3 +1,5 @@
+// vite.config.js
+
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -6,7 +8,7 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       input: {
-        main: 'public/index.html'
+        main: 'index.html'
       }
     }
   }
