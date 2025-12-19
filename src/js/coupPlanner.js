@@ -1,6 +1,6 @@
 // Coup Planning and Execution Logic
 import { gameLogic } from "./gameLogic.js";
-import { globalMetricsData, globalCities } from "./gameState.js";
+import { getMetrics, getCities } from "./gameState.js";
 import { showToast } from "./notifications.js";
 import { updateProgress } from "./progress.js";
 import { map } from "./main_new.js";
@@ -55,8 +55,8 @@ export const coupPlanner = (() => {
     const maxIPI = 85; // IPI should be weakened to max 85%
 
     if (
-      globalMetricsData.solidarity >= minSolidarity &&
-      globalMetricsData.ipi <= maxIPI
+      getMetrics().solidarity >= minSolidarity &&
+      getMetrics().ipi <= maxIPI
     ) {
       // Add button if it doesn't exist
       if (!existingBtn && actionsPanel) {
@@ -91,8 +91,8 @@ export const coupPlanner = (() => {
       }
     } else if (
       existingBtn &&
-      (globalMetricsData.solidarity < minSolidarity ||
-        globalMetricsData.ipi > maxIPI)
+      (getMetrics().solidarity < minSolidarity ||
+        getMetrics().ipi > maxIPI)
     ) {
       // Remove button if conditions no longer met
       existingBtn.remove();
@@ -167,7 +167,7 @@ export const coupPlanner = (() => {
     } else {
       cellsHTML = '<ul class="cells-list">';
       plan.cells.forEach((cell) => {
-        const city = globalCities.find((c) => c.name === cell);
+        const city = getCities().find((c) => c.name === cell);
         const isLead = cell === plan.leadCity;
 
         cellsHTML += `<li class="${isLead ? "lead-cell" : ""}">
@@ -270,7 +270,7 @@ export const coupPlanner = (() => {
     if (!checkCoupActionCooldown()) return;
 
     // Filter cities that have high enough solidarity and aren't already cells
-    const eligibleCities = globalCities.filter(
+    const eligibleCities = getCities().filter(
       (city) => city.solidarity >= 50 && !plan.cells.includes(city.name)
     );
 
@@ -327,7 +327,7 @@ export const coupPlanner = (() => {
     plan.lastAction = Date.now();
 
     // Increase preparation level
-    const city = globalCities.find((c) => c.name === cityName);
+    const city = getCities().find((c) => c.name === cityName);
     const prepIncrease = Math.floor(city.solidarity / 10); // Higher solidarity = more prep
     plan.prepLevel = Math.min(100, plan.prepLevel + prepIncrease);
     updateProgress("revolution", plan.prepLevel);
@@ -349,7 +349,7 @@ export const coupPlanner = (() => {
     updateCoupPlanningPanel();
 
     // Zoom to the city on the map
-    const cityData = globalCities.find((c) => c.name === cityName);
+    const cityData = getCities().find((c) => c.name === cityName);
     if (cityData && map) {
       map.setView([cityData.lat, cityData.lon], 6);
     }
@@ -382,7 +382,7 @@ export const coupPlanner = (() => {
       <div class="city-list">
         ${plan.cells
           .map((cellName) => {
-            const city = globalCities.find((c) => c.name === cellName);
+            const city = getCities().find((c) => c.name === cellName);
             return `<div class="city-option" data-city="${cellName}">
             <span>${cellName}</span>
             <span>Solidarity: ${city ? city.solidarity : "N/A"}%</span>
@@ -437,7 +437,7 @@ export const coupPlanner = (() => {
     updateCoupPlanningPanel();
 
     // Zoom to the lead city on the map
-    const cityData = globalCities.find((c) => c.name === cityName);
+    const cityData = getCities().find((c) => c.name === cityName);
     if (cityData && map) {
       map.setView([cityData.lat, cityData.lon], 6);
     }
@@ -559,8 +559,8 @@ export const coupPlanner = (() => {
     // Calculate success chance based on preparation, security, and global metrics
     const baseChance = plan.prepLevel;
     const securityModifier = plan.securityLevel / 100; // Higher security = better chance
-    const solidarityModifier = globalMetricsData.solidarity / 50; // Higher solidarity = better chance
-    const ipiModifier = (100 - globalMetricsData.ipi) / 50; // Lower IPI = better chance
+    const solidarityModifier = getMetrics().solidarity / 50; // Higher solidarity = better chance
+    const ipiModifier = (100 - getMetrics().ipi) / 50; // Lower IPI = better chance
 
     const successChance =
       baseChance * securityModifier * solidarityModifier * ipiModifier;

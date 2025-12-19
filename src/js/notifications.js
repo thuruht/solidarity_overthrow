@@ -7,30 +7,34 @@ export function showToast(title, message, type = "info", duration = 5000) {
     return;
   }
 
-  const toast = document.createElement("div");
-  toast.className = `toast ${type}`;
-  toast.innerHTML = `
-        <h3>${title}</h3>
-        <p>${message}</p>
+  const notification = document.createElement("div");
+  notification.className = `notification ${type}`;
+  
+  notification.innerHTML = `
+        <div>
+            <h3>${title}</h3>
+            <p>${message}</p>
+        </div>
+        <span class="notification-close">&times;</span>
     `;
 
-  // Set animation duration via JS
-  toast.style.animationDuration = `${duration / 1000}s, ${duration / 1000}s`;
-  toast.style.animation = `slideIn 0.5s ease forwards, fadeOut 0.5s ease ${
-    duration / 1000 - 0.5
-  }s forwards`;
+  // Close button functionality
+  const closeBtn = notification.querySelector(".notification-close");
+  closeBtn.addEventListener("click", () => {
+    notification.remove();
+  });
 
-  container.appendChild(toast);
+  // Add to the top of the container (so newest is top)
+  // container.prepend(notification); 
+  // Wait, if it pushes the map down, maybe we want it at the bottom of the container?
+  // If we prepend, the "stack" grows downwards.
+  container.appendChild(notification);
+  
+  // Auto-scroll to bottom of notification container to see newest?
+  // container.scrollTop = container.scrollHeight;
 
   // Also log the notification to the history
   if (addLogEntry) {
     addLogEntry(`${title}: ${message}`, type);
   }
-
-  // Remove the element after the animation finishes
-  toast.addEventListener("animationend", (e) => {
-    if (e.animationName === "fadeOut") {
-      toast.remove();
-    }
-  });
 }

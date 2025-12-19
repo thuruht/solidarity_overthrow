@@ -1,7 +1,7 @@
 // js/gameLoop.js
 import { gameLogic } from "./gameLogic.js";
 import { triggerRandomEvent } from "./randomEvents.js";
-import { globalCities, globalMetricsData } from "./gameState.js";
+import { getCities, setMetrics } from "./gameState.js";
 import { updateGlobalMetrics } from "./main_new.js";
 
 const gameLoopManager = (() => {
@@ -15,22 +15,23 @@ const gameLoopManager = (() => {
 
   function tick() {
     // --- Every Tick: Calculate Global Metrics ---
-    if (globalCities.length > 0) {
+    if (getCities().length > 0) {
       let totalIpi = 0;
       let totalPropaganda = 0;
       let totalSolidarity = 0;
 
       // Single pass optimization
-      for (const city of globalCities) {
+      for (const city of getCities()) {
         totalIpi += city.ipi;
         totalPropaganda += city.propaganda;
         totalSolidarity += city.solidarity;
       }
 
-      globalMetricsData.ipi = totalIpi / globalCities.length;
-      globalMetricsData.propaganda = totalPropaganda / globalCities.length;
-      globalMetricsData.solidarity = totalSolidarity / globalCities.length;
-    }
+          const currentMetrics = getMetrics();
+          currentMetrics.ipi = totalIpi / getCities().length;
+          currentMetrics.propaganda = totalPropaganda / getCities().length;
+          currentMetrics.solidarity = totalSolidarity / getCities().length;
+          setMetrics(currentMetrics);    }
 
     // --- Less Frequent Updates ---
 

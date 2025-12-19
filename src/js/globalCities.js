@@ -1,4 +1,4 @@
-export let globalCities = [
+export const initialCities = [
   {
     name: "Melbourne, AR",
     lat: 36.0592,

@@ -1,4 +1,4 @@
-import { globalMetricsData } from "./gameState.js";
+import { getMetrics, getCities, updateCity } from "./gameState.js";
 import { updateGlobalMetrics } from "./main_new.js";
 import { showFeedback, updateCityVisuals } from "./solid0p2.js";
 
@@ -28,8 +28,8 @@ export function initializeCollectiveActions() {
 
 // Perform a collective action that affects multiple cities
 function performCollectiveAction(actionType) {
-  const globalSolidarity = globalMetricsData.solidarity;
-  const potentialCities = globalCities.filter((city) => city.solidarity > 10);
+  const globalSolidarity = getMetrics().solidarity;
+  const potentialCities = getCities().filter((city) => city.solidarity > 10);
 
   if (potentialCities.length === 0) {
     showFeedback(
@@ -84,17 +84,23 @@ function performCollectiveAction(actionType) {
         break;
     }
 
-    city.ipi = Math.max(0, Math.min(100, city.ipi + ipiChange));
-    city.propaganda = Math.max(
+    const newIpi = Math.max(0, Math.min(100, city.ipi + ipiChange));
+    const newPropaganda = Math.max(
       0,
       Math.min(100, city.propaganda + propagandaChange)
     );
-    city.solidarity = Math.max(
+    const newSolidarity = Math.max(
       0,
       Math.min(100, city.solidarity + solidarityChange)
     );
 
-    updateCityVisuals(city);
+    updateCity(city.name, {
+      ipi: newIpi,
+      propaganda: newPropaganda,
+      solidarity: newSolidarity,
+    });
+
+    updateCityVisuals(city.name);
   });
 
   showFeedback(actionFeedback, "success");
@@ -104,7 +110,7 @@ function performCollectiveAction(actionType) {
 
 // Trigger state retaliation in response to collective actions
 function triggerStateRetaliation(actionType, affectedCities) {
-  const retaliationChance = Math.random() + (0.5 - globalMetricsData.ipi / 200);
+  const retaliationChance = Math.random() + (0.5 - getMetrics().ipi / 200);
   if (retaliationChance < 0.3) return;
 
   let retaliationType = "";
@@ -132,7 +138,7 @@ function triggerStateRetaliation(actionType, affectedCities) {
       break;
   }
 
-  if (globalMetricsData.ipi < 50 && Math.random() < 0.2) {
+  if (getMetrics().ipi < 50 && Math.random() < 0.2) {
     retaliationType = "military_intervention";
     message = "Military forces deployed to maintain control!";
   }
@@ -147,37 +153,48 @@ function applyRetaliation(type, message) {
   showFeedback(message, "danger");
 
   const targetCityCount = Math.floor(Math.random() * 5) + 3;
-  const highSolidarityCities = globalCities
+  const highSolidarityCities = getCities()
     .filter((c) => c.solidarity > 30)
     .sort(() => 0.5 - Math.random())
     .slice(0, targetCityCount);
 
   highSolidarityCities.forEach((city) => {
+    let newIpi = city.ipi;
+    let newSolidarity = city.solidarity;
+    let newPropaganda = city.propaganda;
+
     switch (type) {
       case "crackdown":
-        city.ipi += 2;
-        city.solidarity -= 5;
+        newIpi += 2;
+        newSolidarity -= 5;
         break;
       case "propaganda":
-        city.propaganda += 5;
-        city.solidarity -= 1;
+        newPropaganda += 5;
+        newSolidarity -= 1;
         break;
       case "arrests":
-        city.solidarity -= 3;
+        newSolidarity -= 3;
         break;
       case "surveillance":
-        city.solidarity -= 2;
+        newSolidarity -= 2;
         break;
       case "economic_sanctions":
-        city.solidarity -= 4;
-        city.propaganda += 2;
+        newSolidarity -= 4;
+        newPropaganda += 2;
         break;
       case "military_intervention":
-        city.ipi += 10;
-        city.solidarity -= 8;
+        newIpi += 10;
+        newSolidarity -= 8;
         break;
     }
-    updateCityVisuals(city);
+
+    updateCity(city.name, {
+      ipi: newIpi,
+      solidarity: newSolidarity,
+      propaganda: newPropaganda,
+    });
+
+    updateCityVisuals(city.name);
   });
 
   updateGlobalMetrics();

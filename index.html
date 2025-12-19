@@ -19,6 +19,9 @@
     />
   </head>
   <body>
+    <!-- Notification Container (Top Bar) -->
+    <div id="notification-container"></div>
+
     <!-- Unified Horizontal Control Bar -->
     <div id="unified-controls">
       <!-- City Search Control -->
@@ -27,6 +30,9 @@
           <span class="material-icons">search</span> Search
         </button>
         <div id="city-search-panel" class="control-panel">
+          <select id="citySelect" aria-label="Select a city">
+            <option value="" disabled selected>Select a city...</option>
+          </select>
           <input
             type="text"
             id="citySearch"
@@ -160,9 +166,6 @@
     </div>
 
     <div id="retaliation-feedback" class="retaliation-alert"></div>
-
-    <!-- Notification Container -->
-    <div id="notification-container"></div>
 
     <!-- Map container -->
     <div id="map"></div>

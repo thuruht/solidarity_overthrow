@@ -1,41 +1,71 @@
-import { globalCities as initialCities } from "./globalCities.js";
-import { additionalCities } from "./additionalCities.js";
+import { initialCities } from "./globalCities.js";
 
-function getInitialCities() {
-  // Combine city data at initialization
-  const allCities = [...initialCities, ...additionalCities];
-
-  // Filter out duplicates by name, keeping the first occurrence
-  const uniqueCityNames = new Set();
-  return allCities.filter((city) => {
-    if (uniqueCityNames.has(city.name)) {
-      return false;
+let state = {
+    cities: [...initialCities],
+    metrics: {
+        totalSolidarity: 0,
+        averageIPI: 0,
+        averagePropaganda: 0,
+        citiesCount: 0,
+        totalPopulation: 0
     }
-    uniqueCityNames.add(city.name);
-    return true;
-  });
+};
+
+export function getCities() {
+    return state.cities;
 }
 
-function getInitialMetrics() {
-  return {
-    ipi: 100,
-    propaganda: 100,
-    solidarity: 0,
-  };
+export function getMetrics() {
+    return state.metrics;
 }
 
-// These will hold the current, mutable state of the game.
-export let globalCities = getInitialCities();
-export let globalMetricsData = getInitialMetrics();
-
-export function resetGameState() {
-  globalCities = getInitialCities();
-  globalMetricsData = getInitialMetrics();
+export function setCities(newCities) {
+    state.cities = newCities;
 }
+
+export function setMetrics(newMetrics) {
+    state.metrics = newMetrics;
+}
+
+export function updateCity(cityName, newCityProperties) {
+    const currentCities = getCities();
+    const cityIndex = currentCities.findIndex(city => city.name === cityName);
+
+    if (cityIndex !== -1) {
+        const updatedCity = { ...currentCities[cityIndex], ...newCityProperties };
+        const newCities = [...currentCities];
+        newCities[cityIndex] = updatedCity;
+        setCities(newCities);
+    } else {
+        console.warn(`City with name ${cityName} not found.`);
+    }
+}
+
+export function addCity(newCity) {
+    const currentCities = getCities();
+    const newCities = [...currentCities, newCity];
+    setCities(newCities);
+}
+
 
 export function applyLoadedState(loadedState) {
-  // Overwrite the current state with the loaded data
-  // A deep copy is important here to avoid reference issues.
-  globalCities = JSON.parse(JSON.stringify(loadedState.cities));
-  globalMetricsData = JSON.parse(JSON.stringify(loadedState.metrics));
+    if (loadedState && loadedState.cities && loadedState.metrics) {
+        setCities(loadedState.cities);
+        setMetrics(loadedState.metrics);
+        console.log("Loaded game state applied.");
+    } else {
+        console.error("Invalid loaded state provided.");
+    }
+}
+
+export function resetGameState() {
+    setCities([]);
+    setMetrics({
+        totalSolidarity: 0,
+        averageIPI: 0,
+        averagePropaganda: 0,
+        citiesCount: 0,
+        totalPopulation: 0
+    });
+    console.log("Game state reset.");
 }

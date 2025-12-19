@@ -1,5 +1,5 @@
 import { initializeGame, map } from "./main_new.js";
-import { globalMetricsData, resetGameState } from "./gameState.js";
+import { getMetrics, resetGameState } from "./gameState.js";
 import { gameLoopManager } from "./gameLoop.js";
 import { showToast } from "./notifications.js";
 import { coupPlanner } from "./coupPlanner.js";
@@ -24,18 +24,18 @@ export const gameLogic = (() => {
     }
 
     // Standard victory conditions
-    if (globalMetricsData.ipi <= 25) {
+    if (getMetrics().ipi <= 25) {
       // Win condition - imperialist power is very low
       triggerWin("victory");
-    } else if (globalMetricsData.solidarity >= 75) {
+    } else if (getMetrics().solidarity >= 75) {
       // Alternative win condition - solidarity is very high
       triggerWin("solidarity-victory");
-    } else if (globalMetricsData.propaganda <= 25) {
+    } else if (getMetrics().propaganda <= 25) {
       // Alternative win condition - propaganda is very low
       triggerWin("truth-victory");
     } else if (
-      globalMetricsData.ipi >= 95 &&
-      globalMetricsData.solidarity <= 10
+      getMetrics().ipi >= 95 &&
+      getMetrics().solidarity <= 10
     ) {
       // Lose condition - high imperialist power and low solidarity
       triggerLose("defeat");
@@ -72,8 +72,8 @@ export const gameLogic = (() => {
         message = `
           <h2>Victory! Imperialism Has Been Overthrown!</h2>
           <p>Through solidarity and collective action, the people of the world have successfully dismantled the imperialist power structure!</p>
-          <p>Global IPI: ${globalMetricsData.ipi.toFixed(1)}%</p>
-          <p>Global Solidarity: ${globalMetricsData.solidarity.toFixed(1)}%</p>
+          <p>Global IPI: ${getMetrics().ipi.toFixed(1)}%</p>
+          <p>Global Solidarity: ${getMetrics().solidarity.toFixed(1)}%</p>
           <button id="restart-game">Continue The Struggle</button>
         `;
         break;
@@ -82,8 +82,8 @@ export const gameLogic = (() => {
         message = `
           <h2>Solidarity Victory!</h2>
           <p>The world's people have united in an unprecedented show of solidarity. Imperialism cannot survive against such unity!</p>
-          <p>Global Solidarity: ${globalMetricsData.solidarity.toFixed(1)}%</p>
-          <p>Global IPI: ${globalMetricsData.ipi.toFixed(1)}%</p>
+          <p>Global Solidarity: ${getMetrics().solidarity.toFixed(1)}%</p>
+          <p>Global IPI: ${getMetrics().ipi.toFixed(1)}%</p>
           <button id="restart-game">Continue The Struggle</button>
         `;
         break;
@@ -92,8 +92,8 @@ export const gameLogic = (() => {
         message = `
           <h2>Truth Victory!</h2>
           <p>Imperial propaganda has been countered with truth. The people now see through the lies and are rising up!</p>
-          <p>Global Propaganda: ${globalMetricsData.propaganda.toFixed(1)}%</p>
-          <p>Global IPI: ${globalMetricsData.ipi.toFixed(1)}%</p>
+          <p>Global Propaganda: ${getMetrics().propaganda.toFixed(1)}%</p>
+          <p>Global IPI: ${getMetrics().ipi.toFixed(1)}%</p>
           <button id="restart-game">Continue The Struggle</button>
         `;
         break;
@@ -102,8 +102,8 @@ export const gameLogic = (() => {
         message = `
           <h2>Revolutionary Victory!</h2>
           <p>The secret revolutionary network you built has successfully executed a global coup! The imperialist structures have been overthrown and the people now control their own destiny.</p>
-          <p>Global Solidarity: ${globalMetricsData.solidarity.toFixed(1)}%</p>
-          <p>Global IPI: ${globalMetricsData.ipi.toFixed(1)}%</p>
+          <p>Global Solidarity: ${getMetrics().solidarity.toFixed(1)}%</p>
+          <p>Global IPI: ${getMetrics().ipi.toFixed(1)}%</p>
           <button id="restart-game">Continue The Struggle</button>
         `;
         break;
@@ -112,8 +112,8 @@ export const gameLogic = (() => {
         message = `
           <h2>Defeat!</h2>
           <p>The imperial powers have consolidated control. The struggle continues, but this battle is lost...</p>
-          <p>Global IPI: ${globalMetricsData.ipi.toFixed(1)}%</p>
-          <p>Global Solidarity: ${globalMetricsData.solidarity.toFixed(1)}%</p>
+          <p>Global IPI: ${getMetrics().ipi.toFixed(1)}%</p>
+          <p>Global Solidarity: ${getMetrics().solidarity.toFixed(1)}%</p>
           <button id="restart-game">Try Again</button>
         `;
         break;
@@ -157,7 +157,7 @@ export const gameLogic = (() => {
   async function submitScore() {
     // A simple scoring metric: solidarity percentage + (100 - IPI percentage)
     const score = Math.round(
-      globalMetricsData.solidarity + (100 - globalMetricsData.ipi)
+      getMetrics().solidarity + (100 - getMetrics().ipi)
     );
 
     // For now, we'll get the username from the same prompt as chat.
@@ -166,18 +166,22 @@ export const gameLogic = (() => {
       localStorage.getItem("revolutionaryUsername") || "Anonymous";
 
     try {
-      await fetch("/api/leaderboard/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, score }),
-      });
-      console.log(`Score of ${score} submitted for ${username}.`);
-      showToast(
-        "Score Submitted!",
-        `Your score of ${score} has been added to the leaderboard.`,
-        "success"
-      );
-    } catch (error) {
+          try {
+            await fetch("/api/leaderboard/submit", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username, score }),
+            });
+            console.log(`Score of ${score} submitted for ${username}.`);
+            showToast(
+              "Score Submitted!",
+              `Your score of ${score} has been added to the leaderboard.`,
+              "success"
+            );
+          } catch (error) {
+            console.error("Failed to submit score:", error);
+            showToast("Score Submission Failed", "Could not submit score to leaderboard.", "error");
+          }    } catch (error) {
       console.error("Failed to submit score:", error);
     }
   }
@@ -271,7 +275,7 @@ export const gameLogic = (() => {
     // Check for Propaganda Buster
     if (
       !achievements.propagandaBuster.unlocked &&
-      globalMetricsData.propaganda < 75
+      getMetrics().propaganda < 75
     ) {
       unlockAchievement("propagandaBuster");
     }
@@ -279,7 +283,7 @@ export const gameLogic = (() => {
     // Check for Solidarity Builder
     if (
       !achievements.solidarityBuilder.unlocked &&
-      globalMetricsData.solidarity > 25
+      getMetrics().solidarity > 25
     ) {
       unlockAchievement("solidarityBuilder");
     }

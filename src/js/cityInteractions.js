@@ -1,7 +1,7 @@
 import { map, updateGlobalMetrics } from "./main_new.js";
 import { showToast } from "./notifications.js";
 import { gameLogic } from "./gameLogic.js";
-import { globalCities, globalMetricsData } from "./gameState.js";
+import { getCities, setCities, updateCity, addCity } from "./gameState.js";
 // File: solid0p2.js
 
 // This function will be called by main_new.js to set up everything related to city interactions
@@ -26,7 +26,7 @@ export function populateDropdown(filter = "") {
   }
 
   // Add cities to dropdown that match the filter
-  globalCities.forEach((city) => {
+  getCities().forEach((city) => {
     if (city.name.toLowerCase().includes(lowerCaseFilter)) {
       const option = document.createElement("option");
       option.value = city.name;
@@ -44,7 +44,7 @@ export function populateDropdown(filter = "") {
   // Restore previous selection if it still exists and matches filter
   if (
     currentCity &&
-    globalCities.some(
+    getCities().some(
       (c) =>
         c.name === currentCity && c.name.toLowerCase().includes(lowerCaseFilter)
     )
@@ -56,7 +56,7 @@ export function populateDropdown(filter = "") {
 // Initialize city markers on the map
 function initializeCityMarkers() {
   // Place markers for all cities with a delay
-  globalCities.forEach((city, index) => {
+  getCities().forEach((city, index) => {
     setTimeout(() => {
       placeStaticMarker(city);
     }, index * 50); // 50ms delay between each city
@@ -87,7 +87,7 @@ function placeStaticMarker(city) {
   marker.on("click", () => {
     document.getElementById("cityDropdown").value = city.name;
     map.setView([city.lat, city.lon], 6);
-    updateCityMetrics(city);
+    updateCityMetrics(city.name);
   });
 
   colorizeMarker(marker, city);
@@ -188,7 +188,7 @@ function createCityPopup(city) {
 
 // Perform action on a specific city
 function performCityAction(action, cityName) {
-  const city = globalCities.find((c) => c.name === cityName);
+  const city = getCities().find((c) => c.name === cityName);
   if (!city) return;
 
   let ipiChange = 0,
@@ -252,15 +252,21 @@ function performCityAction(action, cityName) {
       break;
   }
 
-  city.ipi = Math.max(0, Math.min(100, city.ipi + ipiChange));
-  city.propaganda = Math.max(
+  const newIpi = Math.max(0, Math.min(100, city.ipi + ipiChange));
+  const newPropaganda = Math.max(
     0,
     Math.min(100, city.propaganda + propagandaChange)
   );
-  city.solidarity = Math.max(
+  const newSolidarity = Math.max(
     0,
     Math.min(100, city.solidarity + solidarityChange)
   );
+
+  updateCity(city.name, {
+    ipi: newIpi,
+    propaganda: newPropaganda,
+    solidarity: newSolidarity,
+  });
 
   // Update marker and sidebar
   updateCityVisuals(city);
@@ -271,7 +277,10 @@ function performCityAction(action, cityName) {
 }
 
 // Update marker color and popup content
-export function updateCityVisuals(city) {
+export function updateCityVisuals(cityName) {
+  const city = getCities().find(c => c.name === cityName);
+  if (!city) return;
+
   const markerElement = document.getElementById(
     `marker-${city.name.replace(/[^a-zA-Z0-9]/g, "-")}`
   );
@@ -292,7 +301,7 @@ export function updateCityVisuals(city) {
 
   const dropdown = document.getElementById("cityDropdown");
   if (dropdown && dropdown.value === city.name) {
-    updateCityMetrics(city);
+    updateCityMetrics(city.name);
   }
 }
 
@@ -333,17 +342,17 @@ function setupDropdownListener() {
 
 // Handle city selection from dropdown
 function handleCitySelection(cityName) {
-  const city = globalCities.find((c) => c.name === cityName);
+  const city = getCities().find((c) => c.name === cityName);
   if (city) {
     map.setView([city.lat, city.lon], 6);
-    updateCityMetrics(city);
+    updateCityMetrics(city.name);
   }
 }
 
 // Add a custom city dynamically
 async function addCustomCity(cityName) {
   if (
-    globalCities.some((c) => c.name.toLowerCase() === cityName.toLowerCase())
+    getCities().some((c) => c.name.toLowerCase() === cityName.toLowerCase())
   ) {
     alert(`${cityName} is already on the map.`);
     return;
@@ -366,7 +375,7 @@ async function addCustomCity(cityName) {
         solidarity: Math.floor(Math.random() * 15),
         propaganda: 80 + Math.floor(Math.random() * 20),
       };
-      globalCities.push(newCity);
+      addCity(newCity);
       populateDropdown();
       placeStaticMarker(newCity);
       handleCitySelection(newCity.name);
@@ -379,7 +388,10 @@ async function addCustomCity(cityName) {
 }
 
 // Update the sidebar with city metrics
-export function updateCityMetrics(city) {
+export function updateCityMetrics(cityName) {
+  const city = getCities().find(c => c.name === cityName);
+  if (!city) return;
+
   const metricsDiv = document.querySelector(".city-metrics");
   if (!metricsDiv) return;
 
