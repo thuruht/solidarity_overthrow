@@ -14,7 +14,6 @@ import { initializeSaveGame, initializeLoadGame } from "./saveLoad.js";
 import { setupCityInteractions, updateCityMetrics } from "./cityInteractions.js";
 import { initializeCollectiveActions as initCollectiveActions } from "./collectiveActions.js";
 import { gameLoopManager } from "./gameLoop.js";
-import { initializeGameLogic } from "./gameLogic.js";
 import { initRandomEvents } from "./randomEvents.js";
 import { initializeLog } from "./log.js";
 import { initializeProgressTrackers } from "./progress.js";

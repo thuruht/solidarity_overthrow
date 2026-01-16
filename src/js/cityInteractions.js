@@ -1,4 +1,5 @@
-import { map, updateGlobalMetrics } from "./main_new.js";
+import { map } from "./main_new.js";
+import { updateGlobalMetrics } from "./uiControls.js";
 import { showToast } from "./notifications.js";
 import { gameLogic } from "./gameLogic.js";
 import { getCities, setCities, updateCity, addCity } from "./gameState.js";

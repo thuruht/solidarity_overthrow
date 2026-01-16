@@ -1,6 +1,6 @@
 import { getMetrics, getCities, updateCity } from "./gameState.js";
-import { updateGlobalMetrics } from "./main_new.js";
-import { showFeedback, updateCityVisuals } from "./solid0p2.js";
+import { updateGlobalMetrics } from "./uiControls.js";
+import { showFeedback, updateCityVisuals } from "./cityInteractions.js";
 
 // File: solid0p3.js
 
