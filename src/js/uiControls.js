@@ -5,10 +5,15 @@ import { initializeSaveGame, initializeLoadGame } from "./saveLoad.js";
 
 export function initializeControls(map) {
   const controlToggles = document.querySelectorAll(".control-toggle");
+  const backdrop = document.getElementById("panel-backdrop");
   let activePanel = null;
+  
+  // Check if we're on mobile
+  const isMobile = () => window.innerWidth <= 768;
 
   controlToggles.forEach((toggle) => {
-    toggle.addEventListener("click", function () {
+    toggle.addEventListener("click", function (e) {
+      e.stopPropagation();
       const targetPanelId = this.getAttribute("data-target");
       const targetPanel = document.getElementById(targetPanelId);
 
@@ -20,40 +25,124 @@ export function initializeControls(map) {
         currentActiveToggle.classList.remove("active");
         const currentActivePanelId =
           currentActiveToggle.getAttribute("data-target");
-        document.getElementById(currentActivePanelId).style.display = "none";
+        const prevPanel = document.getElementById(currentActivePanelId);
+        prevPanel.classList.remove("show");
+        setTimeout(() => {
+          prevPanel.style.display = "none";
+        }, 300);
       }
 
       // Toggle current button and panel
       this.classList.toggle("active");
       if (this.classList.contains("active")) {
         targetPanel.style.display = "block";
+        // Force reflow for animation
+        targetPanel.offsetHeight;
+        targetPanel.classList.add("show");
         activePanel = targetPanel;
+        
+        // Show backdrop on mobile
+        if (isMobile() && backdrop) {
+          backdrop.classList.add("show");
+        }
+        
         // Special handling for panels that need dynamic content
         if (targetPanelId === "legend-panel") {
           updateGlobalMetrics();
         }
       } else {
-        targetPanel.style.display = "none";
+        targetPanel.classList.remove("show");
+        setTimeout(() => {
+          targetPanel.style.display = "none";
+        }, 300);
         activePanel = null;
+        
+        // Hide backdrop
+        if (backdrop) {
+          backdrop.classList.remove("show");
+        }
       }
     });
   });
 
-  // Close panel if clicking outside
+  // Close panel if clicking backdrop or outside
+  const closeActivePanel = () => {
+    const currentActiveToggle = document.querySelector(
+      ".control-toggle.active"
+    );
+    if (currentActiveToggle && activePanel) {
+      currentActiveToggle.classList.remove("active");
+      activePanel.classList.remove("show");
+      setTimeout(() => {
+        activePanel.style.display = "none";
+      }, 300);
+      activePanel = null;
+      
+      if (backdrop) {
+        backdrop.classList.remove("show");
+      }
+    }
+  };
+  
+  // Click backdrop to close
+  if (backdrop) {
+    backdrop.addEventListener("click", closeActivePanel);
+  }
+  
+  // Click outside to close (desktop)
   document.addEventListener("click", function (event) {
     if (
       activePanel &&
       !activePanel.contains(event.target) &&
-      !event.target.closest(".control-toggle")
+      !event.target.closest(".control-toggle") &&
+      !isMobile()
     ) {
-      const currentActiveToggle = document.querySelector(
-        ".control-toggle.active"
-      );
-      if (currentActiveToggle) {
-        currentActiveToggle.classList.remove("active");
-        activePanel.style.display = "none";
-        activePanel = null;
+      closeActivePanel();
+    }
+  });
+  
+  // ESC key to close
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && activePanel) {
+      closeActivePanel();
+    }
+  });
+  
+  // Swipe down to close on mobile
+  let touchStartY = 0;
+  let touchEndY = 0;
+  
+  document.addEventListener("touchstart", function (event) {
+    if (activePanel && activePanel.contains(event.target) && isMobile()) {
+      touchStartY = event.touches[0].clientY;
+    }
+  }, { passive: true });
+  
+  document.addEventListener("touchmove", function (event) {
+    if (activePanel && touchStartY > 0 && isMobile()) {
+      touchEndY = event.touches[0].clientY;
+      const diff = touchEndY - touchStartY;
+      
+      // Only allow downward swipes and apply transform
+      if (diff > 0) {
+        activePanel.style.transform = `translateY(${diff}px)`;
       }
+    }
+  }, { passive: true });
+  
+  document.addEventListener("touchend", function () {
+    if (activePanel && touchStartY > 0 && isMobile()) {
+      const diff = touchEndY - touchStartY;
+      
+      // If swiped down more than 100px, close the panel
+      if (diff > 100) {
+        closeActivePanel();
+      }
+      
+      // Reset transform
+      activePanel.style.transform = "";
+      touchStartY = 0;
+      touchEndY = 0;
     }
   });
 

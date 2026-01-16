@@ -155,34 +155,36 @@ export const gameLogic = (() => {
 
   // Calculate and submit the player's score to the leaderboard
   async function submitScore() {
-    // A simple scoring metric: solidarity percentage + (100 - IPI percentage)
     const score = Math.round(
       getMetrics().solidarity + (100 - getMetrics().ipi)
     );
-
-    // For now, we'll get the username from the same prompt as chat.
-    // In a full OAuth setup, this would come from the user's session.
     const username =
       localStorage.getItem("revolutionaryUsername") || "Anonymous";
 
     try {
-          try {
-            await fetch("/api/leaderboard/submit", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ username, score }),
-            });
-            console.log(`Score of ${score} submitted for ${username}.`);
-            showToast(
-              "Score Submitted!",
-              `Your score of ${score} has been added to the leaderboard.`,
-              "success"
-            );
-          } catch (error) {
-            console.error("Failed to submit score:", error);
-            showToast("Score Submission Failed", "Could not submit score to leaderboard.", "error");
-          }    } catch (error) {
+      const response = await fetch("/api/leaderboard/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, score }),
+      });
+
+      if (response.ok) {
+        console.log(`Score ${score} submitted for ${username}`);
+        showToast(
+          "Score Submitted!",
+          `Your score of ${score} has been added to the leaderboard.`,
+          "success"
+        );
+      } else {
+        throw new Error("Submit failed");
+      }
+    } catch (error) {
       console.error("Failed to submit score:", error);
+      showToast(
+        "Score Submission Failed",
+        "Could not submit score to leaderboard.",
+        "error"
+      );
     }
   }
 

@@ -1,76 +1,77 @@
 // src/workers/gameHandlers.js
 import { getSessionId } from "./authHandlers.js";
 
+function jsonResponse(data, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
 async function handleSaveGame(request, env) {
+  if (request.method !== "POST") {
+    return jsonResponse({ error: "Method not allowed" }, 405);
+  }
+
   const sessionId = getSessionId(request);
   if (!sessionId) {
-    return new Response("Unauthorized: Please log in to save.", {
-      status: 401,
-    });
+    return jsonResponse({ error: "Unauthorized" }, 401);
   }
 
   const session = await env.SESSIONS.get(sessionId);
   if (!session) {
-    return new Response("Invalid session.", { status: 401 });
-  }
-  const { userId } = JSON.parse(session);
-
-  if (request.method !== "POST") {
-    return new Response("Method Not Allowed", { status: 405 });
+    return jsonResponse({ error: "Invalid session" }, 401);
   }
 
   try {
+    const { userId } = JSON.parse(session);
     const { slotId, gameState } = await request.json();
+
     if (!slotId || !gameState) {
-      return new Response("Missing slotId or gameState", { status: 400 });
+      return jsonResponse({ error: "Missing slotId or gameState" }, 400);
     }
 
-    // Save the game state to the KV namespace.
-    // The key is `user_id:save_slot`, e.g., "user123:slot1"
+    // Validate slotId format
+    if (!/^[a-zA-Z0-9_-]{1,50}$/.test(slotId)) {
+      return jsonResponse({ error: "Invalid slotId format" }, 400);
+    }
+
     await env.SAVED_GAMES.put(
       `${userId}:${slotId}`,
       JSON.stringify(gameState),
       { metadata: { timestamp: Date.now() } }
     );
 
-    return new Response(
-      JSON.stringify({ success: true, message: "Game saved!" }),
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return jsonResponse({ success: true, message: "Game saved" });
   } catch (error) {
     console.error("Save game error:", error);
-    return new Response("Failed to save game", { status: 500 });
+    return jsonResponse({ error: "Failed to save game" }, 500);
   }
 }
 
 async function handleLoadGame(request, env) {
   const sessionId = getSessionId(request);
   if (!sessionId) {
-    return new Response("Unauthorized: Please log in to load.", {
-      status: 401,
-    });
+    return jsonResponse({ error: "Unauthorized" }, 401);
   }
 
   const session = await env.SESSIONS.get(sessionId);
   if (!session) {
-    return new Response("Invalid session.", { status: 401 });
+    return jsonResponse({ error: "Invalid session" }, 401);
   }
-  const { userId } = JSON.parse(session);
 
   try {
+    const { userId } = JSON.parse(session);
     const url = new URL(request.url);
     const slotId = url.searchParams.get("slotId");
+
     if (!slotId) {
-      return new Response("Missing slotId parameter", { status: 400 });
+      return jsonResponse({ error: "Missing slotId parameter" }, 400);
     }
+
     const savedState = await env.SAVED_GAMES.get(`${userId}:${slotId}`);
     if (!savedState) {
-      return new Response(JSON.stringify({ error: "No saved game found." }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+      return jsonResponse({ error: "No saved game found" }, 404);
     }
 
     return new Response(savedState, {
@@ -78,33 +79,32 @@ async function handleLoadGame(request, env) {
     });
   } catch (error) {
     console.error("Load game error:", error);
-    return new Response("Failed to load game", { status: 500 });
+    return jsonResponse({ error: "Failed to load game" }, 500);
   }
 }
 
 async function handleListSaves(request, env) {
   const sessionId = getSessionId(request);
   if (!sessionId) {
-    return new Response("Unauthorized", { status: 401 });
+    return jsonResponse({ error: "Unauthorized" }, 401);
   }
+
   const session = await env.SESSIONS.get(sessionId);
   if (!session) {
-    return new Response("Invalid session", { status: 401 });
+    return jsonResponse({ error: "Invalid session" }, 401);
   }
-  const { userId } = JSON.parse(session);
 
   try {
+    const { userId } = JSON.parse(session);
     const list = await env.SAVED_GAMES.list({ prefix: `${userId}:` });
     const saves = list.keys.map((key) => ({
       slotId: key.name.split(":")[1],
-      metadata: key.metadata, // Contains timestamp
+      metadata: key.metadata,
     }));
-    return new Response(JSON.stringify(saves), {
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonResponse(saves);
   } catch (error) {
     console.error("List saves error:", error);
-    return new Response("Failed to list saves", { status: 500 });
+    return jsonResponse({ error: "Failed to list saves" }, 500);
   }
 }
 

@@ -1,102 +1,105 @@
 // _worker.js
-
 export { ChatRoom } from "./chat.js";
 import { handleLogin, handleAuthCallback, handleMe, handleLogout } from "./src/workers/authHandlers.js";
 import { handleSaveGame, handleLoadGame, handleListSaves } from "./src/workers/gameHandlers.js";
 import { handleLeaderboardGet, handleLeaderboardSubmit } from "./src/workers/leaderboardHandlers.js";
 import { handleAdminUnmute, handleAdminChatStatus } from "./src/workers/adminHandlers.js";
 
+const SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "X-XSS-Protection": "1; mode=block"
+};
+
 export default {
   async fetch(request, env, ctx) {
-    const url = new URL(request.url);
+    try {
+      const url = new URL(request.url);
 
-    // API Routes
-    if (url.pathname.startsWith("/api/")) {
-      return handleApiRequest(request, env);
-    }
-
-    // Weather Proxy Route
-    if (url.pathname.startsWith("/weather")) {
-      return handleWeatherRequest(request, env);
-    }
-
-    // Serve static assets
-    let response = await env.ASSETS.fetch(request);
-    if (response.status === 404 && !url.pathname.startsWith("/api/")) {
-      const accept = request.headers.get("Accept");
-      if (accept && accept.includes("text/html")) {
-        response = await env.ASSETS.fetch(
-          new Request(new URL("/index.html", request.url), request)
-        );
+      // API Routes
+      if (url.pathname.startsWith("/api/")) {
+        return await handleApiRequest(request, env, ctx);
       }
+
+      // Weather Proxy Route
+      if (url.pathname.startsWith("/weather")) {
+        return await handleWeatherRequest(request, env, ctx);
+      }
+
+      // Serve static assets with SPA fallback
+      let response = await env.ASSETS.fetch(request);
+      if (response.status === 404 && !url.pathname.startsWith("/api/")) {
+        const accept = request.headers.get("Accept") || "";
+        if (accept.includes("text/html")) {
+          response = await env.ASSETS.fetch(
+            new Request(new URL("/index.html", request.url), request)
+          );
+        }
+      }
+
+      return addSecurityHeaders(response);
+    } catch (error) {
+      console.error("Worker error:", error);
+      return jsonResponse({ error: "Internal server error" }, 500);
     }
-
-    // Add security headers
-    const newHeaders = new Headers(response.headers);
-    newHeaders.set("X-Content-Type-Options", "nosniff");
-    newHeaders.set("X-Frame-Options", "DENY");
-    newHeaders.set("Referrer-Policy", "strict-origin-when-cross-origin");
-
-    return new Response(response.body, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: newHeaders,
-    });
   },
 };
 
-async function handleApiRequest(request, env) {
+async function handleApiRequest(request, env, ctx) {
   const url = new URL(request.url);
-  switch (url.pathname) {
-    case "/api/login":
-      return handleLogin(request, env);
-    case "/api/auth/callback":
-      return handleAuthCallback(request, env);
-    case "/api/me":
-      return handleMe(request, env);
-    case "/api/logout":
-      return handleLogout(request, env); // Now async
-    case "/api/save":
-      return handleSaveGame(request, env);
-    case "/api/load":
-      return handleLoadGame(request, env);
-    case "/api/saves":
-      return handleListSaves(request, env);
-    case "/api/chat":
-      const id = env.CHAT_ROOM.idFromName("global");
-      const room = env.CHAT_ROOM.get(id);
-      return room.fetch(request);
-    case "/api/leaderboard":
-      return handleLeaderboardGet(request, env);
-    case "/api/leaderboard/submit":
-      return handleLeaderboardSubmit(request, env);
-    case "/api/admin/chat-status":
-      return withAdminAuth(handleAdminChatStatus)(request, env);
-    case "/api/admin/unmute":
-      return withAdminAuth(handleAdminUnmute)(request, env);
-    default:
-      return new Response("API route not found", { status: 404 });
+  const routes = {
+    "/api/login": handleLogin,
+    "/api/auth/callback": handleAuthCallback,
+    "/api/me": handleMe,
+    "/api/logout": handleLogout,
+    "/api/save": handleSaveGame,
+    "/api/load": handleLoadGame,
+    "/api/saves": handleListSaves,
+    "/api/leaderboard": handleLeaderboardGet,
+    "/api/leaderboard/submit": handleLeaderboardSubmit,
+    "/api/admin/chat-status": withAdminAuth(handleAdminChatStatus),
+    "/api/admin/unmute": withAdminAuth(handleAdminUnmute),
+  };
+
+  if (url.pathname === "/api/chat") {
+    const id = env.CHAT_ROOM.idFromName("global");
+    const room = env.CHAT_ROOM.get(id);
+    return await room.fetch(request);
   }
+
+  const handler = routes[url.pathname];
+  if (handler) {
+    return await handler(request, env, ctx);
+  }
+
+  return jsonResponse({ error: "API route not found" }, 404);
 }
 
 
 
+function getSessionId(request) {
+  const cookie = request.headers.get("Cookie");
+  if (!cookie) return null;
+  const match = cookie.match(/session_id=([^;]+)/);
+  return match ? match[1] : null;
+}
+
 const withAdminAuth = (handler) => {
-  return async (request, env) => {
+  return async (request, env, ctx) => {
     const sessionId = getSessionId(request);
     if (!sessionId) {
-      return new Response("Unauthorized", { status: 401 });
+      return jsonResponse({ error: "Unauthorized" }, 401);
     }
     const sessionData = await env.SESSIONS.get(sessionId);
     if (!sessionData) {
-      return new Response("Invalid session", { status: 401 });
+      return jsonResponse({ error: "Invalid session" }, 401);
     }
     const { isAdmin } = JSON.parse(sessionData);
     if (!isAdmin) {
-      return new Response("Forbidden", { status: 403 });
+      return jsonResponse({ error: "Forbidden" }, 403);
     }
-    // If all checks pass, call the original handler
-    return handler(request, env);
+    return await handler(request, env, ctx);
   };
 };
 
@@ -106,49 +109,68 @@ const withAdminAuth = (handler) => {
 
 
 
-async function handleWeatherRequest(request, env) {
+async function handleWeatherRequest(request, env, ctx) {
   const url = new URL(request.url);
   const lat = url.searchParams.get("lat");
   const lon = url.searchParams.get("lon");
 
   if (!lat || !lon) {
-    return new Response("Missing lat or lon parameter", { status: 400 });
+    return jsonResponse({ error: "Missing lat or lon parameter" }, 400);
   }
 
-  const apiKey = env.OWM_API_KEY;
-  if (!apiKey) {
-    return new Response("Missing OWM_API_KEY secret", { status: 500 });
+  if (!env.OWM_API_KEY) {
+    return jsonResponse({ error: "Weather service unavailable" }, 503);
   }
 
-  const cacheUrl = new URL(request.url);
-  const cacheKey = new Request(cacheUrl.toString(), request);
+  const cacheKey = new Request(url.toString(), { method: "GET" });
   const cache = caches.default;
 
-  // Check for cached response
+  // Check cache first
   let response = await cache.match(cacheKey);
-  if (response) {
-    return response;
-  }
+  if (response) return response;
 
-  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
+  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${env.OWM_API_KEY}`;
 
   try {
-    const apiResponse = await fetch(apiUrl);
-    const data = await apiResponse.json();
+    const apiResponse = await fetch(apiUrl, { cf: { cacheTtl: 600 } });
+    if (!apiResponse.ok) {
+      return jsonResponse({ error: "Weather API error" }, apiResponse.status);
+    }
 
-    // Create a new response with Cache-Control headers
-    response = new Response(JSON.stringify(data), {
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "public, max-age=600", // Cache for 10 minutes
-      },
+    const data = await apiResponse.json();
+    response = jsonResponse(data, 200, {
+      "Cache-Control": "public, max-age=600",
     });
 
-    // Store in cache (wait for it to complete to ensure it's stored)
-    await cache.put(cacheKey, response.clone());
+    // Use waitUntil for non-blocking cache write
+    ctx.waitUntil(cache.put(cacheKey, response.clone()));
 
     return response;
   } catch (error) {
-    return new Response("Error fetching weather data", { status: 500 });
+    console.error("Weather API error:", error);
+    return jsonResponse({ error: "Failed to fetch weather" }, 500);
   }
+}
+
+// Helper functions
+function jsonResponse(data, status = 200, headers = {}) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
+  });
+}
+
+function addSecurityHeaders(response) {
+  const newHeaders = new Headers(response.headers);
+  Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
+    newHeaders.set(key, value);
+  });
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: newHeaders,
+  });
 }

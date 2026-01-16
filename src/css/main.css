@@ -329,6 +329,18 @@
   transform: scale(1.1);
 }
 
+/* Tablet adjustments */
+@media (max-width: 1024px) {
+  .splash-title {
+    font-size: 2.8rem;
+  }
+  
+  .help-panel {
+    width: 85%;
+    max-height: 75vh;
+  }
+}
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .splash-title {
@@ -338,6 +350,7 @@
   
   .splash-subtitle {
     font-size: 1rem;
+    max-width: 90%;
   }
   
   .splash-button {
@@ -358,6 +371,7 @@
   
   .help-panel {
     width: 95%;
+    max-height: 85vh;
   }
   
   .help-title {
@@ -367,6 +381,32 @@
   .help-tab {
     padding: 6px 10px;
     font-size: 0.9rem;
+  }
+  
+  .help-button {
+    bottom: 15px;
+    right: 15px;
+    width: 50px;
+    height: 50px;
+    font-size: 1.4rem;
+  }
+}
+
+/* Small mobile adjustments */
+@media (max-width: 480px) {
+  .splash-title {
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+  }
+  
+  .splash-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .splash-button {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    min-width: 150px;
   }
 }
 
@@ -462,15 +502,33 @@
 
 #notification-container {
     width: 100%;
-    max-height: 200px; /* Limit height so it doesn't push map offscreen completely */
-    overflow-y: auto;  /* Scroll if too many notifications */
+    max-height: min(200px, 25vh);
+    overflow-y: auto;
     background-color: #2c3e50;
     color: #ecf0f1;
     display: flex;
     flex-direction: column;
-    /* transition: height 0.3s ease; Remove transition for now to avoid jitter */
     z-index: 2000;
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+@media (max-width: 768px) {
+  #notification-container {
+    max-height: min(150px, 20vh);
+  }
+  
+  .notification {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+  
+  .notification h3 {
+    font-size: 0.9rem;
+  }
+  
+  .notification p {
+    font-size: 0.8rem;
+  }
 }
 
 .notification {
@@ -598,10 +656,30 @@ html {
   color: #fff;
   padding: 15px;
   border-radius: 8px;
-  width: 300px; /* Default width for wider screens */
+  width: min(300px, 90vw);
+  max-height: min(70vh, 500px);
+  overflow-y: auto;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
   z-index: 1001;
   border: 1px solid #444;
+  
+  /* Modern CSS animations */
+  transition-property: opacity, transform, display;
+  transition-duration: 0.3s;
+  transition-behavior: allow-discrete;
+  opacity: 0;
+  transform: translateX(-50%) translateY(-10px);
+}
+
+.control-panel.show {
+  display: block;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  
+  @starting-style {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
 }
 
 /* Panel Content Styling */
@@ -758,10 +836,67 @@ html {
   color: white;
   padding: 10px 20px;
   border-radius: 5px;
-  z-index: 2000;
-  display: none; /* Initially hidden */
+  z-index: 2001;
+  display: none;
   font-family: "Oswald", sans-serif;
   box-shadow: 0 0 15px rgba(217, 83, 79, 0.7);
+  max-width: 90vw;
+  text-align: center;
+  
+  transition-property: opacity, transform, display;
+  transition-duration: 0.3s;
+  transition-behavior: allow-discrete;
+}
+
+/* Panel Backdrop for Mobile */
+.panel-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease, display 0.3s;
+  transition-behavior: allow-discrete;
+}
+
+.panel-backdrop.show {
+  display: block;
+  opacity: 1;
+  
+  @starting-style {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .retaliation-alert {
+    bottom: 10px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    max-width: 95vw;
+  }
+}
+
+/* Tablet Responsiveness */
+@media (max-width: 1024px) {
+  #unified-controls {
+    max-width: 95%;
+    gap: 3px;
+    padding: 3px;
+  }
+  
+  .control-toggle {
+    font-size: 0.85rem;
+    padding: 7px 10px;
+  }
+  
+  .control-toggle .material-icons {
+    font-size: 1rem;
+  }
 }
 
 /* Mobile Responsiveness */
@@ -769,21 +904,78 @@ html {
   #unified-controls {
     width: 100%;
     top: 0;
+    left: 0;
+    transform: none;
     border-radius: 0;
-    flex-wrap: wrap; /* Allow buttons to wrap */
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 5px 2px;
   }
 
   .control-toggle {
-    font-size: 0.8rem; /* Smaller font on mobile */
+    font-size: 0.75rem;
     padding: 6px 8px;
+    gap: 3px;
+    flex: 1 1 auto;
+    min-width: 70px;
+    justify-content: center;
+  }
+  
+  .control-toggle .button-label {
+    display: none;
   }
 
   .control-panel {
-    width: 95vw; /* Full width panels on mobile */
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-height: 60vh;
+    transform: none;
+    border-radius: 12px 12px 0 0;
+    border-bottom: none;
+    padding-top: 25px;
+  }
+  
+  /* Swipe handle indicator */
+  .control-panel::before {
+    content: "";
+    position: absolute;
+    top: 8px;
     left: 50%;
     transform: translateX(-50%);
-    max-height: 70vh; /* Prevent panel from being too tall */
-    overflow-y: auto;
+    width: 40px;
+    height: 4px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+  }
+  
+  .control-panel.show {
+    transform: none;
+    
+    @starting-style {
+      transform: translateY(100%);
+    }
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .control-toggle {
+    font-size: 0.7rem;
+    padding: 5px 6px;
+    min-width: 60px;
+  }
+  
+  .control-toggle .material-icons {
+    font-size: 0.9rem;
+  }
+  
+  .control-panel {
+    max-height: 65vh;
+    padding: 12px;
   }
 }
 

@@ -1,0 +1,217 @@
+/* Responsive Utilities - Modern CSS for all screen sizes */
+
+/* Container queries support (progressive enhancement) */
+@supports (container-type: inline-size) {
+  .control-panel {
+    container-type: inline-size;
+  }
+  
+  @container (max-width: 250px) {
+    .control-panel h4 {
+      font-size: 0.9rem;
+    }
+    
+    .control-panel p {
+      font-size: 0.8rem;
+    }
+  }
+}
+
+/* Smooth scrolling for better UX */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better touch targets for mobile */
+@media (pointer: coarse) {
+  .control-toggle,
+  .splash-button,
+  .slide-button,
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Landscape orientation optimizations */
+@media (orientation: landscape) and (max-height: 600px) {
+  #unified-controls {
+    padding: 3px;
+    gap: 3px;
+  }
+  
+  .control-toggle {
+    padding: 5px 8px;
+    font-size: 0.75rem;
+  }
+  
+  .control-panel {
+    max-height: 50vh;
+  }
+  
+  .splash-screen {
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 20px;
+  }
+  
+  .splash-title {
+    font-size: 2rem;
+  }
+  
+  .splash-subtitle {
+    font-size: 0.9rem;
+  }
+}
+
+/* High DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .control-toggle,
+  .splash-button {
+    border-width: 0.5px;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark mode support (if system prefers) */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #000;
+  }
+}
+
+/* Print styles */
+@media print {
+  #unified-controls,
+  .help-button,
+  #notification-container {
+    display: none !important;
+  }
+  
+  #map {
+    height: 100vh;
+    width: 100vw;
+  }
+}
+
+/* Viewport-based spacing utilities */
+.vw-padding {
+  padding-left: max(10px, 2vw);
+  padding-right: max(10px, 2vw);
+}
+
+.vh-margin {
+  margin-top: max(10px, 2vh);
+  margin-bottom: max(10px, 2vh);
+}
+
+/* Fluid typography */
+.fluid-text {
+  font-size: clamp(0.875rem, 0.5rem + 2vw, 1.125rem);
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: env(safe-area-inset-top)) {
+  #unified-controls {
+    padding-top: max(5px, env(safe-area-inset-top));
+    padding-left: max(5px, env(safe-area-inset-left));
+    padding-right: max(5px, env(safe-area-inset-right));
+  }
+  
+  .retaliation-alert {
+    bottom: max(20px, env(safe-area-inset-bottom));
+  }
+  
+  .help-button {
+    bottom: max(60px, calc(60px + env(safe-area-inset-bottom)));
+    right: max(10px, env(safe-area-inset-right));
+  }
+}
+
+/* Focus visible for keyboard navigation */
+.control-toggle:focus-visible,
+.splash-button:focus-visible,
+button:focus-visible {
+  outline: 2px solid #6B8E23;
+  outline-offset: 2px;
+}
+
+/* Better scrollbar styling */
+.control-panel::-webkit-scrollbar,
+#log-history::-webkit-scrollbar,
+#city-search-results::-webkit-scrollbar {
+  width: 8px;
+}
+
+.control-panel::-webkit-scrollbar-track,
+#log-history::-webkit-scrollbar-track,
+#city-search-results::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.control-panel::-webkit-scrollbar-thumb,
+#log-history::-webkit-scrollbar-thumb,
+#city-search-results::-webkit-scrollbar-thumb {
+  background: rgba(107, 142, 35, 0.5);
+  border-radius: 4px;
+}
+
+.control-panel::-webkit-scrollbar-thumb:hover,
+#log-history::-webkit-scrollbar-thumb:hover,
+#city-search-results::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 142, 35, 0.7);
+}
+
+/* Breakpoint-specific utilities */
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block;
+  }
+  
+  .desktop-only {
+    display: none;
+  }
+}
+
+/* Grid layout for control buttons on larger screens */
+@media (min-width: 1200px) {
+  #unified-controls {
+    max-width: 1000px;
+    gap: 8px;
+  }
+  
+  .control-toggle {
+    padding: 10px 15px;
+    font-size: 0.95rem;
+  }
+}
+
+/* Ultra-wide screen support */
+@media (min-width: 1920px) {
+  #unified-controls {
+    max-width: 1200px;
+  }
+  
+  .control-panel {
+    width: 350px;
+  }
+}

@@ -1,78 +1,70 @@
 // js/gameLoop.js
 import { gameLogic } from "./gameLogic.js";
 import { triggerRandomEvent } from "./randomEvents.js";
-import { getCities, setMetrics } from "./gameState.js";
-import { updateGlobalMetrics } from "./main_new.js";
+import { getCities, getMetrics, setMetrics } from "./gameState.js";
 
 const gameLoopManager = (() => {
   let mainLoopIntervalId = null;
-  const TICK_RATE = 1000; // Main game tick every 1 second
+  const TICK_RATE = 1000;
 
-  // Timers for less frequent events, counted in ticks
-  let randomEventTimer = 120; // 120 seconds
-  let achievementCheckTimer = 5; // 5 seconds
-  let gameStateCheckTimer = 10; // 10 seconds
+  let randomEventTimer = 120;
+  let achievementCheckTimer = 5;
+  let gameStateCheckTimer = 10;
 
   function tick() {
-    // --- Every Tick: Calculate Global Metrics ---
-    if (getCities().length > 0) {
-      let totalIpi = 0;
-      let totalPropaganda = 0;
-      let totalSolidarity = 0;
+    const cities = getCities();
+    if (cities.length === 0) return;
 
-      // Single pass optimization
-      for (const city of getCities()) {
-        totalIpi += city.ipi;
-        totalPropaganda += city.propaganda;
-        totalSolidarity += city.solidarity;
-      }
+    // Calculate metrics in single pass
+    let totalIpi = 0;
+    let totalPropaganda = 0;
+    let totalSolidarity = 0;
 
-          const currentMetrics = getMetrics();
-          currentMetrics.ipi = totalIpi / getCities().length;
-          currentMetrics.propaganda = totalPropaganda / getCities().length;
-          currentMetrics.solidarity = totalSolidarity / getCities().length;
-          setMetrics(currentMetrics);    }
+    for (const city of cities) {
+      totalIpi += city.ipi || 0;
+      totalPropaganda += city.propaganda || 0;
+      totalSolidarity += city.solidarity || 0;
+    }
 
-    // --- Less Frequent Updates ---
+    const count = cities.length;
+    setMetrics({
+      ipi: totalIpi / count,
+      propaganda: totalPropaganda / count,
+      solidarity: totalSolidarity / count,
+    });
 
-    // Check game state (win/loss)
-    gameStateCheckTimer--;
-    if (gameStateCheckTimer <= 0) {
+    // Periodic checks
+    if (--gameStateCheckTimer <= 0) {
       gameLogic.checkGameState();
-      gameStateCheckTimer = 10; // Reset timer
+      gameStateCheckTimer = 10;
     }
 
-    // Check achievements
-    achievementCheckTimer--;
-    if (achievementCheckTimer <= 0) {
+    if (--achievementCheckTimer <= 0) {
       gameLogic.checkAchievements();
-      achievementCheckTimer = 5; // Reset timer
+      achievementCheckTimer = 5;
     }
 
-    // Trigger random events
-    randomEventTimer--;
-    if (randomEventTimer <= 0) {
+    if (--randomEventTimer <= 0) {
       triggerRandomEvent();
-      randomEventTimer = 120; // Reset timer
+      randomEventTimer = 120;
     }
   }
 
   function start() {
     if (mainLoopIntervalId === null) {
-      console.log("Starting main game loop...");
+      console.log("Starting game loop");
       mainLoopIntervalId = setInterval(tick, TICK_RATE);
     }
   }
 
   function stop() {
     if (mainLoopIntervalId !== null) {
-      console.log("Stopping main game loop.");
+      console.log("Stopping game loop");
       clearInterval(mainLoopIntervalId);
       mainLoopIntervalId = null;
     }
   }
 
-  // Expose public methods
   return { start, stop };
 })();
 
