@@ -50,6 +50,7 @@
   max-width: 90%;
   color: #ccc;
   line-height: 1.5;
+  letter-spacing: 0.05em;
 }
 
 .splash-buttons {
@@ -914,62 +915,102 @@ html {
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   #unified-controls {
-    width: 100%;
-    top: 0;
-    left: 0;
-    transform: none;
-    border-radius: 0;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    padding: 5px 2px;
-  }
-
-  .control-toggle {
-    font-size: 0.75rem;
-    padding: 6px 8px;
-    gap: 3px;
-    flex: 1 1 auto;
-    min-width: 70px;
-    justify-content: center;
-  }
-  
-  .control-toggle .button-label {
-    display: none;
-  }
-
-  .control-panel {
     position: fixed;
-    top: auto;
     bottom: 0;
     left: 0;
     right: 0;
+    top: auto;
     width: 100%;
-    max-height: 60vh;
     transform: none;
-    border-radius: 12px 12px 0 0;
-    border-bottom: none;
-    padding-top: 25px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.95));
+    backdrop-filter: blur(10px);
+    border-top: 2px solid #ff6b35;
+    border-radius: 0;
+    padding: 8px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
   }
-  
-  /* Swipe handle indicator */
-  .control-panel::before {
-    content: "";
+
+  .control-block {
+    position: relative;
+    flex: 1;
+    max-width: 60px;
+  }
+
+  .control-toggle {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    border: 2px solid #444;
+    color: #ff6b35;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    padding: 4px;
+    gap: 2px;
+  }
+
+  .control-toggle:hover,
+  .control-toggle.active {
+    background: linear-gradient(135deg, #ff6b35, #e55a2b);
+    color: white;
+    border-color: #ff6b35;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
+  }
+
+  .control-toggle .material-icons {
+    font-size: 20px;
+    margin-bottom: 2px;
+  }
+
+  .button-label {
+    font-size: 8px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1;
+  }
+
+  .control-panel {
     position: absolute;
-    top: 8px;
+    bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
-    width: 40px;
-    height: 4px;
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 2px;
+    width: 280px;
+    max-height: 60vh;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.95));
+    backdrop-filter: blur(15px);
+    border: 2px solid #ff6b35;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    overflow-y: auto;
+    z-index: 1001;
   }
-  
-  .control-panel.show {
+
+  .control-block:first-child .control-panel {
+    left: 0;
     transform: none;
-    
-    @starting-style {
-      transform: translateY(100%);
-    }
+  }
+
+  .control-block:last-child .control-panel {
+    right: 0;
+    left: auto;
+    transform: none;
+  }
+
+  #user-profile-controls {
+    display: none;
   }
 }
 
@@ -988,6 +1029,19 @@ html {
   .control-panel {
     max-height: 65vh;
     padding: 12px;
+  }
+}
+
+/* Leaflet zoom controls positioning */
+.leaflet-control-zoom {
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .leaflet-control-zoom {
+    margin-right: 10px;
+    margin-top: 60px;
   }
 }
 

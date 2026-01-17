@@ -16,6 +16,7 @@ export function initializeControls(map) {
       e.stopPropagation();
       const targetPanelId = this.getAttribute("data-target");
       const targetPanel = document.getElementById(targetPanelId);
+      if (!targetPanel) return;
 
       // Deactivate previously active toggle and hide its panel
       const currentActiveToggle = document.querySelector(
@@ -26,10 +27,12 @@ export function initializeControls(map) {
         const currentActivePanelId =
           currentActiveToggle.getAttribute("data-target");
         const prevPanel = document.getElementById(currentActivePanelId);
-        prevPanel.classList.remove("show");
-        setTimeout(() => {
-          prevPanel.style.display = "none";
-        }, 300);
+        if (prevPanel) {
+          prevPanel.classList.remove("show");
+          setTimeout(() => {
+            prevPanel.style.display = "none";
+          }, 300);
+        }
       }
 
       // Toggle current button and panel
@@ -74,7 +77,9 @@ export function initializeControls(map) {
       currentActiveToggle.classList.remove("active");
       activePanel.classList.remove("show");
       setTimeout(() => {
-        activePanel.style.display = "none";
+        if (activePanel) {
+          activePanel.style.display = "none";
+        }
       }, 300);
       activePanel = null;
       
@@ -124,7 +129,7 @@ export function initializeControls(map) {
       const diff = touchEndY - touchStartY;
       
       // Only allow downward swipes and apply transform
-      if (diff > 0) {
+      if (diff > 0 && activePanel) {
         activePanel.style.transform = `translateY(${diff}px)`;
       }
     }
@@ -140,7 +145,9 @@ export function initializeControls(map) {
       }
       
       // Reset transform
-      activePanel.style.transform = "";
+      if (activePanel) {
+        activePanel.style.transform = "";
+      }
       touchStartY = 0;
       touchEndY = 0;
     }

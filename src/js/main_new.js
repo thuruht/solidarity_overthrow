@@ -53,7 +53,13 @@ export function initializeGame() {
     maxZoom: 6,
     worldCopyJump: true,
     attributionControl: false,
+    zoomControl: false,
   });
+
+  // Add zoom control to top-right to avoid overlap
+  L.control.zoom({
+    position: 'topright'
+  }).addTo(map);
 
   L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
     attribution:

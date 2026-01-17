@@ -82,7 +82,7 @@ function createSplashScreen() {
   const subtitle = document.createElement("p");
   subtitle.className = "splash-subtitle typing-text";
   subtitle.textContent =
-    "Unite the world against imperialism through collective action and revolutionary planning";
+    "Unite the globe against imperialism";
 
   splashScreen.appendChild(title);
   splashScreen.appendChild(buttonsContainer);
