@@ -44,11 +44,6 @@ function createSplashScreen() {
   title.className = "splash-title";
   title.textContent = "S0LIDARITY 0VERTHR0W";
 
-  const subtitle = document.createElement("p");
-  subtitle.className = "splash-subtitle typing-text";
-  subtitle.textContent =
-    "Unite the world against imperialism through collective action and revolutionary planning";
-
   const buttonsContainer = document.createElement("div");
   buttonsContainer.className = "splash-buttons";
 
@@ -84,9 +79,14 @@ function createSplashScreen() {
   buttonsContainer.appendChild(helpButton);
   buttonsContainer.appendChild(creditsButton);
 
+  const subtitle = document.createElement("p");
+  subtitle.className = "splash-subtitle typing-text";
+  subtitle.textContent =
+    "Unite the world against imperialism through collective action and revolutionary planning";
+
   splashScreen.appendChild(title);
-  splashScreen.appendChild(subtitle);
   splashScreen.appendChild(buttonsContainer);
+  splashScreen.appendChild(subtitle);
 
   document.body.appendChild(splashScreen);
 

@@ -15,13 +15,16 @@ export function setupCityInteractions() {
 
 // Populate the dropdown with global cities and custom city option
 export function populateDropdown(filter = "") {
-  const citySelector = document.getElementById("cityDropdown");
-  if (!citySelector) return;
+  const citySelector = document.getElementById("citySelect");
+  if (!citySelector) {
+    console.warn("citySelect element not found");
+    return;
+  }
 
   const lowerCaseFilter = filter.toLowerCase();
+  const currentCity = citySelector.value;
 
   // Clear existing options except the default
-  let currentCity = citySelector.value;
   while (citySelector.options.length > 1) {
     citySelector.remove(1);
   }
@@ -35,12 +38,6 @@ export function populateDropdown(filter = "") {
       citySelector.appendChild(option);
     }
   });
-
-  // Add option for custom city
-  const customOption = document.createElement("option");
-  customOption.value = "custom";
-  customOption.textContent = "Add Custom City...";
-  citySelector.appendChild(customOption);
 
   // Restore previous selection if it still exists and matches filter
   if (
@@ -86,7 +83,8 @@ function placeStaticMarker(city) {
   marker.bindPopup(createCityPopup(city));
 
   marker.on("click", () => {
-    document.getElementById("cityDropdown").value = city.name;
+    const dropdown = document.getElementById("citySelect");
+    if (dropdown) dropdown.value = city.name;
     map.setView([city.lat, city.lon], 6);
     updateCityMetrics(city.name);
   });
@@ -300,7 +298,7 @@ export function updateCityVisuals(cityName) {
     }
   }
 
-  const dropdown = document.getElementById("cityDropdown");
+  const dropdown = document.getElementById("citySelect");
   if (dropdown && dropdown.value === city.name) {
     updateCityMetrics(city.name);
   }
@@ -329,16 +327,16 @@ function colorizeMarker(marker, city) {
 
 // Set up the listener for the city dropdown
 function setupDropdownListener() {
-  document
-    .getElementById("cityDropdown")
-    .addEventListener("change", async function () {
-      if (this.value === "custom") {
-        const cityName = prompt("Enter city name:");
-        if (cityName) await addCustomCity(cityName);
-      } else {
-        handleCitySelection(this.value);
-      }
-    });
+  const dropdown = document.getElementById("citySelect");
+  if (!dropdown) {
+    console.warn("citySelect element not found");
+    return;
+  }
+  dropdown.addEventListener("change", function () {
+    if (this.value) {
+      handleCitySelection(this.value);
+    }
+  });
 }
 
 // Handle city selection from dropdown
@@ -420,11 +418,13 @@ export function updateCityMetrics(cityName) {
 // Generic feedback function
 export function showFeedback(message, type = "info") {
   const feedback = document.getElementById("retaliation-feedback");
-  if (feedback) {
-    feedback.textContent = message;
-    feedback.style.backgroundColor =
-      type === "success" ? "rgba(0, 100, 0, 0.8)" : "rgba(200, 0, 0, 0.8)";
-    feedback.style.display = "block";
-    setTimeout(() => (feedback.style.display = "none"), 3000);
+  if (!feedback) {
+    console.warn("retaliation-feedback element not found");
+    return;
   }
+  feedback.textContent = message;
+  feedback.style.backgroundColor =
+    type === "success" ? "rgba(0, 100, 0, 0.8)" : "rgba(200, 0, 0, 0.8)";
+  feedback.style.display = "block";
+  setTimeout(() => (feedback.style.display = "none"), 3000);
 }

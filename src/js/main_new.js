@@ -28,23 +28,18 @@ export let map;
 let isInitialLoad = true;
 
 document.addEventListener("DOMContentLoaded", function () {
-  checkUserSession(); // Check login status on every page load
+  checkUserSession();
   if (isInitialLoad) {
     isInitialLoad = false;
-    // This function will be called when the DOM is ready
-    // It will set up the initial UI and wait for the user to start the game
     const urlParams = new URLSearchParams(window.location.search);
     const skipIntro = urlParams.get("skipIntro") === "true";
 
     if (skipIntro) {
-      // If we skip the intro, we can start the game immediately
       initializeGame();
     } else {
-      // The intro script will handle starting the game
       initializeIntro(initializeGame);
     }
   }
-  setupCityInteractions(); // From solid0p2.js
 });
 
 
@@ -65,11 +60,13 @@ export function initializeGame() {
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
   }).addTo(map);
 
+  // Initialize city interactions (markers, dropdown)
+  setupCityInteractions();
+
   // Initialize various game components
   initializeControls(map);
-  initRandomEvents(); // Initializes the system, but doesn't start the timer.
-
-  // Initialize notification and log systems
+  initCollectiveActions();
+  initRandomEvents();
   initializeLog();
   initializeProgressTrackers();
 
