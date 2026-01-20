@@ -7,6 +7,14 @@ export const initialCities = [
     propaganda: 96,
     solidarity: 7,
   },
+    {
+    name: "Lathrop, MO",
+    lat: 39.5483,
+    lon: -94.3290,
+    ipi: 99,
+    propaganda: 80,
+    solidarity: 5,
+  },
   {
     name: "El Paso, TX",
     lat: 31.7619,

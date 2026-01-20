@@ -51,6 +51,8 @@
   color: #ccc;
   line-height: 1.5;
   letter-spacing: 0.05em;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .splash-buttons {
@@ -469,11 +471,10 @@
 
 /* Typing animation for intro text */
 .typing-text {
-  overflow: hidden;
-  white-space: nowrap;
+  overflow: visible;
+  white-space: normal;
   margin: 0 auto;
   letter-spacing: 0.15em;
-  animation: typing 3.5s steps(40, end);
 }
 
 @keyframes typing {
