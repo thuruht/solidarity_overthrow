@@ -821,6 +821,23 @@ html {
 }
 
 /* Leaflet Customizations */
+.leaflet-control-reset-view {
+    background-color: #444;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-family: 'Special Elite', monospace;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    margin-top: 10px;
+}
+.leaflet-control-reset-view:hover {
+    background-color: #666;
+}
 .leaflet-popup-content-wrapper {
   background: rgba(0, 0, 0, 0.8);
   color: #fff;

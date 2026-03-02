@@ -5,6 +5,9 @@
   "assets": {
     "directory": "./dist"
   },
+  "build": {
+    "command": "npm run build"
+  },
   "routes": ["overthrow.distorted.work/*"],
   "d1_databases": [
     {
@@ -31,5 +34,11 @@
       "tag": "v1",
       "new_classes": ["ChatRoom"]
     }
-  ]
+  ],
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
+  }
 }

@@ -18,6 +18,7 @@ import { initRandomEvents } from "./randomEvents.js";
 import { initializeLog } from "./log.js";
 import { initializeProgressTrackers } from "./progress.js";
 import { initializeIntro } from "./intro.js";
+import { initializeChat } from "./chat-client.js";
 
 import { showToast } from "./notifications.js";
 import "../css/main.css";
@@ -76,6 +77,13 @@ export function initializeGame() {
   initializeLog();
   initializeProgressTrackers();
 
+  // Address map visibility glitch after loading/sizing
+  setTimeout(() => {
+    if (map) {
+      map.invalidateSize();
+    }
+  }, 500);
+
   // Start the game
   startGame(map);
 }
@@ -91,6 +99,13 @@ export function initializeGame() {
 function startGame(map) {
   // This function is called after the intro is dismissed
   console.log("Game has started!");
+
+  // Try to initialize chat if we are logged in
+  const username = localStorage.getItem("revolutionaryUsername");
+  if (username) {
+    initializeChat(username);
+  }
+
   // Start the main game loop
   gameLoopManager.start();
 }

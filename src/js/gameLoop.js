@@ -20,10 +20,21 @@ const gameLoopManager = (() => {
     let totalPropaganda = 0;
     let totalSolidarity = 0;
 
+    // Gradual change per tick for all cities (passive progression/regression)
+    // Make IPI naturally increase slowly, Solidarity decay if not maintained, Propaganda slightly decay
+    const passiveIpiIncrease = 0.05;
+    const passiveSolidarityDecay = 0.02;
+    const passivePropagandaDecay = 0.01;
+
     for (const city of cities) {
-      totalIpi += city.ipi || 0;
-      totalPropaganda += city.propaganda || 0;
-      totalSolidarity += city.solidarity || 0;
+      // Apply passive changes
+      city.ipi = Math.max(0, Math.min(100, (city.ipi || 0) + passiveIpiIncrease));
+      city.solidarity = Math.max(0, Math.min(100, (city.solidarity || 0) - passiveSolidarityDecay));
+      city.propaganda = Math.max(0, Math.min(100, (city.propaganda || 0) - passivePropagandaDecay));
+
+      totalIpi += city.ipi;
+      totalPropaganda += city.propaganda;
+      totalSolidarity += city.solidarity;
     }
 
     const count = cities.length;

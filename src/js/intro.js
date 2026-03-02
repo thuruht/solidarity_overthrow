@@ -137,15 +137,10 @@ function showQuickTips() {
 
   tips.forEach((tip, index) => {
     setTimeout(() => {
-      const feedback = document.getElementById("retaliation-feedback");
-      if (feedback) {
-        feedback.textContent = `TIP: ${tip}`;
-        feedback.style.backgroundColor = "rgba(0, 100, 200, 0.8)";
-        feedback.style.display = "block";
-
-        // Hide feedback after 4 seconds
-        setTimeout(() => (feedback.style.display = "none"), 4000);
-      }
+      // Use the global showToast notification system instead of the old retaliation feedback banner
+      import("./notifications.js").then(({ showToast }) => {
+        showToast("TIP", tip, "info", 4000);
+      });
     }, index * 4500);
   });
 }
