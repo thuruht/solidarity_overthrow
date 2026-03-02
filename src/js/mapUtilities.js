@@ -35,27 +35,7 @@ function addResetViewButton() {
     button.innerHTML = '<span class="material-icons">public</span> Reset View';
     button.title = "Reset map to default view";
 
-    // Style the button
-    button.style.backgroundColor = "#444";
-    button.style.color = "white";
-    button.style.border = "none";
-    button.style.padding = "8px 12px";
-    button.style.borderRadius = "4px";
-    button.style.cursor = "pointer";
-    button.style.display = "flex";
-    button.style.alignItems = "center";
-    button.style.fontFamily = "'Special Elite', monospace";
-    button.style.fontSize = "14px";
-    button.style.boxShadow = "0 2px 5px rgba(0,0,0,0.3)";
-    button.style.marginTop = "10px"; // Add some top margin
-
-    // Add hover effect
-    button.onmouseover = function () {
-      this.style.backgroundColor = "#666";
-    };
-    button.onmouseout = function () {
-      this.style.backgroundColor = "#444";
-    };
+    button.className = "leaflet-control-reset-view";
 
     // Add click event
     L.DomEvent.on(button, "click", function (e) {

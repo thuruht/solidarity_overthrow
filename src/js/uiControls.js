@@ -2,6 +2,7 @@ import { getMetrics, getCities } from "./gameState.js";
 import { updateCityMetrics } from "./cityInteractions.js";
 import { updateProgress } from "./progress.js";
 import { initializeSaveGame, initializeLoadGame } from "./saveLoad.js";
+import { gsap } from "gsap";
 
 export function initializeControls(map) {
   const controlToggles = document.querySelectorAll(".control-toggle");
@@ -28,10 +29,15 @@ export function initializeControls(map) {
           currentActiveToggle.getAttribute("data-target");
         const prevPanel = document.getElementById(currentActivePanelId);
         if (prevPanel) {
-          prevPanel.classList.remove("show");
-          setTimeout(() => {
-            prevPanel.style.display = "none";
-          }, 300);
+          gsap.to(prevPanel, {
+            duration: 0.3,
+            opacity: 0,
+            y: -10,
+            onComplete: () => {
+              prevPanel.classList.remove("show");
+              prevPanel.style.display = "none";
+            }
+          });
         }
       }
 
@@ -39,14 +45,19 @@ export function initializeControls(map) {
       this.classList.toggle("active");
       if (this.classList.contains("active")) {
         targetPanel.style.display = "block";
-        // Force reflow for animation
-        targetPanel.offsetHeight;
         targetPanel.classList.add("show");
+
+        gsap.fromTo(targetPanel,
+          { opacity: 0, y: -10 },
+          { duration: 0.3, opacity: 1, y: 0, ease: "power2.out" }
+        );
+
         activePanel = targetPanel;
         
         // Show backdrop on mobile
         if (isMobile() && backdrop) {
           backdrop.classList.add("show");
+          gsap.fromTo(backdrop, {opacity: 0}, {opacity: 1, duration: 0.3});
         }
         
         // Special handling for panels that need dynamic content
@@ -54,15 +65,24 @@ export function initializeControls(map) {
           updateGlobalMetrics();
         }
       } else {
-        targetPanel.classList.remove("show");
-        setTimeout(() => {
-          targetPanel.style.display = "none";
-        }, 300);
+        gsap.to(targetPanel, {
+          duration: 0.3,
+          opacity: 0,
+          y: -10,
+          onComplete: () => {
+            targetPanel.classList.remove("show");
+            targetPanel.style.display = "none";
+          }
+        });
         activePanel = null;
         
         // Hide backdrop
         if (backdrop) {
-          backdrop.classList.remove("show");
+          gsap.to(backdrop, {
+            duration: 0.3,
+            opacity: 0,
+            onComplete: () => backdrop.classList.remove("show")
+          });
         }
       }
     });
