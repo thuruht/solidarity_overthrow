@@ -3,6 +3,8 @@ import { getMetrics, resetGameState } from "./gameState.js";
 import { gameLoopManager } from "./gameLoop.js";
 import { showToast } from "./notifications.js";
 import { coupPlanner } from "./coupPlanner.js";
+import { gsap } from "gsap";
+import "../css/game-end.css";
 
 // Game Logic: Win/Lose Conditions and Game Progression
 
@@ -140,6 +142,12 @@ export const gameLogic = (() => {
     messageContainer.innerHTML = message;
     document.body.appendChild(messageContainer);
 
+    // Animate the message container appearance
+    gsap.fromTo(messageContainer,
+      { scale: 0.5, opacity: 0 },
+      { duration: 0.5, scale: 1, opacity: 1, ease: "back.out(1.7)" }
+    );
+
     // If it's a victory, calculate and submit the score
     const isVictory = messageContainer.classList.contains("victory");
     if (isVictory) {
@@ -148,8 +156,15 @@ export const gameLogic = (() => {
 
     // Add event listener to restart button
     document.getElementById("restart-game").addEventListener("click", () => {
-      restartGame();
-      document.body.removeChild(messageContainer);
+      gsap.to(messageContainer, {
+        duration: 0.3,
+        scale: 0.8,
+        opacity: 0,
+        onComplete: () => {
+          restartGame();
+          document.body.removeChild(messageContainer);
+        }
+      });
     });
   }
 

@@ -417,14 +417,7 @@ export function updateCityMetrics(cityName) {
 
 // Generic feedback function
 export function showFeedback(message, type = "info") {
-  const feedback = document.getElementById("retaliation-feedback");
-  if (!feedback) {
-    console.warn("retaliation-feedback element not found");
-    return;
-  }
-  feedback.textContent = message;
-  feedback.style.backgroundColor =
-    type === "success" ? "rgba(0, 100, 0, 0.8)" : "rgba(200, 0, 0, 0.8)";
-  feedback.style.display = "block";
-  setTimeout(() => (feedback.style.display = "none"), 3000);
+  import("./notifications.js").then(({ showToast }) => {
+    showToast(type === "success" ? "Success" : "Update", message, type, 3000);
+  });
 }

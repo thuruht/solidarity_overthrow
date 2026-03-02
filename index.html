@@ -136,6 +136,20 @@
         </div>
       </div>
 
+      <!-- Multiplayer Chat Control -->
+      <div class="control-block">
+        <button class="control-toggle" data-target="chat-panel" aria-label="Global Chat">
+          <span class="material-icons">forum</span>
+          <span class="button-label">Comrades</span>
+        </button>
+        <div id="chat-panel" class="control-panel">
+          <div id="chat-messages" style="height: 150px; overflow-y: auto; background: #222; padding: 5px; margin-bottom: 5px; font-size: 0.9em;">
+            <em>Connecting to global network...</em>
+          </div>
+          <input type="text" id="chat-input" placeholder="Message comrades... (Enter to send)" style="width: 100%; padding: 5px; box-sizing: border-box; background: #333; color: white; border: 1px solid #555;">
+        </div>
+      </div>
+
       <!-- Save Game Control -->
       <div class="control-block">
         <button class="control-toggle" data-target="save-game-panel" aria-label="Save game">

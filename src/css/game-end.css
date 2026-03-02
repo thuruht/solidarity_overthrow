@@ -1,0 +1,52 @@
+/* --- Game End Message --- */
+.game-end-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 10000;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    border: 2px solid;
+    max-width: 80%;
+}
+
+.game-end-message.victory {
+    border-color: #00ff00;
+}
+
+.game-end-message.defeat {
+    border-color: #ff0000;
+}
+
+.game-end-message h2 {
+    margin-top: 0;
+    font-family: 'Special Elite', monospace;
+    font-size: 2em;
+}
+
+.game-end-message p {
+    font-size: 1.2em;
+    margin: 15px 0;
+}
+
+.game-end-message button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    background-color: #444;
+    color: white;
+    border: 1px solid white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    transition: background-color 0.2s;
+}
+
+.game-end-message button:hover {
+    background-color: #666;
+}
