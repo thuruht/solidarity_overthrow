@@ -1,6 +1,6 @@
 // _worker.js
 export { ChatRoom } from "./chat.js";
-import { handleLogin, handleAuthCallback, handleMe, handleLogout } from "./src/workers/authHandlers.js";
+import { handleLogin, handleAuthCallback, handleMe, handleLogout, handleDeviceCode, handleDevicePoll } from "./src/workers/authHandlers.js";
 import { handleSaveGame, handleLoadGame, handleListSaves } from "./src/workers/gameHandlers.js";
 import { handleLeaderboardGet, handleLeaderboardSubmit } from "./src/workers/leaderboardHandlers.js";
 import { handleAdminUnmute, handleAdminChatStatus } from "./src/workers/adminHandlers.js";
@@ -51,6 +51,8 @@ async function handleApiRequest(request, env, ctx) {
   const routes = {
     "/api/login": handleLogin,
     "/api/auth/callback": handleAuthCallback,
+    "/api/auth/device/code": handleDeviceCode,
+    "/api/auth/device/poll": handleDevicePoll,
     "/api/me": handleMe,
     "/api/logout": handleLogout,
     "/api/save": handleSaveGame,

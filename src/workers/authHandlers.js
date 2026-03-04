@@ -152,4 +152,117 @@ async function handleLogout(request, env) {
   });
 }
 
-export { handleLogin, handleAuthCallback, handleMe, handleLogout, getSessionId };
+async function handleDeviceCode(request, env) {
+  if (!env.GITHUB_CLIENT_ID) {
+    return jsonResponse({ error: "OAuth not configured" }, 503);
+  }
+
+  try {
+    const response = await fetch("https://github.com/login/device/code", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        client_id: env.GITHUB_CLIENT_ID,
+        scope: "read:user",
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok || data.error) {
+      return jsonResponse({ error: data.error || "Failed to get device code" }, 400);
+    }
+
+    return jsonResponse(data);
+  } catch (error) {
+    console.error("Device code error:", error);
+    return jsonResponse({ error: "Failed to initiate device flow" }, 500);
+  }
+}
+
+async function handleDevicePoll(request, env) {
+  if (!env.GITHUB_CLIENT_ID) {
+    return jsonResponse({ error: "OAuth not configured" }, 503);
+  }
+
+  let requestData;
+  try {
+    requestData = await request.json();
+  } catch (e) {
+    return jsonResponse({ error: "Invalid JSON body" }, 400);
+  }
+
+  const { device_code } = requestData;
+  if (!device_code) {
+    return jsonResponse({ error: "Missing device_code" }, 400);
+  }
+
+  try {
+    const tokenResponse = await fetch("https://github.com/login/oauth/access_token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        client_id: env.GITHUB_CLIENT_ID,
+        device_code,
+        grant_type: "urn:ietf:params:oauth:grant-type:device_code",
+      }),
+    });
+
+    const tokenData = await tokenResponse.json();
+
+    if (tokenData.error) {
+      // Return 200 with error info so client can handle polling states (e.g. authorization_pending)
+      return jsonResponse(tokenData, 200);
+    }
+
+    if (!tokenData.access_token) {
+      return jsonResponse({ error: "No access token returned" }, 400);
+    }
+
+    // Get user info
+    const userResponse = await fetch("https://api.github.com/user", {
+      headers: {
+        Authorization: `Bearer ${tokenData.access_token}`,
+        "User-Agent": "SolidarityOverthrow",
+      },
+    });
+
+    if (!userResponse.ok) {
+      return jsonResponse({ error: "Failed to get user info" }, 400);
+    }
+
+    const userData = await userResponse.json();
+
+    // Create session
+    const sessionId = crypto.randomUUID();
+    const sessionData = {
+      userId: userData.id,
+      username: userData.login,
+      avatar: userData.avatar_url,
+      isAdmin: env.ADMIN_USER_ID && `${userData.id}` === env.ADMIN_USER_ID,
+    };
+
+    await env.SESSIONS.put(sessionId, JSON.stringify(sessionData), {
+      expirationTtl: 86400,
+    });
+
+    // We can't use 302 redirect here since it's an AJAX poll request.
+    // Instead we send back the cookie header for the client to parse,
+    // or better yet, Cloudflare Workers lets us set the Set-Cookie header on a 200 response
+    const headers = new Headers();
+    headers.append("Set-Cookie", `session_id=${sessionId}; HttpOnly; Secure; Path=/; SameSite=Lax; Max-Age=86400`);
+
+    return jsonResponse({ success: true, user: sessionData }, 200, Object.fromEntries(headers.entries()));
+
+  } catch (error) {
+    console.error("Device poll error:", error);
+    return jsonResponse({ error: "Polling failed" }, 500);
+  }
+}
+
+export { handleLogin, handleAuthCallback, handleMe, handleLogout, getSessionId, handleDeviceCode, handleDevicePoll };
