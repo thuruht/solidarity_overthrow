@@ -1,6 +1,6 @@
 import { addLogEntry } from "./log.js";
 
-export function showToast(title, message, type = "info", duration = 5000) {
+export function showToast(title, content, type = "info", duration = 7000) {
   const container = document.getElementById("notification-container");
   if (!container) {
     console.error("Notification container not found!");
@@ -10,31 +10,51 @@ export function showToast(title, message, type = "info", duration = 5000) {
   const notification = document.createElement("div");
   notification.className = `notification ${type}`;
   
-  notification.innerHTML = `
-        <div>
-            <h3>${title}</h3>
-            <p>${message}</p>
-        </div>
-        <span class="notification-close">&times;</span>
-    `;
-
-  // Close button functionality
-  const closeBtn = notification.querySelector(".notification-close");
-  closeBtn.addEventListener("click", () => {
-    notification.remove();
-  });
-
-  // Add to the top of the container (so newest is top)
-  // container.prepend(notification); 
-  // Wait, if it pushes the map down, maybe we want it at the bottom of the container?
-  // If we prepend, the "stack" grows downwards.
-  container.appendChild(notification);
+  const contentWrapper = document.createElement('div');
   
-  // Auto-scroll to bottom of notification container to see newest?
-  // container.scrollTop = container.scrollHeight;
+  const titleEl = document.createElement('h3');
+  titleEl.textContent = title;
+  contentWrapper.appendChild(titleEl);
+
+  if (typeof content === 'string') {
+    const p = document.createElement('p');
+    p.innerHTML = content; // Use innerHTML for simple strings that might contain bold, etc.
+    contentWrapper.appendChild(p);
+  } else if (content instanceof HTMLElement) {
+    content.classList.add('toast-content');
+    contentWrapper.appendChild(content);
+  }
+
+  const closeBtn = document.createElement('span');
+  closeBtn.className = 'notification-close';
+  closeBtn.innerHTML = '&times;';
+
+  notification.appendChild(contentWrapper);
+  notification.appendChild(closeBtn);
+
+  const removeNotif = () => {
+    notification.classList.remove('visible');
+    // Remove the element after the transition ends
+    setTimeout(() => notification.remove(), 400); 
+  };
+
+  closeBtn.addEventListener("click", removeNotif);
+
+  if (duration > 0) {
+    setTimeout(removeNotif, duration);
+  }
+
+  container.appendChild(notification);
+
+  // Trigger the animation
+  // We need a short delay to allow the element to be added to the DOM first
+  setTimeout(() => {
+    notification.classList.add("visible");
+  }, 50);
 
   // Also log the notification to the history
   if (addLogEntry) {
-    addLogEntry(`${title}: ${message}`, type);
+    const logMessage = typeof content === 'string' ? content : content.textContent.trim().substring(0, 50) + '...';
+    addLogEntry(`${title}: ${logMessage}`, type);
   }
 }

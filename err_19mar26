@@ -1,0 +1,55 @@
+Uncaught TypeError: The specifier “leaflet” was a bare specifier, but was not remapped to anything. Relative module specifiers must start with “./”, “../” or “/”. main_new.js:1:15
+GET
+http://127.0.0.1:8000/favicon.ico
+[HTTP/1 404 File not found 0ms]
+
+	
+GET
+	http://127.0.0.1:8000/favicon.ico
+Status
+404
+File not found
+VersionHTTP/1
+Transferred335 B (335 B size)
+Referrer Policystrict-origin-when-cross-origin
+DNS ResolutionSystem
+
+	
+Connection
+	close
+Content-Length
+	335
+Content-Type
+	text/html;charset=utf-8
+Date
+	Thu, 19 Mar 2026 15:20:28 GMT
+Server
+	SimpleHTTP/0.6 Python/3.13.5
+	
+Accept
+	image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5
+Accept-Encoding
+	gzip, deflate, br, zstd
+Accept-Language
+	en-US,en;q=0.5
+Connection
+	keep-alive
+DNT
+	1
+Host
+	127.0.0.1:8000
+Referer
+	http://127.0.0.1:8000/
+Sec-Fetch-Dest
+	image
+Sec-Fetch-Mode
+	no-cors
+Sec-Fetch-Site
+	same-origin
+Sec-GPC
+	1
+User-Agent
+	Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0
+The Components object is deprecated. It will soon be removed. 127.0.0.1:8000
+
+​

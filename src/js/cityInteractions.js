@@ -80,13 +80,15 @@ function placeStaticMarker(city) {
 
   fetchAndIntegrateWeather(city, marker);
 
-  marker.bindPopup(createCityPopup(city));
-
   marker.on("click", () => {
     const dropdown = document.getElementById("citySelect");
     if (dropdown) dropdown.value = city.name;
     map.setView([city.lat, city.lon], 6);
     updateCityMetrics(city.name);
+
+    // Show toast notification instead of popup
+    const toastContent = createCityPopup(city);
+    showToast(city.name, toastContent, 'info', 10000); // 10-second duration
   });
 
   colorizeMarker(marker, city);
@@ -113,11 +115,6 @@ export async function fetchAndIntegrateWeather(city, marker) {
        <span>Solidarity: ${city.solidarity}%</span>`,
       { direction: "auto", opacity: 0.9 }
     );
-
-    const popup = marker.getPopup();
-    if (popup) {
-      popup.setContent(createCityPopup(city));
-    }
   } catch (error) {
     console.error(`Error fetching weather data for ${city.name}:`, error);
   }
@@ -143,8 +140,8 @@ function getWeatherEffectDescription(weatherDesc) {
 
 // Create popup content for a city
 function createCityPopup(city) {
-  const popupContent = document.createElement("div");
-  popupContent.className = "city-popup";
+  const toastContent = document.createElement("div");
+  toastContent.className = "city-toast-content";
 
   let weatherEffectHint = "";
   if (city.weather && city.weather.description) {
@@ -154,8 +151,7 @@ function createCityPopup(city) {
     }
   }
 
-  popupContent.innerHTML = `
-    <h3>${city.name}</h3>
+  toastContent.innerHTML = `
     <div class="popup-metrics">
       <p><b>IPI:</b> ${city.ipi}%</p>
       <p><b>Solidarity:</b> ${city.solidarity}%</p>
@@ -174,15 +170,13 @@ function createCityPopup(city) {
   `;
 
   // Add event listeners directly to the created element before returning it
-  popupContent.querySelectorAll(".action-btn").forEach((btn) => {
+  toastContent.querySelectorAll(".action-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
-      // Stop the click from propagating to the map, which might close the popup
-      e.stopPropagation();
       performCityAction(e.target.dataset.action, e.target.dataset.city);
     });
   });
 
-  return popupContent;
+  return toastContent;
 }
 
 // Perform action on a specific city
@@ -294,7 +288,7 @@ export function updateCityVisuals(cityName) {
       ];
     if (leafletMarker) {
       colorizeMarker(leafletMarker, city);
-      leafletMarker.getPopup().setContent(createCityPopup(city));
+      // leafletMarker.getPopup().setContent(createCityPopup(city));
     }
   }
 

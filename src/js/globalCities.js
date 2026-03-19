@@ -1776,14 +1776,6 @@ export const initialCities = [
     solidarity: 18,
   },
   {
-    name: "Zinder",
-    lat: 13.8072,
-    lon: 8.9881,
-    ipi: 90,
-    propaganda: 85,
-    solidarity: 20,
-  },
-  {
     name: "Maradi",
     lat: 13.4917,
     lon: 7.0964,
@@ -1966,14 +1958,6 @@ export const initialCities = [
     ipi: 92,
     propaganda: 88,
     solidarity: 16,
-  },
-  {
-    name: "Zinder",
-    lat: 13.8072,
-    lon: 8.9881,
-    ipi: 95,
-    propaganda: 89,
-    solidarity: 20,
   },
   {
     name: "Maroua",
@@ -2312,7 +2296,7 @@ export const initialCities = [
     solidarity: 5,
   },
   {
-    name: "Melbourne",
+    name: "Melbourne, AU",
     lat: -37.8136,
     lon: 144.9631,
     ipi: 93,
