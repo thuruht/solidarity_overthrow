@@ -5,6 +5,11 @@ import { gameLogic } from "./gameLogic.js";
 import { getCities, setCities, updateCity, addCity } from "./gameState.js";
 // File: solid0p2.js
 
+// Track marker instances by city name so we can refresh them after a load
+// (previously markers were only reachable via a DOM-id/map._layers lookup,
+// which broke after a fresh set of city objects replaced the old ones)
+const markersByCityName = new Map();
+
 // This function will be called by main_new.js to set up everything related to city interactions
 export function setupCityInteractions() {
   populateDropdown();
@@ -77,6 +82,7 @@ function placeStaticMarker(city) {
   const marker = L.marker([city.lat, city.lon]).addTo(map);
 
   marker._icon.id = `marker-${city.name.replace(/[^a-zA-Z0-9]/g, "-")}`;
+  markersByCityName.set(city.name, marker);
 
   fetchAndIntegrateWeather(city, marker);
 
@@ -87,7 +93,12 @@ function placeStaticMarker(city) {
     updateCityMetrics(city.name);
 
     // Show toast notification instead of popup
-    const toastContent = createCityPopup(city);
+    // Look up the CURRENT city data by name each click, rather than closing
+    // over the city object captured at marker-creation time - otherwise a
+    // save/load or state reset leaves this marker showing stale data.
+    const currentCity = getCities().find((c) => c.name === city.name);
+    if (!currentCity) return;
+    const toastContent = createCityPopup(currentCity);
     showToast(city.name, toastContent, 'info', 10000); // 10-second duration
   });
 
@@ -261,8 +272,12 @@ function performCityAction(action, cityName) {
     solidarity: newSolidarity,
   });
 
-  // Update marker and sidebar
-  updateCityVisuals(city);
+  // Update marker and sidebar.
+  // BUGFIX: this previously passed the `city` object instead of `city.name`.
+  // updateCityVisuals() does a getCities().find(c => c.name === cityName),
+  // so passing the object made the lookup silently fail every time - the
+  // marker color and sidebar never refreshed after a direct city action.
+  updateCityVisuals(city.name);
   updateGlobalMetrics();
 
   // Show feedback using the new notification system
@@ -271,30 +286,36 @@ function performCityAction(action, cityName) {
 
 // Update marker color and popup content
 export function updateCityVisuals(cityName) {
-  const city = getCities().find(c => c.name === cityName);
+  const city = getCities().find((c) => c.name === cityName);
   if (!city) return;
 
-  const markerElement = document.getElementById(
-    `marker-${city.name.replace(/[^a-zA-Z0-9]/g, "-")}`
-  );
-  if (markerElement) {
-    const leafletMarker =
-      map._layers[
-        Object.keys(map._layers).find(
-          (key) =>
-            map._layers[key]._icon &&
-            map._layers[key]._icon.id === markerElement.id
-        )
-      ];
-    if (leafletMarker) {
-      colorizeMarker(leafletMarker, city);
-      // leafletMarker.getPopup().setContent(createCityPopup(city));
-    }
+  const marker = markersByCityName.get(city.name);
+  if (marker) {
+    colorizeMarker(marker, city);
   }
 
   const dropdown = document.getElementById("citySelect");
   if (dropdown && dropdown.value === city.name) {
     updateCityMetrics(city.name);
+  }
+}
+
+// Remove every existing marker and re-place one per current city.
+// Needed after a game load, since applyLoadedState() replaces the whole
+// `cities` array with new objects - the old markers' click closures and
+// colors would otherwise keep pointing at pre-load data forever.
+export function refreshAllCityVisuals() {
+  markersByCityName.forEach((marker) => {
+    if (map) map.removeLayer(marker);
+  });
+  markersByCityName.clear();
+
+  populateDropdown();
+  initializeCityMarkers();
+
+  const dropdown = document.getElementById("citySelect");
+  if (dropdown && dropdown.value) {
+    updateCityMetrics(dropdown.value);
   }
 }
 
@@ -382,7 +403,7 @@ async function addCustomCity(cityName) {
 
 // Update the sidebar with city metrics
 export function updateCityMetrics(cityName) {
-  const city = getCities().find(c => c.name === cityName);
+  const city = getCities().find((c) => c.name === cityName);
   if (!city) return;
 
   const metricsDiv = document.querySelector(".city-metrics");

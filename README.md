@@ -12,15 +12,16 @@
 *   **Dynamic Events:** React to random events like crackdowns, media leaks, and natural disasters.
 *   **Multiplayer Elements:** Global chat and leaderboards powered by Cloudflare Durable Objects.
 *   **Progression:** Unlock achievements and save your progress.
-*   **Authentication:** GitHub OAuth for secure login and profile management.
+*   **Authentication:** Local username/password accounts for secure login and profile management.
 *   **Cloud Save:** Save your revolution's state to the cloud and resume from any device.
+*   **Revolutionary Coup Planning:** Build a secret network of cells across cities, balance preparation against secrecy, and attempt a final coup for the hardest-won victory condition.
 
 ## 🛠 Tech Stack
 
 *   **Frontend:** HTML5, CSS3, JavaScript (Modules), Vite
 *   **Mapping:** Leaflet.js
 *   **Backend:** Cloudflare Workers, Durable Objects, KV Storage, D1 Database
-*   **Authentication:** GitHub OAuth
+*   **Authentication:** Local accounts (username/password, hashed with PBKDF2 via the Web Crypto API - no third-party auth provider)
 *   **Animations:** GSAP
 
 ## 🚀 Getting Started
@@ -35,8 +36,8 @@
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/yourusername/solidarity-overthrow.git
-    cd solidarity-overthrow
+    git clone https://github.com/thuruht/solidarity_overthrow.git
+    cd solidarity_overthrow
     ```
 
 2.  **Install dependencies:**
@@ -47,9 +48,18 @@
 3.  **Configure Environment:**
     Create a `.dev.vars` file for local development secrets (do not commit this):
     ```
-    GITHUB_CLIENT_ID=your_id
-    GITHUB_CLIENT_SECRET=your_secret
     OWM_API_KEY=your_openweathermap_key
+    ```
+    (GitHub OAuth credentials are no longer needed - accounts are handled entirely by the Worker's own `/api/register` and `/api/login` endpoints against the D1 `users` table.)
+
+4.  **Apply the database migrations**, including the `users` table:
+    ```bash
+    npx wrangler d1 execute solidarity-leaderboard --file=migrations/0002_users.sql
+    ```
+
+5.  **Promote your own account to admin** (after registering once in-app):
+    ```bash
+    npx wrangler d1 execute solidarity-leaderboard --command "UPDATE users SET is_admin = 1 WHERE username = 'yourname';"
     ```
 
 ### Running Locally
@@ -67,15 +77,22 @@
 
 ### Core Metrics
 *   **Solidarity:** The unity of the people. High solidarity unlocks powerful collective actions.
-*   **IPI (Instability/Pressure Index):** The pressure on the ruling regime. Push this high to force change.
+*   **IPI (Imperialist Power Index):** The strength of the imperial system's control. Reduce this to win - the lower it goes, the closer the regime is to collapse.
 *   **Propaganda:** The regime's control over information. Reduce this to gain more support.
 
 ### Actions
 *   **Local Actions:** Click on a city to perform specific actions like distributing flyers or organizing local meetings.
 *   **Collective Actions:** Use the "Actions" panel to launch global initiatives like General Strikes or sabotage, but beware of retaliation!
+*   **Revolutionary Coup Planning:** Once global solidarity reaches 25% and IPI drops to 85% or below, a "Plan Revolution" button appears. Establish cells in high-solidarity cities, designate a lead city, and balance preparation against operational security before attempting to execute the revolution. Note that as IPI drops further, a cornered regime grows more desperate and retaliation intensifies - this is intentional, not a bug.
 
 ### Winning
-Maintain high global solidarity and push the IPI to 100% to overthrow the regime. Avoid getting crushed by retaliation or losing all support.
+There are four ways to win:
+1.  **IPI Victory:** Reduce global IPI to 25% or below.
+2.  **Solidarity Victory:** Raise global solidarity to 75% or above.
+3.  **Truth Victory:** Reduce global propaganda to 25% or below.
+4.  **Revolutionary Victory:** Successfully execute a planned coup (see above).
+
+Avoid getting crushed by retaliation (IPI at 95%+ with solidarity at 10% or below ends the game in defeat).
 
 ## 🤝 Contributing
 

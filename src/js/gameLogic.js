@@ -12,18 +12,13 @@ import "../css/game-end.css";
 export const gameLogic = (() => {
   // Check if the game is won or lost after each action
   function checkGameState() {
-    // Check for revolutionary victory if coup planner is active
-    if (
-      typeof coupPlanner !== "undefined" &&
-      coupPlanner.isActive() &&
-      coupPlanner.getCellsCount() >= 5 &&
-      coupPlanner.getPreparation() >= 95 &&
-      coupPlanner.getSecrecy() >= 80 &&
-      coupPlanner.getLeadCity() !== null
-    ) {
-      // Player has all the conditions for revolutionary victory, but needs to execute it manually
-      // This is handled in the coupPlanner's executeCoup function
-    }
+    // NOTE: Revolutionary victory is NOT checked here. The coup/revolution
+    // win path is entirely player-triggered via coupPlanner.executeCoup()
+    // (the "Execute Revolution!" button, only enabled once cells >= 5,
+    // preparation >= 95%, secrecy >= 80%, and a lead city is set) - that
+    // function calls gameLogic.triggerWin("revolution") itself on success.
+    // There used to be a dead conditional block here that duplicated the
+    // same condition check but did nothing with the result; it's removed.
 
     // Standard victory conditions
     if (getMetrics().ipi <= 25) {
@@ -190,6 +185,15 @@ export const gameLogic = (() => {
           `Your score of ${score} has been added to the leaderboard.`,
           "success"
         );
+      } else if (response.status === 401) {
+        // Clarify to the player *why* it failed - previously this showed
+        // the same generic "Could not submit score" message whether the
+        // server errored or the player was simply never logged in.
+        showToast(
+          "Score Not Saved",
+          "Log in to save your score to the leaderboard.",
+          "warning"
+        );
       } else {
         throw new Error("Submit failed");
       }
@@ -217,6 +221,11 @@ export const gameLogic = (() => {
 
     // 3. Reset the core game state data (cities, metrics)
     resetGameState();
+
+    // 3b. Reset any in-progress coup/revolution plan. Previously this was
+    // never called on restart, so leftover cells/preparation/security from
+    // a prior playthrough could persist into the new one.
+    coupPlanner.resetPlan();
 
     // 4. Re-initialize the entire game
     // This will create a new map, redraw markers, and restart the game loop.
@@ -339,18 +348,6 @@ export const gameLogic = (() => {
         coupPlanner.getPreparation() >= 75
       ) {
         unlockAchievement("wellPrepared");
-      }
-
-      // Check for revolutionary win condition
-      if (
-        coupPlanner.isActive() &&
-        coupPlanner.getCellsCount() >= 5 &&
-        coupPlanner.getPreparation() >= 95 &&
-        coupPlanner.getSecrecy() >= 80 &&
-        coupPlanner.getLeadCity() !== null
-      ) {
-        // Conditions are met for a successful revolution!
-        // This check allows the Execute button to be enabled in the coup planner
       }
     }
   }

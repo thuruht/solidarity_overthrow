@@ -120,6 +120,8 @@
             <option value="network">🔄 Build Network (Multi-City)</option>
             <option value="sabotage">💥 Sabotage (Multi-City)</option>
           </select>
+          <!-- The "Plan Revolution" button is inserted here dynamically by
+               coupPlanner.js once solidarity >= 25% and IPI <= 85%. -->
         </div>
       </div>
 
@@ -133,6 +135,25 @@
           <div id="log-history"></div>
           <hr />
           <div id="progress-trackers"></div>
+        </div>
+      </div>
+
+      <!-- Leaderboard Control -->
+      <!-- Previously missing entirely: uiControls.js's initializeLeaderboard()
+           expected a [data-target="leaderboard-panel"] toggle and a
+           #leaderboard-list element, neither of which existed. That made
+           initializeLeaderboard() throw for every logged-in user, which
+           silently aborted the rest of auth.js's checkUserSession(). -->
+      <div class="control-block">
+        <button class="control-toggle" data-target="leaderboard-panel" aria-label="View leaderboard">
+          <span class="material-icons">emoji_events</span>
+          <span class="button-label">Ranks</span>
+        </button>
+        <div id="leaderboard-panel" class="control-panel">
+          <h4>Top Revolutionaries</h4>
+          <ul id="leaderboard-list">
+            <li>Log in and win to see scores here.</li>
+          </ul>
         </div>
       </div>
 
@@ -173,20 +194,65 @@
         </div>
       </div>
 
-      <!-- User Profile / Login Control -->
-      <div class="control-block" id="user-profile-controls">
-        <div id="user-info" style="display: none">
-          <img id="user-avatar" src="" alt="User avatar" />
-          <span id="user-name"></span>
-          <a href="/api/logout" id="logout-btn" class="control-toggle" aria-label="Logout">
-            <span class="material-icons">logout</span>
-            <span class="button-label">Logout</span>
-          </a>
+      <!-- Admin Control -->
+      <!-- Previously missing entirely from the HTML: adminPanel.js's
+           initializeAdminPanel() looked for [data-target="admin-panel"]
+           and #admin-chat-users, and auth.js tried to unhide
+           #admin-controls - none of which existed, so the admin
+           moderation UI was completely unreachable even for the site's
+           actual admin user. Hidden by default; auth.js shows it once
+           the logged-in session confirms isAdmin === true. -->
+      <div class="control-block" id="admin-controls" style="display: none">
+        <button class="control-toggle" data-target="admin-panel" aria-label="Admin panel">
+          <span class="material-icons">shield</span>
+          <span class="button-label">Admin</span>
+        </button>
+        <div id="admin-panel" class="control-panel">
+          <h4>Chat Moderation</h4>
+          <div id="admin-chat-users"></div>
         </div>
-        <a href="/api/login" id="login-btn" class="control-toggle" aria-label="Login with GitHub">
-          <span class="material-icons">login</span>
-          <span class="button-label">Login</span>
-        </a>
+      </div>
+
+      <!-- User Profile / Login Control -->
+      <!-- Replaces the old GitHub OAuth redirect link with local
+           username/password forms, handled by auth.js. -->
+      <div class="control-block" id="user-profile-controls">
+        <button class="control-toggle" data-target="auth-panel" aria-label="Account">
+          <span class="material-icons">account_circle</span>
+          <span class="button-label">Account</span>
+        </button>
+        <div id="auth-panel" class="control-panel">
+          <div id="auth-logged-in" style="display: none">
+            <p>Logged in as <strong id="user-name"></strong></p>
+            <button id="logout-btn" class="action-btn">
+              <span class="material-icons">logout</span> Logout
+            </button>
+          </div>
+
+          <div id="auth-logged-out" class="auth-forms" style="display: flex; flex-direction: column;">
+            <form id="login-form" class="auth-form" style="display: flex; flex-direction: column; gap: 8px;">
+              <h4>Login</h4>
+              <div class="auth-form-error" style="display: none; color: #e74c3c; font-size: 0.85em;"></div>
+              <input type="text" name="username" placeholder="Username" autocomplete="username" required minlength="3" maxlength="24" />
+              <input type="password" name="password" placeholder="Password" autocomplete="current-password" required minlength="8" />
+              <button type="submit" class="action-btn">Log In</button>
+              <p style="font-size: 0.85em; margin: 4px 0 0;">
+                No account? <a href="#" id="show-register">Register</a>
+              </p>
+            </form>
+
+            <form id="register-form" class="auth-form" style="display: none; flex-direction: column; gap: 8px;">
+              <h4>Create Account</h4>
+              <div class="auth-form-error" style="display: none; color: #e74c3c; font-size: 0.85em;"></div>
+              <input type="text" name="username" placeholder="Username (3-24 chars)" autocomplete="username" required minlength="3" maxlength="24" pattern="[a-zA-Z0-9_]+" />
+              <input type="password" name="password" placeholder="Password (8+ chars)" autocomplete="new-password" required minlength="8" />
+              <button type="submit" class="action-btn">Register</button>
+              <p style="font-size: 0.85em; margin: 4px 0 0;">
+                Already have an account? <a href="#" id="show-login">Log in</a>
+              </p>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
 

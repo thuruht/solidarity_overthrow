@@ -1,6 +1,6 @@
 // _worker.js
 export { ChatRoom } from "./chat.js";
-import { handleLogin, handleAuthCallback, handleMe, handleLogout } from "./src/workers/authHandlers.js";
+import { handleRegister, handleLogin, handleMe, handleLogout } from "./src/workers/authHandlers.js";
 import { handleSaveGame, handleLoadGame, handleListSaves } from "./src/workers/gameHandlers.js";
 import { handleLeaderboardGet, handleLeaderboardSubmit } from "./src/workers/leaderboardHandlers.js";
 import { handleAdminUnmute, handleAdminChatStatus } from "./src/workers/adminHandlers.js";
@@ -49,8 +49,11 @@ export default {
 async function handleApiRequest(request, env, ctx) {
   const url = new URL(request.url);
   const routes = {
+    // BUGFIX/CHANGE: GitHub OAuth (login redirect + auth/callback) removed.
+    // /api/login and /api/register are now POST JSON endpoints handled
+    // directly by authHandlers.js against the local `users` D1 table.
+    "/api/register": handleRegister,
     "/api/login": handleLogin,
-    "/api/auth/callback": handleAuthCallback,
     "/api/me": handleMe,
     "/api/logout": handleLogout,
     "/api/save": handleSaveGame,

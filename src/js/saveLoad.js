@@ -1,6 +1,7 @@
 import { getCities, getMetrics, applyLoadedState } from "./gameState.js";
 import { showToast } from "./notifications.js";
 import { updateGlobalMetrics } from "./uiControls.js";
+import { refreshAllCityVisuals } from "./cityInteractions.js";
 
 export function initializeSaveGame() {
   const savePanelToggle = document.querySelector(
@@ -98,7 +99,7 @@ async function handleLoadClick(event) {
   try {
     showToast("Loading...", `Loading game from ${slotId}.`, "info");
     const response = await fetch(`/api/load?slotId=${slotId}`);
-    
+
     if (!response.ok) {
        // Try to parse error message if possible
        let errorMsg = `Server responded with ${response.status}`;
@@ -110,11 +111,17 @@ async function handleLoadClick(event) {
     }
 
     const loadedData = await response.json();
-    
+
     // The worker returns the raw game state object
     if (loadedData && loadedData.cities && loadedData.metrics) {
       applyLoadedState(loadedData);
       updateGlobalMetrics();
+      // BUGFIX: previously the map markers, tooltips, and dropdown were
+      // never refreshed after a load - applyLoadedState() replaces the
+      // whole `cities` array with new objects, but the old Leaflet markers'
+      // click handlers still closed over the pre-load objects. Only the
+      // stats panel numbers were actually updating.
+      refreshAllCityVisuals();
       showToast("Game Loaded!", `Progress restored from ${slotId}.`, "success");
     } else {
       throw new Error("Invalid save file format.");

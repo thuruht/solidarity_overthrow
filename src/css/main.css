@@ -1027,8 +1027,13 @@ html {
     transform: none;
   }
 
+  /* BUGFIX: this used to be `display: none`, which hid the entire
+     User Profile / login control on mobile - meaning mobile users had
+     no visible way to log in at all. Now that login/register are real
+     forms (not just a small link), keep this control visible on mobile
+     like every other control-block. */
   #user-profile-controls {
-    display: none;
+    display: block;
   }
 }
 
@@ -1078,4 +1083,271 @@ html {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   Additions: coup planning panel, admin panel, auth forms.
+   These elements existed in JS (coupPlanner.js, adminPanel.js)
+   but had no matching CSS at all - the coup panel and dialogs
+   would have rendered as unstyled white blocks even once their
+   JS wiring bugs were fixed.
+   ============================================================ */
+
+.coup-panel,
+.selection-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(420px, 92vw);
+  max-height: 80vh;
+  overflow-y: auto;
+  background: linear-gradient(135deg, rgba(20, 0, 0, 0.97), rgba(0, 0, 0, 0.97));
+  border: 2px solid #8B0000;
+  border-radius: 10px;
+  padding: 20px;
+  color: #fff;
+  font-family: 'Special Elite', monospace;
+  z-index: 10001;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+}
+
+.coup-panel h3,
+.selection-dialog h3 {
+  color: #ff4d4d;
+  margin-top: 0;
+}
+
+.coup-panel h4 {
+  color: #ffc107;
+  margin-bottom: 8px;
+}
+
+.coup-panel ul,
+.coup-panel .cells-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+}
+
+.cells-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid #555;
+}
+
+.cells-list li.lead-cell {
+  border-left-color: #ffc107;
+  background: rgba(255, 193, 7, 0.08);
+}
+
+.cell-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85em;
+  color: #ccc;
+}
+
+.status-bars {
+  margin-bottom: 16px;
+}
+
+.status-item {
+  margin-bottom: 10px;
+}
+
+.status-item label {
+  display: block;
+  font-size: 0.85em;
+  margin-bottom: 4px;
+}
+
+.coup-panel .progress-bar {
+  width: 100%;
+  height: 14px;
+  background-color: #333;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.coup-panel .progress-fill {
+  height: 100%;
+  transition: width 0.4s ease;
+}
+
+.coup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.coup-actions .action-btn {
+  flex: 1 1 45%;
+  font-size: 0.85em;
+}
+
+.coup-execute {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.execute-btn {
+  flex: 1;
+  padding: 10px;
+  background-color: #6B8E23;
+  border: 1px solid #8fb843;
+  color: #fff;
+  font-family: 'Special Elite', monospace;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.execute-btn:hover {
+  background-color: #7ea329;
+}
+
+.execute-btn.disabled {
+  background-color: #444;
+  border-color: #555;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.cancel-btn {
+  flex: 1;
+  padding: 10px;
+  background-color: #333;
+  border: 1px solid #8B0000;
+  color: #ff8080;
+  font-family: 'Special Elite', monospace;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background-color: #4a0000;
+}
+
+.selection-dialog .city-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.selection-dialog .city-option {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #444;
+  cursor: pointer;
+}
+
+.selection-dialog .city-option:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 768px) {
+  .coup-panel,
+  .selection-dialog {
+    width: 95vw;
+    padding: 14px;
+  }
+
+  .coup-actions .action-btn {
+    flex: 1 1 100%;
+  }
+}
+
+/* ---------------- Admin panel ---------------- */
+
+#admin-chat-users ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#admin-chat-users li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
+.admin-badge,
+.muted-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7em;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.admin-badge {
+  background-color: #ffc107;
+  color: #222;
+}
+
+.muted-badge {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.unmute-btn {
+  padding: 4px 10px;
+  background-color: #3498db;
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8em;
+}
+
+.unmute-btn:hover {
+  background-color: #2980b9;
+}
+
+/* ---------------- Auth forms ---------------- */
+
+.auth-form input {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #666;
+  background-color: #222;
+  color: #fff;
+  font-size: 0.9em;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: #6B8E23;
+}
+
+.auth-form h4 {
+  margin: 0 0 4px;
+  color: #ffc107;
+}
+
+.auth-form a {
+  color: #6B8E23;
+}
+
+#auth-logged-in {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
