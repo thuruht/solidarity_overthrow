@@ -4,6 +4,9 @@ import { getMetrics, getCities } from "./gameState.js";
 import { showToast } from "./notifications.js";
 import { updateProgress } from "./progress.js";
 import { map } from "./main_new.js";
+// BUGFIX: this was referenced (in resetCoupPlan) but never imported, so
+// every coup outcome (win, loss, exposed, cancel) threw a ReferenceError.
+import { updateGlobalMetrics } from "./uiControls.js";
 
 // Create a coupPlanner object to expose functions to other modules
 export const coupPlanner = (() => {
@@ -211,21 +214,21 @@ export const coupPlanner = (() => {
           </div>
         </div>
       </div>
-      
+
       <h4>Revolutionary Cells</h4>
       ${cellsHTML}
-      
+
       <div class="coup-actions">
-        <button id="add-cell" class="action-btn" onclick="coupPlanner.openCellSelection()">Add Cell</button>
-        <button id="improve-security" class="action-btn" onclick="coupPlanner.improveSecurity()">Improve Security</button>
-        <button id="accelerate-prep" class="action-btn" onclick="coupPlanner.acceleratePrep()">Accelerate Prep</button>
+        <button id="add-cell" class="action-btn">Add Cell</button>
+        <button id="improve-security" class="action-btn">Improve Security</button>
+        <button id="accelerate-prep" class="action-btn">Accelerate Prep</button>
         ${
           plan.leadCity
             ? ""
-            : '<button id="designate-lead" class="action-btn" onclick="coupPlanner.selectLeadCity()">Select Lead City</button>'
+            : '<button id="designate-lead" class="action-btn">Select Lead City</button>'
         }
       </div>
-      
+
       <div class="coup-execute">
         ${
           plan.prepLevel >= plan.requiredPrep && plan.leadCity
@@ -234,9 +237,34 @@ export const coupPlanner = (() => {
         }
         <button id="cancel-coup" class="cancel-btn">Cancel Plans</button>
       </div>
-      
+
       <button id="close-panel" class="action-btn">Close</button>
     `;
+
+    // BUGFIX: these buttons used to be wired up with inline
+    // onclick="coupPlanner.openCellSelection()" etc. attributes in the HTML
+    // string above. Since coupPlanner is a plain ES module export (not a
+    // global), `coupPlanner` did not exist in the page's global scope and
+    // every one of those inline handlers threw "coupPlanner is not
+    // defined" the moment it was clicked. Wired up as real listeners
+    // instead, matching how the rest of this file already does it.
+    const addCellBtn = document.getElementById("add-cell");
+    if (addCellBtn) addCellBtn.addEventListener("click", openCellSelection);
+
+    const improveSecurityBtn = document.getElementById("improve-security");
+    if (improveSecurityBtn)
+      improveSecurityBtn.addEventListener("click", improveSecurity);
+
+    const acceleratePrepBtn = document.getElementById("accelerate-prep");
+    if (acceleratePrepBtn)
+      acceleratePrepBtn.addEventListener("click", acceleratePrep);
+
+    const designateLeadBtn = document.getElementById("designate-lead");
+    if (designateLeadBtn)
+      designateLeadBtn.addEventListener("click", selectLeadCity);
+
+    // execute-coup and cancel-coup are handled by the document-level click
+    // delegation set up in initialize() - no listener needed here.
 
     // Re-add close button functionality
     document
@@ -645,6 +673,8 @@ export const coupPlanner = (() => {
     plan.leadCity = null;
 
     // Update global metrics display
+    // (this call previously threw a ReferenceError - see the import fix
+    // at the top of this file)
     updateGlobalMetrics();
 
     // Check if coup planning should be available
@@ -660,6 +690,9 @@ export const coupPlanner = (() => {
     selectLeadCity,
     executeCoup,
     cancelCoupPlanning,
+    // Exposed so gameLogic.restartGame() can clear any in-progress plan
+    // when the player starts a new game.
+    resetPlan: resetCoupPlan,
     getCellsCount: () => plan.cells.length,
     getLeadCity: () => plan.leadCity,
     getPreparation: () => plan.prepLevel,

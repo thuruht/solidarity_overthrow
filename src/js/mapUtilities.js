@@ -1,33 +1,13 @@
 import { map } from "./main_new.js";
 // File: solid0p1.js
-
-// Function to set up the map and its basic controls
-// This is now handled directly in main_new.js
-/*
-export function setupMap() {
-  // Initialize the map
-  map = L.map('map', {
-    attributionControl: false // Disable default attribution control
-  }).setView([20, 0], 2); // Centered globally
-
-  // Use CartoDB's tile service for clean tiles
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '<small>&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors & <a href="https://carto.com/">CARTO</a></small>',
-    subdomains: 'abcd',
-    maxZoom: 19
-  }).addTo(window.map);
-
-  // Add custom attribution control
-  L.control.attribution({
-    position: 'bottomright'
-  }).addTo(window.map).setPrefix('');
-
-  // Initialize offline storage
-  setupOfflineStorage();
-};*/
+//
+// BUGFIX: both functions below were declared but never exported, and this
+// file was never imported anywhere else in the codebase - the "Reset View"
+// map button and the offline weather/location cache were fully dead code.
+// Both are now exported and wired up from main_new.js's initializeGame().
 
 // Add reset view button
-function addResetViewButton() {
+export function addResetViewButton() {
   const resetButton = L.control({ position: "topleft" });
 
   resetButton.onAdd = function (map) {
@@ -55,8 +35,12 @@ function addResetViewButton() {
   resetButton.addTo(map);
 }
 
-// Offline storage setup using IndexedDB
-function setupOfflineStorage() {
+// Offline storage setup using IndexedDB.
+// NOTE: this only *initializes* the database. Nothing currently reads from
+// or writes to it (fetchAndIntegrateWeather() in cityInteractions.js still
+// always hits the network) - actually caching weather/location data through
+// this store is a follow-up enhancement, not part of this fix.
+export function setupOfflineStorage() {
   if ("indexedDB" in window) {
     const request = indexedDB.open("SolidarityOverthrowDB", 1);
     request.onupgradeneeded = (event) => {

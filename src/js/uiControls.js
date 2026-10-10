@@ -184,11 +184,26 @@ export function initializeLeaderboard() {
   const leaderboardToggle = document.querySelector(
     '.control-toggle[data-target="leaderboard-panel"]'
   );
+  // BUGFIX: this used to call .addEventListener directly on the result of
+  // querySelector with no null-check. index.html had no leaderboard-panel
+  // control block at all, so this threw a TypeError for every logged-in
+  // user - and since it's called synchronously (not awaited) from inside
+  // auth.js's checkUserSession() try block, the exception silently aborted
+  // everything after it in that block, including the admin-controls check.
+  // The missing HTML is now added (see index.html); this guard stays as
+  // defensive insurance against the same class of bug recurring.
+  if (!leaderboardToggle) {
+    console.warn(
+      "initializeLeaderboard: no [data-target=\"leaderboard-panel\"] toggle found in the DOM."
+    );
+    return;
+  }
   leaderboardToggle.addEventListener("click", fetchLeaderboard, { once: true });
 }
 
 async function fetchLeaderboard() {
   const list = document.getElementById("leaderboard-list");
+  if (!list) return;
   list.innerHTML = '<div style="text-align:center; padding: 10px;"><div class="loading-spinner"></div></div>';
   try {
     const response = await fetch("/api/leaderboard");
